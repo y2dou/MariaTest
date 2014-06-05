@@ -256,7 +256,6 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 	private void setupRevenueWeightedLandUseSelector() {
 		// heuristic: prioritize remaining land use selections based on revenue
 		landUseSelector.reset();
-		System.out.println("hahah");
 		if (marketPrices != null) {
 			// select with weighted probability
 			
