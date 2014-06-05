@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<score:SContext xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:score="http://scoreabm.org/score" label="MariaPrototype" ID="mariaPrototype" pluralLabel="MariaPrototypes">
+  <attributes label="sweepName" ID="sweepName" pluralLabel="sweepNames" sType="STRING" defaultValue="single_run"/>
+  <attributes label="outputEnabled" ID="outputEnabled" pluralLabel="outputEnableds" defaultValue="true"/>
+  <attributes label="outputImagesAsFiles" ID="outputImagesAsFiles" pluralLabel="outputImagesAsFiless" defaultValue="true"/>
+  <attributes label="outputParametersAsFile" ID="outputParametersAsFile" pluralLabel="outputParametersAsFiles" defaultValue="true"/>
+  <attributes label="outputNetworkCSV" ID="outputNetworkCSV" pluralLabel="outputNetworkCSVs" description="" defaultValue="true"/>
+  <attributes label="cell size" ID="cellsize" pluralLabel="cell sizes" sType="FLOAT" defaultValue="15.0f"/>
+  <attributes label="width" ID="width" pluralLabel="widths" sType="INTEGER" defaultValue="765" units=""/>
+  <attributes label="height" ID="height" pluralLabel="heights" sType="INTEGER" defaultValue="808"/>
+  <attributes label="originx" ID="originx" pluralLabel="originxs" sType="FLOAT"/>
+  <attributes label="originy" ID="originy" pluralLabel="originys" sType="FLOAT"/>
+  <attributes label="numHouseholds" ID="numHouseholds" pluralLabel="numHouseholdss" sType="INTEGER" defaultValue="21"/>
+  <attributes label="numPersons" ID="numPersons" pluralLabel="numPersons" description="" sType="INTEGER" defaultValue="144"/>
+  <attributes label="numOffers" ID="numOffers" pluralLabel="numOffers" sType="INTEGER" defaultValue="0"/>
+  <attributes label="lambdaOffers" ID="lambdaOffers" pluralLabel="lambdaOffers" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentHeuristicHouseholds" ID="percentHeuristicHouseholds" pluralLabel="percentHeuristicHouseholdss" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentOptimalHouseholds" ID="percentOptimalHouseholds" pluralLabel="percentOptimalHouseholdss" sType="FLOAT" defaultValue="1.0" units=""/>
+  <attributes label="percentForwardOptimalHouseholds" ID="percentForwardOptimalHouseholds" pluralLabel="percentForwardOptimalHouseholdss" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentFullForwardOptimalHouseholds" ID="percentFullForwardOptimalHouseholds" pluralLabel="percentFullForwardOptimalHouseholdss" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="runlength" ID="runlength" pluralLabel="runlengths" sType="FLOAT" defaultValue="40" units=""/>
+  <attributes label="labourMultiplier" ID="labourMultiplier" pluralLabel="labourMultipliers" sType="FLOAT" defaultValue="1"/>
+  <attributes label="capitalMultiplier" ID="capitalMultiplier" pluralLabel="capitalMultipliers" sType="FLOAT" defaultValue="1"/>
+  <attributes label="priceStreamMultiplier" ID="priceStreamMultiplier" pluralLabel="priceStreamMultipliers" description="Multiply all price streams by this scaling factor. May be overridden by other multipliers if valid." sType="FLOAT" defaultValue="0.000003"/>
+  <attributes label="acaiMultiplier" ID="acaiMultiplier" pluralLabel="acaiMultipliers" description="Multiply acai selling prices by this amount." sType="FLOAT" defaultValue="-1.0f"/>
+  <attributes label="maniocMultiplier" ID="maniocMultiplier" pluralLabel="maniocMultipliers" description="Multiply manioc selling prices by this amount." sType="FLOAT" defaultValue="-1.0f"/>
+  <attributes label="timberMultiplier" ID="timberMultiplier" pluralLabel="timberMultipliers" description="Multiply timber selling prices by this amount." sType="FLOAT" defaultValue="-1.0f"/>
+  <attributes label="acaiPrice" ID="acaiPrice" pluralLabel="acaiPrices" description="Price of acai. Set to &lt; 0 to use an external file." sType="FLOAT" defaultValue="-1.0f"/>
+  <attributes label="maniocPrice" ID="maniocPrice" pluralLabel="maniocPrices" sType="FLOAT" defaultValue="-1.0f"/>
+  <attributes label="timberPrice" ID="timberPrice" pluralLabel="timberPrices" sType="FLOAT" defaultValue="-1.0f"/>
+  <attributes label="acaiLabour" ID="acaiLabour" pluralLabel="acaiLabours" description="Acai intensification labour requirements." sType="FLOAT" defaultValue="0.1"/>
+  <attributes label="fallowLabour" ID="fallowLabour" pluralLabel="fallowLabours" sType="FLOAT" defaultValue="0.05"/>
+  <attributes label="maniocLabour" ID="maniocLabour" pluralLabel="maniocLabours" sType="FLOAT" defaultValue="0.1"/>
+  <attributes label="acaiCost" ID="acaiCost" pluralLabel="acaiCosts" description="Acai intensification cost (required capital)." sType="FLOAT" defaultValue="1.0"/>
+  <attributes label="maniocCost" ID="maniocCost" pluralLabel="maniocCosts" sType="FLOAT" defaultValue="3.0"/>
+  <attributes label="fallowCost" ID="fallowCost" pluralLabel="fallowCosts" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="maintainAcaiLabour" ID="maintainAcaiLabour" pluralLabel="maintainAcaiLabours" sType="FLOAT" defaultValue="0.1"/>
+  <attributes label="maintainAcaiCost" ID="maintainAcaiCost" pluralLabel="maintainAcaiCosts" sType="FLOAT" defaultValue="2.0"/>
+  <attributes label="maintainManiocLabour" ID="maintainManiocLabour" pluralLabel="maintainManiocLabours" sType="FLOAT" defaultValue="0.04"/>
+  <attributes label="maintainManiocCost" ID="maintainManiocCost" pluralLabel="maintainManiocCosts" sType="FLOAT" defaultValue="10"/>
+  <attributes label="forestFallowLabour" ID="forestFallowLabour" pluralLabel="forestFallowLabours" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="forestFallowCost" ID="forestFallowCost" pluralLabel="forestFallowCosts" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="harvestAcaiLabour" ID="harvestAcaiLabour" pluralLabel="harvestAcaiLabours" description="Acai harvest labour requirements." sType="FLOAT" defaultValue="0.5"/>
+  <attributes label="harvestTimberLabour" ID="harvestTimberLabour" pluralLabel="harvestTimberLabours" sType="FLOAT" defaultValue="40.0"/>
+  <attributes label="harvestManiocLabour" ID="harvestManiocLabour" pluralLabel="harvestManiocLabours" sType="FLOAT" defaultValue="0.05"/>
+  <attributes label="offerValueSpread" ID="offerValueSpread" pluralLabel="offerValueSpreads" sType="FLOAT" defaultValue="5f"/>
+  <attributes label="offerValueAverage" ID="offerValueAverage" pluralLabel="offerValueAverages" sType="FLOAT" defaultValue="10f"/>
+  <attributes label="demographicRandomSeed" ID="demographicRandomSeed" pluralLabel="demographicRandomSeeds" sType="INTEGER" defaultValue="1"/>
+  <attributes label="familySizeRandomSeed" ID="familySizeRandomSeed" pluralLabel="familySizeRandomSeeds" sType="INTEGER" defaultValue="1"/>
+  <attributes label="plotSizeRandomSeed" ID="plotSizeRandomSeed" pluralLabel="plotSizeRandomSeeds" sType="INTEGER" defaultValue="1"/>
+  <implementation package="mariaprototype" className="" basePath="../MariaPrototype" mode="AUTO" binDir="bin,lib/windows,lib"/>
+  <agents label="SimpleAgent" ID="simpleAgent" pluralLabel="SimpleAgents">
+    <implementation className="SimpleAgent"/>
+  </agents>
+  <agents xsi:type="score:SContext" label="EnvironmentalContext" ID="environmentalContext" pluralLabel="EnvironmentalContexts">
+    <implementation package="mariaprototype.environmental" className="EnvironmentalContextBuilder" basePath=""/>
+    <agents label="WaterCell" ID="waterCell" pluralLabel="WaterCells">
+      <implementation className="WaterCell"/>
+    </agents>
+    <agents label="LandCell" ID="landCell" pluralLabel="LandCells">
+      <implementation className="LandCell"/>
+    </agents>
+    <agents label="LandscapeCell" ID="landscapeCell" pluralLabel="LandscapeCells">
+      <implementation className="LandscapeCell"/>
+    </agents>
+    <agents label="House" ID="house" pluralLabel="Houses">
+      <implementation className="House"/>
+    </agents>
+    <projections xsi:type="score:SGrid" label="Landscape Grid" ID="landscapeGrid" pluralLabel="Landscape Grids" borderRule="STRICT"/>
+    <valueLayers label="Elevation Field" ID="elevationField" pluralLabel="Elevation Fields"/>
+    <valueLayers label="Slope Field" ID="slopeField" pluralLabel="Slope Fields"/>
+    <valueLayers label="Floodability Field" ID="floodabilityField" pluralLabel="Floodability Fields"/>
+    <valueLayers label="Distance to Water" ID="distancetoWater" pluralLabel="Distance to Waters"/>
+    <valueLayers label="is Land" ID="isLand" pluralLabel="is Lands"/>
+  </agents>
+  <agents xsi:type="score:SContext" label="HumanContext" ID="humanContext" pluralLabel="HumanContexts">
+    <implementation package="mariaprototype.human" className="HumanContextBuilder" basePath=""/>
+    <agents label="HouseholdAgent" ID="householdAgent" pluralLabel="HouseholdAgents">
+      <implementation className="HouseholdAgent"/>
+    </agents>
+    <agents label="PolicyAgent" ID="policyAgent" pluralLabel="PolicyAgents">
+      <implementation className="PolicyAgent"/>
+    </agents>
+    <agents label="MarketAgent" ID="marketAgent" pluralLabel="MarketAgents">
+      <implementation className="MarketAgent"/>
+    </agents>
+    <agents label="StaticMarketAgent" ID="staticMarketAgent" pluralLabel="StaticMarketAgents">
+      <implementation className="StaticMarketAgent"/>
+    </agents>
+    <agents label="DynamicMarketAgent" ID="dynamicMarketAgent" pluralLabel="DynamicMarketAgents">
+      <implementation className="DynamicMarketAgent"/>
+    </agents>
+    <agents label="Person" ID="person" pluralLabel="People">
+      <implementation className="Person"/>
+    </agents>
+    <agents label="HeuristicHouseholdAgent" ID="heuristicHouseholdAgent" pluralLabel="HeuristicHouseholdAgents">
+      <implementation className="HeuristicHouseholdAgent"/>
+    </agents>
+    <agents label="LinearOptimizingHouseholdAgent" ID="linearOptimizingHouseholdAgent" pluralLabel="LinearOptimizingHouseholdAgents">
+      <implementation className="LinearOptimizingHouseholdAgent"/>
+    </agents>
+    <agents label="ForwardThinkingLinearOptimizingHouseholdAgent" ID="forwardThinkingLinearOptimizingHouseholdAgent" pluralLabel="ForwardThinkingLinearOptimizingHouseholdAgents">
+      <implementation className="ForwardThinkingLinearOptimizingHouseholdAgent"/>
+    </agents>
+    <agents label="FullForwardLPHouseholdAgent" ID="fullForwardLPHouseholdAgent" pluralLabel="FullForwardLPHouseholdAgents">
+      <implementation className="FullForwardLPHouseholdAgent"/>
+    </agents>
+    <agents label="Town" ID="town" pluralLabel="Towns">
+      <implementation className="Town"/>
+    </agents>
+    <agents label="NetworkedUrbanAgent" ID="networkedUrbanAgent" pluralLabel="NetworkedUrbanAgents">
+      <implementation className="NetworkedUrbanAgent"/>
+    </agents>
+    <projections xsi:type="score:SContinuousSpace" label="Person Space" ID="personSpace" pluralLabel="Person Spaces" borderRule="STRICT"/>
+    <projections xsi:type="score:SNetwork" label="Multisited Household Network" ID="multisitedHouseholdNetwork" pluralLabel="Multisited Household Networks" directed="true"/>
+    <projections xsi:type="score:SGeography" label="Person Geography" ID="personGeography" pluralLabel="Person Geographys"/>
+    <valueLayers label="Land Holder Field" ID="landHolderField" pluralLabel="Land Holder Fields"/>
+  </agents>
+</score:SContext>

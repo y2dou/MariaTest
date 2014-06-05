@@ -1,0 +1,98 @@
+<repast.simphony.data.engine.DefaultDataGathererDescriptor>
+  <name>Household Data Set</name>
+  <dataSetId class="string">Household Data Set 1</dataSetId>
+  <scheduleParameters>
+    <start>1.0</start>
+    <interval>1.0</interval>
+    <priority>-Infinity</priority>
+    <duration>-1.0</duration>
+    <frequency>REPEAT</frequency>
+  </scheduleParameters>
+  <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
+    <nameMappingTable>
+      <entry>
+        <string>Tick</string>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
+      </entry>
+      <entry>
+        <string>SubsistenceRequirements</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>mariaprototype.human.HouseholdAgent</class>
+            <name>getSubsistenceRequirements</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>Capital</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>mariaprototype.human.HouseholdAgent</class>
+            <name>getCapital</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>Run Number</string>
+        <repast.simphony.data.logging.gather.RunNumberMapping>
+          <runNumber>1</runNumber>
+        </repast.simphony.data.logging.gather.RunNumberMapping>
+      </entry>
+      <entry>
+        <string>Labour</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>mariaprototype.human.HouseholdAgent</class>
+            <name>getLabour</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>FamilyMembers</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>mariaprototype.human.HouseholdAgent</class>
+            <name>getFamilyMembers</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+    </nameMappingTable>
+    <mappingNameTable>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>SubsistenceRequirements</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>Labour</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>Capital</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.RunNumberMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.RunNumberMapping"/>
+        <string>Run Number</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[6]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>FamilyMembers</string>
+      </entry>
+    </mappingNameTable>
+  </dataMappingContainer>
+  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
+    <nameMappingTable/>
+    <mappingNameTable/>
+    <alternatedNameTable/>
+    <nameAlternatedTable/>
+  </aggregateContainer>
+  <agentClass>mariaprototype.human.HeuristicHouseholdAgent</agentClass>
+</repast.simphony.data.engine.DefaultDataGathererDescriptor>

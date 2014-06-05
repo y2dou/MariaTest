@@ -1,0 +1,1 @@
+Use these libraries for generic (no native acceleration) or for Java Web Start.

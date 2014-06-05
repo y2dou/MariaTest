@@ -1,0 +1,47 @@
+digraph {
+	// global options
+	rankdir=LR
+	margin=0
+	node [fontname="Century Gothic",fontsize=11,shape=egg]
+	edge [color=Blue, fontname="Century Gothic", fontsize=11]
+	
+	// nodes
+	// forest_fallow   [label="Forest Fallow"]
+	// fallow_postacai				[label="Forest Fallow (post-acai)"]
+	// fallow_posthousegarden			[label="Fallow (post-housegarden)"]
+	// fallow_postforest			[label="Partially Cleared"]
+	housegarden				[label="Housegarden"]
+	acai					[label="Acai"]
+	// fields				[label="Fields"]
+	forest					[label="Forest"]
+
+	// acceptable transitions (and wait)
+	// blue: human intervention
+	// cadetblue: maintenance (partial human intervention)
+	// forestgreen: natural
+	
+	// dashed: optional (choice is involved)
+	
+	// TODO: add labour requirements to blue and cadetblue
+
+	// acai -> fallow_postacai			[color=blue,label="= 5 years"]
+	// acai -> acai				[color=cadetblue, label="< 5 years"]
+	// housegarden -> fallow_posthousegarden 	[color=blue,label="= 3 years"]
+	// housegarden -> housegarden 		[color=cadetblue, label="< 3 years"]
+	// forest -> acai				[color=blue, label=">=5 years", style=dashed]
+	// forest -> housegarden 			[color=blue, label=">= 5 years", style=dashed]
+	// forest -> fallow_postforest		[color=blue, label="selective clearing", style=dashed]
+	// fallow_postacai -> forest		[color=forestgreen, label=">= 5 years"]
+	// fallow_posthousegarden -> forest	[color=forestgreen, label=">= 5 years"]
+	// fallow_postforest -> forest		[color=forestgreen, label=">= 10 years"]
+
+	// {rank=same; fallow_postacai fallow_posthousegarden }
+	acai -> intermediate_acai
+	acai -> acai
+	acai -> gap_SS -> forest
+	intermediate_acai -> intensive_acai
+	housegarden -> housegarden
+	housegarden -> intensive_acai
+	housegarden -> gap_SS
+
+}

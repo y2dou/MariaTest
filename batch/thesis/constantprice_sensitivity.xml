@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<sweep runs="1">
+	<parameter name="sweepName" type="constant" constant_type="string" value="constantprice_sensitivity_20090723"/>
+
+	<parameter name="outputEnabled" type="constant" constant_type="boolean" value="false"/>
+
+	<parameter name="outputImagesAsFiles" type="constant" constant_type="boolean" value="true"/>
+	<parameter name="outputParametersAsFile" type="constant" constant_type="boolean" value="true"/>
+	<parameter name="outputNetworkCSV" type="constant" constant_type="boolean" value="false"/>
+
+	<parameter name="runlength" type="constant" constant_type="number" value="40.0"/>
+	<parameter name="width" type="constant" constant_type="number" value="765"/>
+	<parameter name="height" type="constant" constant_type="number" value="808"/>
+	<parameter name="cellsize" type="constant" constant_type="number" value="15.0"/>
+	<parameter name="originx" type="constant" constant_type="number" value="15.0"/>
+	<parameter name="originy" type="constant" constant_type="number" value="15.0"/>
+	
+	<parameter name="acaiMultiplier" type="constant" constant_type="number" value="-0.000003"/>
+	<parameter name="maniocMultiplier" type="constant" constant_type="number" value="-1.01"/>
+	<parameter name="timberMultiplier" type="constant" constant_type="number" value="-1.01"/>
+	<parameter name="priceStreamMultiplier" type="constant" constant_type="number" value="-1.01"/>
+	
+	<parameter name="numHouseholds" type="constant" constant_type="number" value="21"/>
+	<parameter name="numPersons" type="constant" constant_type="number" value="144"/>
+	
+	<parameter name="lambdaOffers" type="constant" constant_type="number" value="0.01" />
+	<parameter name="offerValueAverage" type="constant" constant_type="number" value="100.0" />
+	<parameter name="offerValueSpread" type="constant" constant_type="number" value="0.01" />
+	
+	<parameter name="numOffers" type="list" value_type="int" values="0">
+	
+		<parameter name="labourMultiplier" type="list" value_type="double" values="1.0">
+		<parameter name="capitalMultiplier" type="list" value_type="double" values="1.0">
+			
+			<parameter name="acaiPrice" type="list" value_type="double" values="0.000250875 0.000254220 0.000257565 0.000260910 0.000264255 0.000267600 0.000270945 0.000274290 0.000277635 0.000280980 0.000284325 0.000287670 0.000291015 0.000294360 0.000297705 0.000301050 0.000304395 0.000307740 0.000311085 0.000314430 0.000317775 0.000321120 0.000324465 0.000327810 0.000331155 0.000334500 0.000337845 0.000341190 0.000344535 0.000347880 0.000351225 0.000354570 0.000357915 0.000361260 0.000364605 0.000367950 0.000371295 0.000374640 0.000377985 0.000381330 0.000384675 0.000388020 0.000391365 0.000394710 0.000398055 0.000401400 0.000404745 0.000408090 0.000411435 0.000414780 0.000418125">
+			<parameter name="maniocPrice" type="list" value_type="double" values="0.002">
+			<parameter name="timberPrice" type="list" value_type="double" values="1.0">
+				<parameter name="acaiLabour" type="list" value_type="double" values="0.2">
+				<parameter name="maniocLabour" type="list" value_type="double" values="0.4">
+				<parameter name="fallowLabour" type="list" value_type="double" values="0.1">
+				<parameter name="forestFallowLabour" type="list" value_type="double" values="0.0">
+					<parameter name="maintainAcaiLabour" type="list" value_type="double" values="0.1">
+					<parameter name="maintainManiocLabour" type="list" value_type="double" values="0.04">
+						<parameter name="acaiCost" type="list" value_type="double" values="1.0">
+						<parameter name="maniocCost" type="list" value_type="double" values="3.0">
+						<parameter name="fallowCost" type="list" value_type="double" values="50.0">
+						<parameter name="forestFallowCost" type="list" value_type="double" values="0.0">
+						<parameter name="maintainAcaiCost" type="list" value_type="double" values="2.0">
+						<parameter name="maintainManiocCost" type="list" value_type="double" values="2.0">
+							<parameter name="harvestAcaiLabour" type="list" value_type="double" values="0.5">
+							<parameter name="harvestManiocLabour" type="list" value_type="double" values="0.0">
+							<parameter name="harvestTimberLabour" type="list" value_type="double" values="1000.0">
+								<parameter name="percentHeuristicHouseholds" type="list" value_type="double" values="0.0 1.0" />
+								<parameter name="percentOptimalHouseholds" type="list" value_type="double" values="1.0 0.0" />																						
+							</parameter>
+							</parameter>
+							</parameter>
+						</parameter>
+						</parameter>														
+						</parameter>
+						</parameter>
+						</parameter>
+						</parameter>
+					</parameter>
+					</parameter>
+				</parameter>
+				</parameter>
+				</parameter>
+				</parameter>						
+			</parameter>
+			</parameter>
+			</parameter>
+		</parameter>
+		</parameter>
+	
+	</parameter>
+</sweep>

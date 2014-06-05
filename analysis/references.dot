@@ -1,0 +1,46 @@
+digraph StudyAreaReferenceGraph {
+	// global settings
+	graph          [rotate=0, rankdir="LR"]
+	node           [color="#333333", style=filled,
+                 shape=box, fontname="Trebuchet MS"]
+ 	edge           [color="#666666", arrowhead="open", 
+                 fontname="Trebuchet MS", fontsize="11"]
+ 	node           [fillcolor="#294b76", fontcolor="white"]
+	
+	// articles
+	Murrieta1999 [style = filled, fillcolor = yellow]
+	
+
+	// rural study site references
+	"Foz de Mazagao" -> Padoch2008
+	Ipixuna	-> Padoch2008
+	Bacaba -> Padoch2008
+	"Santo Antonio" -> Padoch2008
+	"Lontra Pedreira" -> Padoch2008
+
+	// cities
+	Macapa -> Padoch2008
+	Santana -> Padoch2008
+	"Mazagao Novo" -> Padoch2008 // Pinedo-Vasquez and Padoch 2008
+	"Ponta de Pedras" -> Padoch2008
+	Belem -> Padoch2008
+	Santana -> Padoch2008
+	
+
+	// cross-references
+	AndersonIoris1992he -> Peters1989
+	Anderson1995 -> Peters1989
+	Anderson1995 -> AndersonIoris1992he
+	Anderson1995 -> Anderson1990
+	Anderson1995 -> Halle1975
+	Brondizio2008 -> Anderson1990
+	Brondizio2008 -> Netting1993
+	Brondizio2008 -> Boserup1965
+	Brondizio2008 -> IBGE2002
+	Brondizio2008 -> Peters1992
+	Brondizio2008 -> Murrieta1999
+	Padoch2008 -> Brondizio2008
+	Padoch2008 -> Kruger1998
+	Padoch2008 -> Rudel2002
+}
+

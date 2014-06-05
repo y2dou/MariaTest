@@ -1,0 +1,7 @@
+today:
+log income, income sources for each year: identify where they're getting all of their money
+-also identify how many plots they've harvested
+multisited households
+
+data output:
+pretty charts: iReport from database

@@ -1,0 +1,78 @@
+<repast.simphony.data.engine.DefaultDataGathererDescriptor>
+  <name>Person</name>
+  <dataSetId class="string">Person Data Set</dataSetId>
+  <scheduleParameters>
+    <start>1.0</start>
+    <interval>1.0</interval>
+    <priority>-Infinity</priority>
+    <duration>-1.0</duration>
+    <frequency>REPEAT</frequency>
+  </scheduleParameters>
+  <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
+    <nameMappingTable>
+      <entry>
+        <string>Female</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>mariaprototype.human.Person</class>
+            <name>isFemale</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>GenderAge</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>mariaprototype.human.Person</class>
+            <name>getGenderAge</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>Age</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>mariaprototype.human.Person</class>
+            <name>getAge</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+    </nameMappingTable>
+    <mappingNameTable>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>GenderAge</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>Female</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>Age</string>
+      </entry>
+    </mappingNameTable>
+  </dataMappingContainer>
+  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
+    <nameMappingTable>
+      <entry>
+        <string>Number</string>
+        <repast.simphony.data.logging.gather.aggregate.CountMapping>
+          <type>Count</type>
+        </repast.simphony.data.logging.gather.aggregate.CountMapping>
+      </entry>
+    </nameMappingTable>
+    <mappingNameTable>
+      <entry>
+        <repast.simphony.data.logging.gather.aggregate.CountMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.aggregate.CountMapping"/>
+        <string>Number</string>
+      </entry>
+    </mappingNameTable>
+    <alternatedNameTable/>
+    <nameAlternatedTable/>
+  </aggregateContainer>
+  <agentClass>mariaprototype.human.Person</agentClass>
+</repast.simphony.data.engine.DefaultDataGathererDescriptor>

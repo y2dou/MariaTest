@@ -1,0 +1,105 @@
+<repast.simphony.visualization.engine.DefaultDisplayDescriptor>
+  <name>Household GIS 3D</name>
+  <type>GIS3D</type>
+  <styles>
+    <entry>
+      <string>mariaprototype.human.HeuristicHouseholdAgent</string>
+      <string>mariaprototype.visualization.style.HouseholdStyleGIS3D</string>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.NetworkedUrbanAgent</string>
+      <string>mariaprototype.visualization.style.NetworkedUrbanAgentGIS3D</string>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.HouseholdAgent</string>
+      <string>mariaprototype.visualization.style.HouseholdStyleGIS3D</string>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.LinearOptimizingHouseholdAgent</string>
+      <string>mariaprototype.visualization.style.HouseholdStyleGIS3D</string>
+    </entry>
+  </styles>
+  <editedStyles>
+    <entry>
+      <string>mariaprototype.human.HeuristicHouseholdAgent</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.NetworkedUrbanAgent</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.HouseholdAgent</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.LinearOptimizingHouseholdAgent</string>
+      <null/>
+    </entry>
+  </editedStyles>
+  <netStyles>
+    <entry>
+      <string>Multisited Household Network</string>
+      <string>mariaprototype.visualization.style.HouseholdNetworkStyleGIS3D</string>
+    </entry>
+  </netStyles>
+  <editedNetStyles>
+    <entry>
+      <string>Multisited Household Network</string>
+      <null/>
+    </entry>
+  </editedNetStyles>
+  <frequency>ON_NEW</frequency>
+  <schedParams>
+    <start>1.0</start>
+    <interval>1.0</interval>
+    <priority>-Infinity</priority>
+    <duration>-1.0</duration>
+    <frequency>REPEAT</frequency>
+  </schedParams>
+  <layoutInterval>0</layoutInterval>
+  <layerOrder>
+    <entry>
+      <string>mariaprototype.human.HeuristicHouseholdAgent</string>
+      <int>3</int>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.NetworkedUrbanAgent</string>
+      <int>2</int>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.HouseholdAgent</string>
+      <int>1</int>
+    </entry>
+    <entry>
+      <string>mariaprototype.human.LinearOptimizingHouseholdAgent</string>
+      <int>0</int>
+    </entry>
+  </layerOrder>
+  <projections>
+    <repast.score.impl.SNetworkImpl>
+      <name>Multisited Household Network</name>
+    </repast.score.impl.SNetworkImpl>
+    <repast.score.impl.SGeographyImpl>
+      <name>Person Geography</name>
+    </repast.score.impl.SGeographyImpl>
+  </projections>
+  <valueLayers/>
+  <projectionDescriptors>
+    <entry>
+      <string>Multisited Household Network</string>
+      <repast.simphony.visualization.engine.DefaultProjectionDescriptor>
+        <proj class="repast.score.impl.SNetworkImpl" reference="../../../../projections/repast.score.impl.SNetworkImpl"/>
+        <props/>
+      </repast.simphony.visualization.engine.DefaultProjectionDescriptor>
+    </entry>
+    <entry>
+      <string>Person Geography</string>
+      <repast.simphony.visualization.engine.DefaultProjectionDescriptor>
+        <proj class="repast.score.impl.SGeographyImpl" reference="../../../../projections/repast.score.impl.SGeographyImpl"/>
+        <props/>
+      </repast.simphony.visualization.engine.DefaultProjectionDescriptor>
+    </entry>
+  </projectionDescriptors>
+  <props/>
+</repast.simphony.visualization.engine.DefaultDisplayDescriptor>
