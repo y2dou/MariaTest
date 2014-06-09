@@ -382,6 +382,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				h = new HeuristicHouseholdAgent(e.getKey());
 				break;
 			case 2:
+			//	System.out.println(e.getValue());
 				h = new LinearOptimizingHouseholdAgent(e.getKey());
 				break;
 			case 3:

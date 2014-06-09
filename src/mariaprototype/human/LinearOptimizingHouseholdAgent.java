@@ -50,6 +50,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 
 	public LinearOptimizingHouseholdAgent(int id) {
 		super(id);
+		
 	}
 
 	@Override
@@ -79,15 +80,22 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 	@Override
 	public void plan() {
 		processMessages();
+	//	String s = null;
+		//s.toString();
 
 		resetActions();
-
+        
 		// consider job offers, move people to town if desired
 		ArrayList<Person> eligibleMembers = new ArrayList<Person>();
+	//	System.out.println("Linear don't make plan1");
 		int males = 0; // adults
 		int females = 0;
+	//	System.out.println("Linear don't make plan2");
 		if (!jobOffers.isEmpty()) {
+			
 			ListIterator<Person> members = familyMembers.listIterator();
+		//	System.out.println(familyMembers.listIterator());
+		//	System.out.println("Linears don't make plan3");
 			while (members.hasNext()) {
 				Person p = members.next();
 				if (p.getAge() >= 70) {
@@ -109,7 +117,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		
 		while (!jobOffers.isEmpty()) {
 			JobOffer o = jobOffers.remove(0);
-			
+		//	System.out.println("Linear don't make plan4");
 			// rank members by age, younger eligible members leave first
 			Collections.sort(eligibleMembers, new Comparator<Person>() {
 				@Override
@@ -129,11 +137,13 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				if (p.isFemale()) {
 					if (females > 1) {
 						feasibleAllocations.getEmployables().put(p, o);
+			//			System.out.println("666");
 						break;
 					}
 				} else {
 					if (males > 1) {
 						feasibleAllocations.getEmployables().put(p, o);
+			//			System.out.println("777");
 						break;
 					}
 				}
@@ -145,6 +155,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			c.age();
 
 			LandCell cell = c.getCell();
+		//	System.out.println("Land Cell+"+cell.getForestAge());
 			if (c.getLandUse() == LandUse.ACAI) {
 				if (c.getYearsSinceMaintained() >= 3) {
 					c.setLandUse(LandUse.FOREST);
@@ -153,7 +164,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 					cell.setForestDensity(FuzzyUtility.constrain(cell.getForestDensity() + cell.getAcaiDensity()));
 					cell.setAcaiDensity(0);
 					feasibleAllocations.getToHarvestAcai().add(c);
-					System.out.println("Let's try here");
+				//	System.out.println("Let's try here:"+c);
 				} else {
 					feasibleAllocations.getToMaintainAcai().add(c);
 					feasibleAllocations.getToHarvestIntenseAcai().add(c);
@@ -170,9 +181,12 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 					feasibleAllocations.getToMaintainManiocGarden().add(c);
 				}
 			} else if (c.getLandUse() == LandUse.FOREST) {
+			//	System.out.println("This is Forest+"+c.getLandUse());
 				if (cell.getForestAge() > 3) {
 					feasibleAllocations.getToHarvestTimber().add(c);
 					feasibleAllocations.getToHarvestAcai().add(c);
+		//			System.out.println("This is Primary Forest");
+			//		System.out.println("size: " + feasibleAllocations.getToHarvestTimber().size());
 				}
 
 				if (c.getYearsSinceLast() > 5) {
@@ -180,6 +194,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				}
 			} else if (c.getLandUse() == LandUse.FALLOW) {
 				final LandUse lastLandUse = c.getLastLandUse();
+				System.out.println("Land Use"+c.getLandUse());
 				switch (lastLandUse) {
 				case ACAI:
 					feasibleAllocations.getToHarvestAcai().add(c);
@@ -194,14 +209,13 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 
 				case FALLOW:
 				case FOREST:
-				//	feasibleAllocations.getToPossiblyDevelop().add(c);
-				//	break;
-                // I made this change June 06, 2014
 				{  feasibleAllocations.getToPossiblyDevelop().add(c);
-				   System.out.println("Linear output: Forest");
+			//	   System.out.println("Linear output: Forest");
 				   break;
 				}
-					
+//				feasibleAllocations.getToPossiblyDevelop().add(c);
+				//	break;
+                // Yue made this change June 06, 2014
 				case FIELDS:
 					if (c.getYearsSinceLast() > 10)
 						feasibleAllocations.getToPossiblyDevelop().add(c);
@@ -269,6 +283,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				if (cell.getForestAge() > 3) {
 					feasibleAllocations.getToHarvestTimber().add(c);
 					feasibleAllocations.getToHarvestAcai().add(c);
+					//System.out.println("HarvestSolution for Forest"+feasibleAllocations.getToHarvestTimber().size());
 				}
 			} else if (c.getLandUse() == LandUse.FALLOW) {
 				final LandUse lastLandUse = c.getLastLandUse();
@@ -289,21 +304,29 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		int j;
 		int[] colno = new int[ncols];
 		double[] row = new double[ncols];
+		//System.out.println("___Try to find the best solution1");
 		
 		// get list of agents available for recall back to the household
 		// need to move keyset to ordered list for consistency
 		List<NetworkedUrbanAgent> recallSolutions = new LinkedList<NetworkedUrbanAgent>();
 		recallSolutions.addAll(linkedHouseholds.keySet());
-
+		
+//From here it's not working. Yue, June 6, 2014
+		
+		
 		try {
+		//	System.out.println("before lp...");
 			LpSolve lp = LpSolve.makeLp(0, ncols);
+		//from here 	
+		//	System.out.println("size of lp" + lp.getLp());
 			if (lp.getLp() == 0) {
 				retVal = 1;
+		//		System.out.println("it is NOT running!");
 			}
 	
 			// name the LP, set columns
 			if (retVal == 0) {
-				System.out.println("it is running!");
+			//	System.out.println("it is running!");
 				lp.setLpName("harvest" + getID());
 				
 				int i = 1;
@@ -326,7 +349,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			
 			if (retVal == 0) {
 				// labour requirements
-				System.out.println("it is running!");
+			//	System.out.println("it is running!");
 				j = 0;
 	
 				colno[j] = 1;
@@ -350,6 +373,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 	
 				/* add the row to lpsolve */
 				lp.addConstraintex(j, row, colno, LpSolve.LE, labour);
+			//	System.out.println("lp ColName:"+lp.getColName(getID()));
 			}
 	
 			if (retVal == 0) {
@@ -378,6 +402,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 						acaiYield += c.getCell().getAcaiYield();
 					}
 					acaiYield /= (double) feasibleAllocations.getToHarvestAcai().size();	
+			//		System.out.println("acaiYield="+acaiYield);
 				}
 				
 				double intenseacaiYield = 0;
@@ -386,6 +411,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 						intenseacaiYield += c.getCell().getIntenseAcaiYield();
 					}
 					intenseacaiYield /= (double) feasibleAllocations.getToHarvestIntenseAcai().size();
+		//			System.out.println("Intensify acai Yield="+intenseacaiYield);
 				}
 				
 				double gardenYield = 0;
@@ -402,19 +428,21 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 						timberYield += c.getCell().getTimberYield();
 					}
 					timberYield /= (double) feasibleAllocations.getToHarvestTimber().size();
+				//	System.out.println("++++++Timber Yield is"+timberYield);
 				}
 				
 				colno[j] = 1;
 				row[j++] = acaiYield * getExpectedPrice(LandUse.ACAI);
-				
+		//		System.out.println("Expected Acai Profit:"+row[j-1]);
 				colno[j] = 2;
 				row[j++] = intenseacaiYield * getExpectedPrice(LandUse.ACAI);
-	
+		//		System.out.println("Expected Intensify Acai Profit:"+row[j-1]);
 				colno[j] = 3;
 				row[j++] = gardenYield * getExpectedPrice(LandUse.MANIOCGARDEN);
 				
 				colno[j] = 4;
 				row[j++] = timberYield * getExpectedPrice(LandUse.FOREST);
+		//		System.out.println("Expected Timber Profit:"+row[j-1]);
 				
 				Iterator<NetworkedUrbanAgent> recallIter = recallSolutions.iterator();
 				while (recallIter.hasNext()) {
@@ -426,7 +454,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 	
 				/* set the objective in lpsolve */
 				lp.setObjFnex(j, row, colno);
-				System.out.println("it is running!");
+			//	System.out.println("*****it is running!");
 			}
 			
 			if (retVal == 0) {
@@ -497,21 +525,27 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		 * 
 		 * variables: NEW plots of: acai, maniocgarden
 		 */
+    //    System.out.println("How about here4");
 
 		// http://lpsolve.sourceforge.net/5.5/formulate.htm#Java
 		int nResourceCols = 4;
+    //    System.out.println("How about here5");
+
 		int ncols = nResourceCols + feasibleAllocations.getEmployables().size() + linkedHouseholds.size();
+	//	System.out.println("How about here6"+feasibleAllocations.getEmployables().size());
 		int retVal = 0;
 		int j;
 		int[] colno = new int[ncols];
 		double[] row = new double[ncols];
-		
+        
+
 		// need to move sets to ordered lists for consistency
 		List<Entry<Person, JobOffer>> employableSolutions = new LinkedList<Entry<Person, JobOffer>>(); 
 		employableSolutions.addAll(feasibleAllocations.getEmployables().entrySet());
-		
+	//	System.out.println("How about here7");
 		List<NetworkedUrbanAgent> recallSolutions = new LinkedList<NetworkedUrbanAgent>();
 		recallSolutions.addAll(linkedHouseholds.keySet());
+	//	System.out.println("How about here8");
 
 		try {
 			LpSolve lp = LpSolve.makeLp(0, ncols);
@@ -528,6 +562,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				lp.setColName(i++, "manioc");
 				lp.setColName(i++, "maintainacai");
 				lp.setColName(i++, "maintainmanioc");
+		//		System.out.println("lp+"+lp.getStatus());
 				
 				// add person-job offer columns
 				int k = i;
@@ -759,7 +794,9 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 						recall.add(a);
 					}
 				}
+
 				recommendation.setRecall(recall);
+			//	System.out.println("How about here:"+recommendation.toString());
 
 				return recommendation;
 			}
@@ -768,10 +805,9 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			if (lp.getLp() != 0) {
 				lp.deleteLp();
 			}
-		} catch (LpSolveException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.print(e);
 		}
-
 		return null;
 	}
 
@@ -787,30 +823,36 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		// networked households)
 		
 		// forest fallow: de-intensify acai (no actual labour, cost)
+    //    System.out.println("How about here");
 		for (MyLandCell c : feasibleAllocations.getToForestFallow()) {
 			if (!forestFallow(c))
 				break;
 		}
 
 		resetLabour();
+    //    System.out.println("How about here2");
 
 		// slash and burn (again, no labour)
 		for (MyLandCell c : feasibleAllocations.getToFallow()) {
 			if (!fallow(c))
 				break;
 		}
+     //   System.out.println("How about here3");
 
 		DevelopmentSolution solution = findDevelopmentSolution();
+    //    System.out.println("How about here4");
+
 		if (solution != null) {
 			// FIXME: do non-integer solutions (partial plots)
-			
+
 			// send off people
 			Iterator<Entry<Person, JobOffer>> offeredIter = solution.getEmploy().entrySet().iterator();
 			if (offeredIter.hasNext()) {
 				Entry<Person, JobOffer> e = offeredIter.next();
 				send(e.getKey(), e.getValue());
 			}
-			
+	 //       System.out.println("How about here5");
+
 			// get people back
 			Iterator<NetworkedUrbanAgent> recallIter = solution.getRecall().iterator();
 			if (recallIter.hasNext()) {
@@ -818,12 +860,14 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			}
 			
 			resetLabour();
+	  //      System.out.println("How about here6");
 			
 			double acai = solution.getAcai();
 			double manioc = solution.getGarden();
 			double maintainAcai = solution.getMaintainAcai();
 			double maintainGardens = solution.getMaintainGarden();
-	
+	//        System.out.println("How about here7");
+
 			// order shouldn't matter; it's optimal!
 			// then again, spatial land allocation isn't
 			while (acai >= 1) {
@@ -833,13 +877,15 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				
 				acai -= acaiIntensification;
 			}
-	
+	  //      System.out.println("How about here8");
+
 			while (manioc >= 1) {
 				if (expandHousegarden()) manioc -= 1;
 				
 				if (feasibleAllocations.getToManiocGarden().isEmpty())
 					break;
 			}
+	  //      System.out.println("How about here9");
 			
 			ListIterator<MyLandCell> iter = feasibleAllocations.getToMaintainAcai().listIterator();
 			while (maintainAcai >= 1) {
@@ -852,7 +898,8 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				maintain(iter.next());
 				maintainAcai -= 1;
 			}
-			
+
+	   //     System.out.println("How about here10");
 			iter = feasibleAllocations.getToMaintainManiocGarden().listIterator();
 			while (maintainGardens >= 1) {
 				if (!iter.hasNext()) {
@@ -1013,5 +1060,4 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		mailbox.put(message.getSource(), message.getContents());
 	}
 
-	
 }

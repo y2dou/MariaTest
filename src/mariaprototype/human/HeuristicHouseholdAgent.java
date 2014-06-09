@@ -87,7 +87,9 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 	@Override
 	public void plan() {
 		processMessages();
-		
+		//String s = null;
+		//s.toString();
+
 		// collect stats over managed property
 		// create plan
 		// TODO: project labour and capital costs (harvest and LUCC are separate)
@@ -211,6 +213,8 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 						break;
 				}
 			}
+			
+		
 		}
 		
 		// TODO: order maintenance activities by profit? de-value maintenance activities which result in loss
