@@ -49,6 +49,8 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected Connection conn;
 	
 	protected EnvelopePool envelopePool;	
+	public double cashTran;
+//	public Double cashTran;
 	
 	public HumanContext() {
 		super();

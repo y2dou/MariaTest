@@ -9,6 +9,7 @@ public class Person extends SimpleAgent {
 	private double labour;
 	private int age;
 	private boolean isFemale;
+	private double pension;
 	
 	public Person() {
 		this(RandomHelper.getDistribution("isFemale").nextInt() == 1, RandomHelper.getDistribution("age").nextInt());
@@ -18,14 +19,32 @@ public class Person extends SimpleAgent {
 		this.isFemale = isFemale;
 		this.age = age;
 		calculateLabour();
+		calculatePension();
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)
 	public void age() {
 		age++;
 		calculateLabour();
+		calculatePension();
 	}
 	
+	private void calculatePension () {
+	// to get people's pension, person who is older than 60, can get pension 100; 
+		
+		if (age>=60) 
+			pension=Policy.cashTransferVolume;
+				
+		else
+			pension=0;
+		
+		this.pension=pension;
+	//	System.out.println("pension="+pension);
+	}
+	public double getPension() {
+		return pension;
+		
+	}
 	// FIXME: set contributing labour for acai, other agroforestry
 	private void calculateLabour() {
 		// labour (person-months)

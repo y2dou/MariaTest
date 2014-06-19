@@ -368,25 +368,33 @@ public class MySQLDatabase extends Database {
 				}
 			}
 			
+	//		PreparedStatement ps = conn.prepareStatement("INSERT INTO tblHouseholdState" +
+	//				"(householdID, runID, tick, stage, capital, labour, acai, maniocgarden, fields, forest, fallow, other, " +
+	//				"harvestAcai, harvestManioc, harvestTimber) VALUES " +
+	//				"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO tblHouseholdState" +
-					"(householdID, runID, tick, stage, capital, labour, acai, maniocgarden, fields, forest, fallow, other, " +
+					"(householdID, runID, tick, stage, capital, labour, cashTran, acai, maniocgarden, fields, forest, fallow, other, " +
 					"harvestAcai, harvestManioc, harvestTimber) VALUES " +
-					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");		
+			
 			ps.setInt(1, a.getID());
 			ps.setInt(2, getRunID(conn));
 			ps.setDouble(3, RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount());
 			ps.setString(4, stage);
 			ps.setDouble(5, a.getCapital());
 			ps.setDouble(6, labour);
-			ps.setInt(7, numAcai);
-			ps.setInt(8, numManiocGarden);
-			ps.setInt(9, numFields);
-			ps.setInt(10, numForest);
-			ps.setInt(11, numFallow);
-			ps.setInt(12, numOther);
-			ps.setDouble(13, a.getAcaiYield());
-			ps.setDouble(14, a.getManiocYield());
-			ps.setDouble(15, a.getTimberYield());
+			ps.setDouble(7, a.getCashTran());
+			//new add;
+			
+			ps.setInt(8, numAcai);
+			ps.setInt(9, numManiocGarden);
+			ps.setInt(10, numFields);
+			ps.setInt(11, numForest);
+			ps.setInt(12, numFallow);
+			ps.setInt(13, numOther);
+			ps.setDouble(14, a.getAcaiYield());
+			ps.setDouble(15, a.getManiocYield());
+			ps.setDouble(16, a.getTimberYield());
 			ps.execute();
 			ps.close();
 		} catch (SQLException e) {

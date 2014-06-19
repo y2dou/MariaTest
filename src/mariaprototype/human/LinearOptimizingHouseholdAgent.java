@@ -243,6 +243,8 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 	
 	protected double getExpectedPrice(LandUse crop) {
 		return marketPrices.get(crop);
+		
+	//	System.out.println(marketPrices.);
 	}
 	
 	protected double getActualPrice(LandUse crop) {

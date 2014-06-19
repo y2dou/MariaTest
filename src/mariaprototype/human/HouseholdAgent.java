@@ -78,7 +78,9 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	protected double capital;
 	protected double labour;
 	protected double subsistenceRequirements;
-	
+	protected double cashTran ;
+	//add cash transfer to hhd agent, June 17, 2014;
+
 	protected FastTable<Person> familyMembers = new FastTable<Person>();
 	
 	protected Map<GridDimensions, MyLandCell> tenure = new FastMap<GridDimensions, MyLandCell>();
@@ -101,6 +103,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	protected double harvestAcaiLabour = 1;
 	protected double harvestManiocLabour = 1;
 	protected double harvestTimberLabour = 1;
+	
 	
 	protected List<JobOffer> jobOffers;
 	
@@ -141,7 +144,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		harvestAcaiLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestAcaiLabour");
 		harvestManiocLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestManiocLabour");
 		harvestTimberLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestTimberLabour");
-		
+		//cashTran = (Double) RunEnvironment.getInstance().getParameters().getValue("cashTransfer");
+			
 		color = new Color((id * 1291 + 1297) % 256, (id * 2267 + 337) % 256, (id * 1553 + 3) % 256);
 		jobOffers = new LinkedList<JobOffer>();
 		
@@ -244,16 +248,45 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	}
 	
 	public final double getCapital() {
+		this.setCashTran();
+		capital = capital + this.getCashTran();
 		return capital;
+		
 	}
 	
 	public void setCapital(double capital) {
-		this.capital = capital;
+		//setCapital only happens at the initialization stage; 
+		//it's not called every stage;
+		
+		this.capital = capital+this.getCashTran();
+		
+		//i don't want to add a new variable called totalCapital, there will be too many revision; 
+		//This way can include cash Transfer into capital;
+		//Yue
 	}
 	
 	public double getLabour() {
 		return labour;
 	}
+	
+	public double getCashTran() {
+		
+		return cashTran;
+	}
+
+	public void setCashTran( ) {
+		cashTran=0;
+		int n=this.familyMembers.size();
+	//	System.out.println("n="+n);
+		for (int i=0;i<n;i++){
+			cashTran+=this.familyMembers.get(i).getPension();
+		}
+		
+			this.cashTran=cashTran;
+	//		System.out.println("hhdCash="+this.cashTran);
+			//get the household cash transfer by counting all pension that eligible persons have.
+	}
+	
 	
 	public FastTable<Person> getFamilyMembers() {
 		return familyMembers;

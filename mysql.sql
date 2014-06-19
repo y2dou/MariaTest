@@ -7,7 +7,7 @@ maniocMultiplier DOUBLE NOT NULL,
 timberMultiplier DOUBLE NOT NULL,
 acaiLabour DOUBLE NOT NULL,
 maniocLabour DOUBLE NOT NULL,
-timberLabourDOUBLE NOT NULL,
+timberLabour DOUBLE NOT NULL,
 PRIMARY KEY (runID) );
 
 CREATE TABLE IF NOT EXISTS tblHousehold (

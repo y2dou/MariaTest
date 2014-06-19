@@ -3,6 +3,7 @@ package mariaprototype.human;
 import mariaprototype.human.messaging.Message;
 
 public class HouseholdAgentState implements Message {
+	private double cashTran;
 	private double capital;
 	private double labour;
 	private double subsistenceRequirements;
@@ -10,9 +11,13 @@ public class HouseholdAgentState implements Message {
 	public void update(HouseholdAgent agent) {
 		capital = agent.getCapital();
 		labour = agent.getLabour();
+		cashTran=agent.getCashTran();
 		subsistenceRequirements = agent.getSubsistenceRequirements();
 	}
 	
+	public double getCashTran(){
+		return cashTran;
+	}
 	public double getCapital() {
 		return capital;
 	}

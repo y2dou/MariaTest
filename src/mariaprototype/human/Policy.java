@@ -12,14 +12,25 @@ import mariaprototype.human.messaging.Message;
  * 
  * @author Raymond Cabrera
  *
+ * The cash transfer Program is setted here, as a global variable; 
+ * to decide whether or not farm agents can get the additional cash;
  */
 public abstract class Policy implements Message {
 	// a set of payouts and conditions (state variables, transport costs)
-	
+	public  static boolean cashTransferProgram=true;
+	public static int cashTransferVolume=110;
 	@Override
 	public MessageType getMessageType() {
 		return MessageType.POLICY;
 	}
 	
+	
+	/*public void setCashTransferVolume(){
+		if (cashTransferProgram)
+		
+			cashTransferVolume=100;
+		else 
+			cashTransferVolume=0;
+	}*/
 	public abstract boolean satisfiesRequirements(HouseholdAgent h);
 }

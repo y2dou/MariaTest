@@ -92,7 +92,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.percentOptimalHouseholds = (Double) p.getValue("percentOptimalHouseholds");
 		context.percentForwardOptimalHouseholds = (Double) p.getValue("percentForwardOptimalHouseholds");
 		context.percentFullForwardOptimalHouseholds = (Double) p.getValue("percentFullForwardOptimalHouseholds");
+	//    context.cashTran = (Double) p.getValue("cashTransfer");
 	    
+	   // .cashTran = (Double)p.getValue("CashTransfer");
 		context.conn = (Connection) RunState.getInstance().getFromRegistry("connection");
 		
 		int demographicRandomSeed = (Integer) p.getValue("demographicRandomSeed");
@@ -103,6 +105,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		int numPersons = (Integer) p.getValue("numPersons");
 		
 		double globalMultiplier = (Double) p.getValue("priceStreamMultiplier");
+		
+//		double cashTran = (Double) p.getValue("CashTransfer");
 		
 		setUpRandomDistributions();
 		
@@ -573,8 +577,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			
 			// initialize household
 			h.init(context, e.getValue().x, e.getValue().y);
-			
 			households.add(h);
+		//	households.add(h);
+			//h.setCashTran();
 		}
 		
 		// initialize households
@@ -629,10 +634,12 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			Person person = new Person (i >= 0, Math.abs(i));
 			context.add(person);
 			h.add(person);
+		//	System.out.println("hhdsize="+h.familyMembers.size());
 		}
 		
 		for (HouseholdAgent h : households)
 			Database.getInstance().logNewHousehold(context.conn, h);
+		    
 	}
 	
 	@SuppressWarnings("unused")
