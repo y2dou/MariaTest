@@ -1,5 +1,7 @@
 package mariaprototype.human;
 
+import com.sun.xml.internal.bind.CycleRecoverable.Context;
+
 import mariaprototype.human.messaging.Message;
 
 /**
@@ -18,7 +20,9 @@ import mariaprototype.human.messaging.Message;
 public abstract class Policy implements Message {
 	// a set of payouts and conditions (state variables, transport costs)
 	public  static boolean cashTransferProgram=true;
-	public static int cashTransferVolume=110;
+	public static double cashTransferVolume=0.0;
+	
+	
 	@Override
 	public MessageType getMessageType() {
 		return MessageType.POLICY;

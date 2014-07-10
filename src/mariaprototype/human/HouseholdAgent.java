@@ -144,7 +144,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		harvestAcaiLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestAcaiLabour");
 		harvestManiocLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestManiocLabour");
 		harvestTimberLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestTimberLabour");
-		//cashTran = (Double) RunEnvironment.getInstance().getParameters().getValue("cashTransfer");
+		cashTran = (Double) RunEnvironment.getInstance().getParameters().getValue("cashTransfer");
 			
 		color = new Color((id * 1291 + 1297) % 256, (id * 2267 + 337) % 256, (id * 1553 + 3) % 256);
 		jobOffers = new LinkedList<JobOffer>();
@@ -161,8 +161,30 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		return location;
 	}
 	
+	//this add(Person) function is for data initialization, it doesn't update everytime.
 	public final void add(Person person) {
-		familyMembers.add(person);
+		if (person.getAge()<100) 
+		{familyMembers.add(person);
+	//	 System.out.println("Member age <100");
+		}
+	}
+	
+	//update familyMember every tick, to remove who are too old 
+	//edited by Yue, July 9, 2014
+	//@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)
+	
+	
+	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.ACTION)	
+	  public void updateAge () {
+		//System.out.println("removed ");
+		for ( Person p:this.familyMembers)
+		 { if (p.getAge()>= 99)
+			{
+			 this.familyMembers.remove(p);
+			 System.out.println("remove one member");
+			}
+		
+	      }		
 	}
 	
 	protected final void resetLabour() {
@@ -259,7 +281,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		//it's not called every stage;
 		
 		this.capital = capital+this.getCashTran();
-		
+	//	System.out.println("setCapital="+this.capital);
 		//i don't want to add a new variable called totalCapital, there will be too many revision; 
 		//This way can include cash Transfer into capital;
 		//Yue

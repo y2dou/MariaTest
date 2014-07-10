@@ -26,6 +26,7 @@ import mariaprototype.environmental.EnvironmentalContext;
 import mariaprototype.environmental.LandUse;
 import mariaprototype.human.messaging.EnvelopePool;
 import mariaprototype.utility.GeographyUtility;
+import mariaprototype.human.Policy;
 
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
@@ -92,9 +93,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.percentOptimalHouseholds = (Double) p.getValue("percentOptimalHouseholds");
 		context.percentForwardOptimalHouseholds = (Double) p.getValue("percentForwardOptimalHouseholds");
 		context.percentFullForwardOptimalHouseholds = (Double) p.getValue("percentFullForwardOptimalHouseholds");
-	//    context.cashTran = (Double) p.getValue("cashTransfer");
-	    
-	   // .cashTran = (Double)p.getValue("CashTransfer");
+	   
 		context.conn = (Connection) RunState.getInstance().getFromRegistry("connection");
 		
 		int demographicRandomSeed = (Integer) p.getValue("demographicRandomSeed");
@@ -106,7 +105,21 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		
 		double globalMultiplier = (Double) p.getValue("priceStreamMultiplier");
 		
-//		double cashTran = (Double) p.getValue("CashTransfer");
+		//load cashTranfer
+		
+		double cashTransfer = (Double) p.getValue("cashTransfer");
+		context.cashTransfer=cashTransfer;
+	//	System.out.println("cashTransfer="+cashTransfer);
+		if (cashTransfer>0) 
+		    { 
+			    Policy.cashTransferProgram=true;
+			    Policy.cashTransferVolume=cashTransfer;
+			    }
+		else {
+			    Policy.cashTransferProgram=false;
+			    Policy.cashTransferVolume=0;
+		}
+		
 		
 		setUpRandomDistributions();
 		
@@ -114,6 +127,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		Map<LandUse, InputStream> priceLists = new HashMap<LandUse, InputStream>();
 		Map<LandUse, Double> priceMultipliers = new HashMap<LandUse, Double>();
 		StaticMarketAgent staticMarketAgent = new StaticMarketAgent();
+		
+		
 		try {
 			double staticAcaiPrice = (Double) p.getValue("acaiPrice");
 			
@@ -170,6 +185,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		
 		// add market agent
 		context.add(staticMarketAgent);
+		
 		context.add(new DynamicMarketAgent(priceLists, priceMultipliers));
 		
 		// load distributions

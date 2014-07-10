@@ -194,7 +194,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				}
 			} else if (c.getLandUse() == LandUse.FALLOW) {
 				final LandUse lastLandUse = c.getLastLandUse();
-				System.out.println("Land Use"+c.getLandUse());
+			//	System.out.println("Land Use"+c.getLandUse());
 				switch (lastLandUse) {
 				case ACAI:
 					feasibleAllocations.getToHarvestAcai().add(c);

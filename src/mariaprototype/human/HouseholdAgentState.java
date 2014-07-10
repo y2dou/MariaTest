@@ -1,5 +1,6 @@
 package mariaprototype.human;
 
+import javolution.util.FastTable;
 import mariaprototype.human.messaging.Message;
 
 public class HouseholdAgentState implements Message {
@@ -7,12 +8,14 @@ public class HouseholdAgentState implements Message {
 	private double capital;
 	private double labour;
 	private double subsistenceRequirements;
+	//private FastTable<Person> familyMembers = new FastTable<Person>();
 	
 	public void update(HouseholdAgent agent) {
 		capital = agent.getCapital();
 		labour = agent.getLabour();
 		cashTran=agent.getCashTran();
 		subsistenceRequirements = agent.getSubsistenceRequirements();
+		
 	}
 	
 	public double getCashTran(){

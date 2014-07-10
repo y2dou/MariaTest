@@ -53,7 +53,7 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 		width = (Integer) p.getValue("width");
 		height = (Integer) p.getValue("height");
 		cellsize = (Double) p.getValue("cellsize");
-		System.out.println (cellsize);
+	//	System.out.println (cellsize);
 		
 		setUpRandomDistributions();
 		

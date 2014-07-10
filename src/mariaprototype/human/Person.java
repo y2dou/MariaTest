@@ -24,6 +24,7 @@ public class Person extends SimpleAgent {
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)
 	public void age() {
+		
 		age++;
 		calculateLabour();
 		calculatePension();
