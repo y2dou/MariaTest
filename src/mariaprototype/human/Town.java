@@ -3,6 +3,7 @@ package mariaprototype.human;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class Town extends SimpleAgent implements NetworkAgent {
 	
 	private List<NetworkedUrbanAgent> residents = new LinkedList<NetworkedUrbanAgent>();
 	
-	private int numOffers = 5;
+	private int numOffers = 50;
 	private double lambdaOffers = 0;
 	private double offerValueLow = 1000000;
 	private double offerValueHigh = 10000000;
@@ -124,9 +125,38 @@ public class Town extends SimpleAgent implements NetworkAgent {
 		EnvelopePool pool = hc.getEnvelopePool();
 		
 		ArrayList<HouseholdAgent> households = new ArrayList<HouseholdAgent>(hc.households);
-		Collections.shuffle(households);
+		
+		Collections.sort(households,new Comparator<HouseholdAgent>(){
+
+			@Override
+			public int compare(HouseholdAgent arg0, HouseholdAgent arg1) {
+				// TODO Auto-generated method stub
+				Double obj1=(double) arg0.getTotalEdu()/arg0.familyMembers.size();
+				Double obj2=(double) arg1.getTotalEdu()/arg1.familyMembers.size();
+				int retval=obj1.compareTo(obj2);
+				return retval;
+				
+			}
+			//sort households based on the total education of a household. 
+		});
+		
+	//	for (int i=0;i<households.size();i++){
+	//		System.out.println("the "+i+" TotalEducation="+households.get(households.size()-i-1).getTotalEdu());
+	//	}
+	/*	
+		for (int i=0;i<households.size();i++)
+		{   int eduMax=0;
+		    if (households.get(i).getTotalEdu()>households.get(i+1).getTotalEdu())
+		    {
+		    	eduMax
+		    }
+			
+		}
+		*/
+		//ArrayList<HouseholdAgent> eligibleHouseholds = new ArrayList<HouseholdAgent>();
+		//Collections.shuffle(households);
 		for (int i = 0; i < currentOffers && i < households.size(); i++) {
-			MessageEnvelope messageEnvelope = pool.getEnvelope(this, households.get(i), new JobOffer(this, offerValueLow + RandomHelper.getDistribution("offerValue").nextDouble() * (offerValueHigh - offerValueLow)));
+			MessageEnvelope messageEnvelope = pool.getEnvelope(this, households.get(households.size()-i-1), new JobOffer(this, offerValueLow + RandomHelper.getDistribution("offerValue").nextDouble() * (offerValueHigh - offerValueLow)));
 			messageEnvelope.send();
 			messageEnvelope.discard();
 		}

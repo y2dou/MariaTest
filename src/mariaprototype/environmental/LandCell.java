@@ -158,6 +158,10 @@ public class LandCell extends LandscapeCell {
 		maniocgardenHealth = FuzzyUtility.constrain(maniocgardenHealth);
 		
 		acaiYield = acaiDensity * acaiHealth * RandomHelper.getDistribution("acaiYield").nextDouble();
+		//System.out.println(" density "+acaiDensity+" health "+acaiHealth+
+		//		" distribution "+RandomHelper.getDistribution("acaiYield").nextDouble());
+	//	if (acaiDensity>0) { System.out.println( "acaiYield="+acaiYield);}
+		
 		intenseAcaiYield = acaiDensity * acaiHealth * 15000d; // * some constant
 		gardenYield = maniocgardenDensity * maniocgardenHealth * RandomHelper.getDistribution("maniocYield").nextDouble();
 		timberYield = forestDensity * 5000d;

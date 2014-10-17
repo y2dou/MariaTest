@@ -30,6 +30,7 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected WeightedSelector<Range<Integer>> plotSizeSelector;
 	protected WeightedSelector<Integer> familySizeSelector;
 	protected WeightedSelector<DemographicWeightedSelector> demographicSelector;
+	protected WeightedSelector<Range<Integer>> educationSelector;
 	
 	// private FastTable<HouseholdReport> householdReports = new FastTable<HouseholdReport>();
 	protected FastTable<HouseholdAgent> households;
@@ -46,7 +47,7 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected double percentForwardOptimalHouseholds;
 	protected double percentFullForwardOptimalHouseholds;
 	
-	protected double cashTransfer;
+	protected float cashTransfer;
 	
 	protected Connection conn;
 	

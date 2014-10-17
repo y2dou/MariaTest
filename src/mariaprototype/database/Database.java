@@ -13,7 +13,7 @@ public abstract class Database {
 	// private static Database instance = new DummyDatabase();
 	//private static Database instance = new MySQLDatabase("jdbc:mysql://env-cfi-7.uwaterloo.ca:3306/maria", "maria", "mariaprototype");
 	//private static Database instance = new MySQLDatabase("jdbc:mysql://129.97.146.227:3306/maria", "maria", "mariaprototype");
-	private static Database instance = new MySQLDatabase("jdbc:mysql://localhost/test", "root", "555738");
+	private static Database instance = new MySQLDatabase("jdbc:mysql://localhost/edu", "root", "555738");
 	
 	public static Database getInstance() {
 		return instance;

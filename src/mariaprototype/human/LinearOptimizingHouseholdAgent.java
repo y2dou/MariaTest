@@ -33,6 +33,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 	// plan
 	protected FeasibleAllocations feasibleAllocations = new FeasibleAllocations();
 	
+	
 	/*
 	// yield estimates for optimization algorithm
 	private double expectedAcaiYield = 15000d;
@@ -117,12 +118,17 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		
 		while (!jobOffers.isEmpty()) {
 			JobOffer o = jobOffers.remove(0);
-		//	System.out.println("Linear don't make plan4");
+
 			// rank members by age, younger eligible members leave first
 			Collections.sort(eligibleMembers, new Comparator<Person>() {
 				@Override
 				public int compare(Person o1, Person o2) {
-					return new Integer(o1.getAge()).compareTo(o2.getAge());
+					//return new Integer(o1.getAge()/o1.getEducation()).compareTo(o2.getAge()/o2.getEducation());
+					Double obj1=o1.getJobProbability();
+					Double obj2=o2.getJobProbability();
+					int retval=obj1.compareTo(obj2);
+					return retval;
+					//get the member with the highest job probability; 
 				}
 				
 				@Override
@@ -273,11 +279,12 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			LandCell cell = c.getCell();
 			if (c.getLandUse() == LandUse.ACAI) {
 				feasibleAllocations.getToHarvestIntenseAcai().add(c);
+	//			System.out.println("HarvestSolution for acai"+feasibleAllocations.getToHarvestAcai().size());
 			} else if (c.getLandUse() == LandUse.MANIOCGARDEN) {
 				if (cell.getManiocGardenAge() > 3) {
 				} else {
 					feasibleAllocations.getToHarvestHousegarden().add(c);
-
+		//			System.out.println("Harvest for manioc"+feasibleAllocations.getToHarvestHousegarden().size());
 					if (cell.getAcaiDensity() > 0)
 						feasibleAllocations.getToHarvestIntenseAcai().add(c);
 				}
@@ -285,13 +292,14 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				if (cell.getForestAge() > 3) {
 					feasibleAllocations.getToHarvestTimber().add(c);
 					feasibleAllocations.getToHarvestAcai().add(c);
-					//System.out.println("HarvestSolution for Forest"+feasibleAllocations.getToHarvestTimber().size());
+				//	System.out.println("HarvestSolution for Forest"+feasibleAllocations.getToHarvestTimber().size());
 				}
 			} else if (c.getLandUse() == LandUse.FALLOW) {
 				final LandUse lastLandUse = c.getLastLandUse();
 				switch (lastLandUse) {
 				case ACAI:
 					feasibleAllocations.getToHarvestAcai().add(c);
+			//		System.out.println("HarvestAcai="+feasibleAllocations.getToHarvestAcai().size());
 					break;
 				default:
 					break;
@@ -312,8 +320,6 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		// need to move keyset to ordered list for consistency
 		List<NetworkedUrbanAgent> recallSolutions = new LinkedList<NetworkedUrbanAgent>();
 		recallSolutions.addAll(linkedHouseholds.keySet());
-		
-//From here it's not working. Yue, June 6, 2014
 		
 		
 		try {
@@ -384,7 +390,10 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				lp.setBounds(2, 0, feasibleAllocations.getToHarvestIntenseAcai().size());
 				lp.setBounds(3, 0, feasibleAllocations.getToHarvestHousegarden().size());
 				lp.setBounds(4, 0, feasibleAllocations.getToHarvestTimber().size());
-				
+		//		System.out.println("feasibleAllocations=acai "+feasibleAllocations.getToHarvestAcai().size()+
+		//				",intenseAcai"+feasibleAllocations.getToHarvestIntenseAcai().size()+",housegarden "+
+		//				feasibleAllocations.getToHarvestHousegarden().size());
+		//have checked, this is correct, it can return feasible Allocations. problem is acaiYield;		
 				// set upper bounds on binary variables
 				for (int i = nResourceCols + 1; i <= ncols; i++) {
 					lp.setBounds(i, 0, 1);
@@ -401,27 +410,34 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				double acaiYield = 0;
 				if (!feasibleAllocations.getToHarvestAcai().isEmpty()) {
 					for (MyLandCell c : feasibleAllocations.getToHarvestAcai()) {
+					//	System.out.println(c.getCell().getAcaiYield());
+						if(c.getCell().getAcaiYield()>0) {System.out.println(
+								"c.getCell().getAcaiYield() "+c.getCell().getAcaiYield());}
 						acaiYield += c.getCell().getAcaiYield();
+					//	System.out.println(acaiYield);
 					}
 					acaiYield /= (double) feasibleAllocations.getToHarvestAcai().size();	
-			//		System.out.println("acaiYield="+acaiYield);
+					
 				}
 				
 				double intenseacaiYield = 0;
 				if (!feasibleAllocations.getToHarvestIntenseAcai().isEmpty()) {
 					for (MyLandCell c : feasibleAllocations.getToHarvestIntenseAcai()) {
+				//		System.out.println("intensifyAcai"+c.getCell().getAcaiYield());
 						intenseacaiYield += c.getCell().getIntenseAcaiYield();
 					}
 					intenseacaiYield /= (double) feasibleAllocations.getToHarvestIntenseAcai().size();
-		//			System.out.println("Intensify acai Yield="+intenseacaiYield);
+				//	System.out.println("Intensify acai Yield="+intenseacaiYield);
 				}
 				
 				double gardenYield = 0;
 				if (!feasibleAllocations.getToHarvestHousegarden().isEmpty()) {
 					for (MyLandCell c : feasibleAllocations.getToHarvestHousegarden()) {
+				//		System.out.println("intensify Manioc="+c.getCell().getGardenYield());
 						gardenYield += c.getCell().getGardenYield();
 					}
 					gardenYield /= (double) feasibleAllocations.getToHarvestHousegarden().size();
+			//		System.out.println("Garden Yield="+gardenYield);
 				}
 				
 				double timberYield = 0;
@@ -435,13 +451,13 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				
 				colno[j] = 1;
 				row[j++] = acaiYield * getExpectedPrice(LandUse.ACAI);
-		//		System.out.println("Expected Acai Profit:"+row[j-1]);
+			//	System.out.println("Expected Acai Profit:"+row[j-1]);
 				colno[j] = 2;
 				row[j++] = intenseacaiYield * getExpectedPrice(LandUse.ACAI);
-		//		System.out.println("Expected Intensify Acai Profit:"+row[j-1]);
+			//	System.out.println("Expected Intensify Acai Profit:"+row[j-1]);
 				colno[j] = 3;
 				row[j++] = gardenYield * getExpectedPrice(LandUse.MANIOCGARDEN);
-				
+			//	System.out.println("Expected garden Profit:"+row[j-1]);
 				colno[j] = 4;
 				row[j++] = timberYield * getExpectedPrice(LandUse.FOREST);
 		//		System.out.println("Expected Timber Profit:"+row[j-1]);
@@ -564,7 +580,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				lp.setColName(i++, "manioc");
 				lp.setColName(i++, "maintainacai");
 				lp.setColName(i++, "maintainmanioc");
-		//		System.out.println("lp+"+lp.getStatus());
+			//	System.out.println("lp+"+lp.getStatus());
 				
 				// add person-job offer columns
 				int k = i;
@@ -693,6 +709,8 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			if (retVal == 0) {
 				// set up upper bounds on optimizing variables
 				lp.setBounds(1, 0, feasibleAllocations.getToIntensifyAcai().size());
+			//	System.out.println("feasibleAllocations.getToIntensifyAcai().size()"+
+			//			feasibleAllocations.getToIntensifyAcai().size());
 				lp.setBounds(2, 0, feasibleAllocations.getToManiocGarden().size());
 				lp.setBounds(3, 0, feasibleAllocations.getToMaintainAcai().size());
 				lp.setBounds(4, 0, feasibleAllocations.getToMaintainManiocGarden().size());
@@ -716,7 +734,8 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				// new plots
 				colno[j] = 1; /* first column */
 				row[j++] = 15000d * getExpectedPrice(LandUse.ACAI) - acaiCost;
-	
+	       //      System.out.println("15000d * getExpectedPrice(LandUse.ACAI) - acaiCost"+
+	       //     		 (15000d * getExpectedPrice(LandUse.ACAI) - acaiCost));
 				colno[j] = 2; /* second column */
 				row[j++] = 5000d * getExpectedPrice(LandUse.MANIOCGARDEN) - maniocCost;
 				
@@ -733,6 +752,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 					colno[j] = j + 1;
 					
 					row[j++] = e.getValue().getWage();
+					
 				}
 				
 				Iterator<NetworkedUrbanAgent> recallIter = recallSolutions.iterator();
@@ -742,6 +762,9 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 					
 					row[j++] = e.getWage();
 				}
+				
+		//		colno[j]=j+1;
+		//		row[j++]=this.cashTran;
 	
 				/* set the objective in lpsolve */
 				lp.setObjFnex(j, row, colno);
@@ -868,7 +891,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			double manioc = solution.getGarden();
 			double maintainAcai = solution.getMaintainAcai();
 			double maintainGardens = solution.getMaintainGarden();
-	//        System.out.println("How about here7");
+	    //    System.out.println("How about here7");
 
 			// order shouldn't matter; it's optimal!
 			// then again, spatial land allocation isn't
@@ -979,11 +1002,15 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			resetHarvestCount();
 
 			double acai = solution.getAcai();
+		//	System.out.println("acai="+acai);
 			double intenseAcai = solution.getIntenseAcai();
+		//	System.out.println("IntenseAcai="+intenseAcai);
 			double gardens = solution.getGardens();
+		//	System.out.println("Gardens="+gardens);
 			double timber = solution.getTimber();
 			
 			while (acai >= 1) {
+		//		System.out.println("acai="+acai);
 				MyLandCell acaiCell = feasibleAllocations.getToHarvestAcai().remove(0);
 				LandCell cell = acaiCell.getCell();
 
@@ -992,7 +1019,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				capital += yield * getActualPrice(LandUse.ACAI);
 				
 				acaiYield += yield;
-				
+			//	System.out.println("acaiYield="+acaiYield);
 				acai -= 1;
 			}
 			
@@ -1005,7 +1032,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				capital += yield * getActualPrice(LandUse.ACAI);
 				
 				acaiYield += yield;
-				
+		//		System.out.println("acaiYield="+acaiYield);
 				intenseAcai -= 1;
 			}
 			
@@ -1046,6 +1073,10 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				
 				timber -= 1;
 			}
+			capital += this.cashTran;
+		//	this.jobOffers
+		//	System.out.println(this.getID()+"linear capital="+capital+"=cashTran="+cashTran);
+			//this.jobOffers.
 			
 		} else {
 			System.out.println("No solution found");

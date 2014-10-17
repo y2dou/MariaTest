@@ -1,3 +1,4 @@
+//need to run tblrun first//
 CREATE TABLE `tblhousehold` (
   `householdID` int(11) NOT NULL DEFAULT '0',
   `runID` int(11) NOT NULL DEFAULT '0',
@@ -72,6 +73,7 @@ CREATE TABLE `tblrun` (
   `runID` int(11) NOT NULL AUTO_INCREMENT,
   `labourMultiplier` double NOT NULL,
   `capitalMultiplier` double NOT NULL,
+  `cashTransfer` double NOT NULL,
   `acaiMultiplier` double NOT NULL,
   `maniocMultiplier` double NOT NULL,
   `timberMultiplier` double NOT NULL,

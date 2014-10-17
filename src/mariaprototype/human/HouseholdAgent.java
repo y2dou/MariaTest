@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javolution.util.FastMap;
@@ -26,6 +27,7 @@ import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.SpatialException;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
@@ -80,6 +82,9 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	protected double subsistenceRequirements;
 	protected double cashTran ;
 	//add cash transfer to hhd agent, June 17, 2014;
+	private int totalEdu;
+	//this is the household education level, Yue, Oct 3, 2014;
+
 
 	protected FastTable<Person> familyMembers = new FastTable<Person>();
 	
@@ -176,16 +181,38 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.ACTION)	
 	  public void updateAge () {
-		//System.out.println("removed ");
 		for ( Person p:this.familyMembers)
-		 { if (p.getAge()>= 99)
+			
+		 {  //System.out.println("age/100="+(double)(p.getAge())/100);
+			p.age();
+			//i changed this part, before there's no p.age, because the aging happens at Person.java @scheduled method; age++;
+			if (p.getAge()>= Policy.lifeExpectancy && new Random().nextDouble()< (double)(p.getAge())/100.00)
+			// if a person is older than life Expectancy age, the chance he dies is his age/100
+			{ 
+			  this.familyMembers.remove(p);
+			}
+			if (p.getAge()==8)
 			{
-			 this.familyMembers.remove(p);
-			 System.out.println("remove one member");
+				p.setEducation(1);
+			}
+			if (p.getAge()>8&&p.getAge()<=18)
+			{
+				p.setEducation(p.getEducation()+1);
 			}
 		
 	      }		
 	}
+	
+	@ScheduledMethod(start = 1, interval = 3, priority = MariaPriorities.ACTION)	
+	//household reproduce, add new familyMember and labour , edited by Yue Dou, Sep 29, 2014
+	public void reproduce (){
+		boolean isFemale= RandomHelper.getDistribution("isFemale").nextInt() == 1;
+		Person pp= new Person (isFemale,0);
+	
+		if (new Random().nextDouble() < 0.5)
+		{ this.familyMembers.add(pp);}
+	}
+	
 	
 	protected final void resetLabour() {
 		labour = 0;
@@ -271,7 +298,9 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	
 	public final double getCapital() {
 		this.setCashTran();
+	//	System.out.println("setCashTran="+this.cashTran);
 		capital = capital + this.getCashTran();
+	//	System.out.println("getCashTran="+(this.capital-this.cashTran));
 		return capital;
 		
 	}
@@ -279,12 +308,13 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	public void setCapital(double capital) {
 		//setCapital only happens at the initialization stage; 
 		//it's not called every stage;
-		
-		this.capital = capital+this.getCashTran();
-	//	System.out.println("setCapital="+this.capital);
+		this.setCashTran();
+		//this.capital = capital+this.getCashTran();
 		//i don't want to add a new variable called totalCapital, there will be too many revision; 
 		//This way can include cash Transfer into capital;
 		//Yue
+		//Oct 13, I'm going to move the cash transfer into capital at decision making part, as a source of income.
+		this.capital=capital;
 	}
 	
 	public double getLabour() {
@@ -292,12 +322,13 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	}
 	
 	public double getCashTran() {
-		
+	//	System.out.println("getCashTran="+cashTran);
 		return cashTran;
+		
 	}
 
 	public void setCashTran( ) {
-		cashTran=0;
+		double cashTran=0;
 		int n=this.familyMembers.size();
 	//	System.out.println("n="+n);
 		for (int i=0;i<n;i++){
@@ -309,13 +340,28 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 			//get the household cash transfer by counting all pension that eligible persons have.
 	}
 	
+	public int getTotalEdu() {
+	//
+		totalEdu=0;
+		
+		for (int i=0;i<this.familyMembers.size();i++)
+		{ int memberEdu=this.familyMembers.get(i).getEducation();
+		  this.totalEdu = totalEdu+memberEdu;
+	     }
+	//	System.out.println("totalEdu="+totalEdu);
+		return totalEdu;
+	    
+	}
+
 	
 	public FastTable<Person> getFamilyMembers() {
 		return familyMembers;
 	}
 	
 	public final double getSubsistenceRequirements() {
+	//	System.out.println("subsistence requirement="+subsistenceRequirements);
 		return subsistenceRequirements;
+		
 	}
 	
 	public Map<GridDimensions, MyLandCell> getTenure() {

@@ -18,6 +18,7 @@ import mariaprototype.human.HouseholdAgent;
 import mariaprototype.human.MyLandCell;
 import mariaprototype.human.NetworkedUrbanAgent;
 import mariaprototype.human.Person;
+import mariaprototype.human.Policy;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.parameter.Parameters;
@@ -85,12 +86,11 @@ public class MySQLDatabase extends Database {
 		try {
 			Parameters p = RunEnvironment.getInstance().getParameters();
 			
-			PreparedStatement s = conn.prepareStatement("INSERT INTO tblRun(randomSeed, sweepName, rundate, " +
+			PreparedStatement s = conn.prepareStatement("INSERT INTO tblrun(randomSeed, sweepName, rundate, " +
 					"numHouseholds, numPersons, numOffers, lambdaOffers, offerValueLow, offerValueHigh, " +
-					"percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, " +
-//			"percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFFOptimalHouseholds, " +
-
-					"labourMultiplier, capitalMultiplier, " +
+					"percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, "+
+					"labourMultiplier, capitalMultiplier, " + 
+					"cashTransfer," +
 					"acaiMultiplier, maniocMultiplier, timberMultiplier, " +
 					"acaiPrice, maniocPrice, timberPrice, " +
 					"acaiLabour, maniocLabour, fallowLabour, forestFallowLabour, maintainAcaiLabour, maintainManiocLabour, " +
@@ -102,6 +102,7 @@ public class MySQLDatabase extends Database {
 					"?, ?, ?, ?, ?, ?, " +
 					"?, ?, ?, ?, " +
 					"?, ?, " +
+					"?,"+
 					"?, ?, ?, " +
 					"?, ?, ?, " +
 					"?, ?, ?, ?, ?, ?, " +
@@ -134,6 +135,8 @@ public class MySQLDatabase extends Database {
 			
 			s.setDouble(i++, (Double) p.getValue("labourMultiplier"));
 			s.setDouble(i++, (Double) p.getValue("capitalMultiplier"));
+			
+			s.setDouble(i++, (Double) p.getValue("cashTransfer") );
 			
 			double globalMultiplier = (Double) p.getValue("priceStreamMultiplier");
 			double acaiMultiplier = (Double) p.getValue("acaiMultiplier"); 
@@ -250,8 +253,8 @@ public class MySQLDatabase extends Database {
 		
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO tblUrbanAgent" +
-					"(urbanagentID, runID, sourceHousehold, settlementyear, age, isfemale, wage, employer) VALUES " +
-					"(?, ?, ?, ?, ?, ?, ?, ?)");
+					"(urbanagentID, runID, sourceHousehold, settlementyear, age, isfemale, education, wage, employer) VALUES " +
+					"(?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			
 			ps.setInt(1, a.getID());
 			ps.setInt(2, getRunID(conn));
@@ -259,8 +262,9 @@ public class MySQLDatabase extends Database {
 			ps.setDouble(4, RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount());
 			ps.setInt(5, a.getPerson().getAge());
 			ps.setBoolean(6, a.getPerson().isFemale());
-			ps.setDouble(7, a.getWage());
-			ps.setString(8, a.getEmployer().getName());
+			ps.setInt(7, a.getPerson().getEducation());
+			ps.setDouble(8, a.getWage());
+			ps.setString(9, a.getEmployer().getName());
 			
 			ps.execute();
 			ps.close();
@@ -330,7 +334,7 @@ public class MySQLDatabase extends Database {
 			double labour = 0;
 			
 			PreparedStatement psM = conn.prepareStatement("INSERT INTO tblHouseholdMembers " +
-					"(householdID, runID, tick, stage, memberID, age, isFemale) VALUES (?, ?, ?, ?, ?, ?, ?)");
+					"(householdID, runID, tick, stage, memberID, age, isFemale, education) VALUES (?, ?, ?, ?, ?, ?,?, ?)");
 			for (Person p : a.getFamilyMembers()) {
 				labour += p.getLabour();
 				
@@ -342,6 +346,7 @@ public class MySQLDatabase extends Database {
 				psM.setInt(5, p.getID());
 				psM.setInt(6, p.getAge());
 				psM.setBoolean(7, p.isFemale());
+				psM.setInt(8,p.getEducation());
 				psM.execute();
 			}
 			psM.close();

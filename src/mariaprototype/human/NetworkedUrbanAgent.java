@@ -77,6 +77,7 @@ public class NetworkedUrbanAgent extends SimpleAgent implements NetworkAgent {
 	public void earn() {
 		if (person != null)
 			capital += wage;
+		
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.HARVEST + 1)
@@ -90,6 +91,8 @@ public class NetworkedUrbanAgent extends SimpleAgent implements NetworkAgent {
 		}
 		
 		capital -= sharedCapital;
+	//	System.out.println("Networkd capital="+capital);
+		//it means this urban agent gives 50% to the households in rural
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.HARVEST - 1)
@@ -100,6 +103,7 @@ public class NetworkedUrbanAgent extends SimpleAgent implements NetworkAgent {
 		// get connected households
 		for (HouseholdAgent h : networkedHouseholds) {
 			h.setCapital(h.getCapital() + sharedPerHousehold);
+	//		System.out.println(h.getID()+"hhd capital="+h.getCapital());
 		}
 		
 		capital -= sharedCapital;

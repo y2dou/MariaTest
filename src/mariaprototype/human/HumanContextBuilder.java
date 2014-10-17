@@ -99,6 +99,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		int demographicRandomSeed = (Integer) p.getValue("demographicRandomSeed");
 		int familySizeRandomSeed = (Integer) p.getValue("familySizeRandomSeed");
 		int plotSizeRandomSeed = (Integer) p.getValue("plotSizeRandomSeed");
+		int educationRandomSeed = 15;
+		//15 is the highest education year that households have; 
 		
 		int numHouseholds = (Integer) p.getValue("numHouseholds");
 		int numPersons = (Integer) p.getValue("numPersons");
@@ -106,9 +108,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		double globalMultiplier = (Double) p.getValue("priceStreamMultiplier");
 		
 		//load cashTranfer
-		
+	//	System.out.println(p.getValue("cashTransfer"));
 		double cashTransfer = (Double) p.getValue("cashTransfer");
-		context.cashTransfer=cashTransfer;
+		context.cashTransfer=(float) cashTransfer;
 	//	System.out.println("cashTransfer="+cashTransfer);
 		if (cashTransfer>0) 
 		    { 
@@ -198,10 +200,18 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.plotSizeSelector.add(new Range<Integer>(800, 1000), 1);
 		context.plotSizeSelector.add(new Range<Integer>(1000, 1200), 2);
 		
+		RandomHelper.registerGenerator("educationSelector", educationRandomSeed);
+		context.educationSelector = new WeightedSelector<Range<Integer>>("educationSelector");
+		context.educationSelector.add(new Range<Integer>(0,4), 25);
+		context.educationSelector.add(new Range<Integer>(4,5), 25);
+		context.educationSelector.add(new Range<Integer>(5,9), 25);
+		context.educationSelector.add(new Range<Integer>(9,15), 25);
+		
+		
 		RandomHelper.registerGenerator("familySizeSelector", familySizeRandomSeed);
 		context.familySizeSelector = new WeightedSelector<Integer>("familySizeSelector");
 		// context.familySizeSelector.add(0, 11); // no one in the family?
-		context.familySizeSelector.add(1, 39);
+	/*	context.familySizeSelector.add(1, 39);
 		context.familySizeSelector.add(2, 46);
 		context.familySizeSelector.add(3, 64);
 		context.familySizeSelector.add(4, 65);
@@ -214,6 +224,22 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.familySizeSelector.add(11, 5);
 		context.familySizeSelector.add(12, 2);
 		context.familySizeSelector.add(17, 1);
+	*/
+		context.familySizeSelector.add(1, 11);
+		context.familySizeSelector.add(2, 31);
+		context.familySizeSelector.add(3, 32);
+		context.familySizeSelector.add(4, 36);
+		context.familySizeSelector.add(5, 20);
+		context.familySizeSelector.add(6, 5);
+		context.familySizeSelector.add(7, 2);
+		context.familySizeSelector.add(8, 4);
+		context.familySizeSelector.add(9, 5);
+		context.familySizeSelector.add(10, 1);
+		context.familySizeSelector.add(12, 32);
+		
+		// I changed the family size selector, to small families, in order to run comparison.
+		//the weight is based on hist of a1$hhdsize
+		//Yue Dou, Sep 29, 2014
 		
 		RandomHelper.registerGenerator("demographicWeightedSelector", demographicRandomSeed);
 		RandomHelper.registerGenerator("maleDemographicWeightedSelector", RandomHelper.getGenerator("demographicWeightedSelector").nextInt());
@@ -235,6 +261,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		maleSelector.add(new Range<Integer>(80, 85), 1.38889);
 		context.demographicSelector.add(maleSelector, maleSelector.getCumulativeProbability());
 		
+		
+		
 		DemographicWeightedSelector femaleSelector = new DemographicWeightedSelector("femaleDemographicWeightedSelector", true);
 		femaleSelector.add(new Range<Integer>(0, 4), 10.41667);
 		femaleSelector.add(new Range<Integer>(5, 9), 10.41667);
@@ -250,6 +278,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		femaleSelector.add(new Range<Integer>(80, 85), 0.694444);
 		context.demographicSelector.add(femaleSelector, femaleSelector.getCumulativeProbability());
 		//where is this score from? and what for? Yue Dou May 14, 2014
+		//now i can answer this question, they're the distribution of the data, Oct 1, 2014
+		
+		
 		
 		GridValueLayer landHolderField = new GridValueLayer("Land Holder Field", true,
 				new repast.simphony.space.grid.StrictBorders(), context.width, context.height);
@@ -478,6 +509,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		
 		// distribute females
 		for (HouseholdAgent h : households) {
+			
 			if (!females.isEmpty()) {
 				Person person = new Person(true, females.get(females.size() - 1));
 				context.add(person);
@@ -499,6 +531,37 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			context.add(person);
 			h.add(person);
 		}
+		
+	/*	for (HouseholdAgent h:households)
+			for (Person p:h.familyMembers)
+		{
+				//when initialize set a distributed value to education, based on the data in A#1D#1;
+	        List<Integer> educations = new LinkedList<Integer>();		
+			for (int i = 0; i < h.familyMembers.size(); i++) {
+				Range<Integer> dws = context.educationSelector.sample();		
+				Integer edu = RandomHelper.nextIntFromTo(dws.getLower(), dws.getUpper());
+				p.setEducation(edu);
+			//	System.out.println("education="+p.getEducation());
+			}
+		}
+		*/
+		
+		for (HouseholdAgent h:households)
+			for(Person p:h.familyMembers)
+			{ 
+				for (int i=0;i<h.familyMembers.size();i++)
+			{
+					Range<Integer> dws = context.educationSelector.sample();		
+					Integer edu = RandomHelper.nextIntFromTo(dws.getLower(), dws.getUpper());
+				if (p.getAge()>18)
+					p.setEducation(edu);
+				else {if (p.getAge()>=8)
+				{ p.setEducation(p.getAge()-8);	}
+				else p.setEducation(0);
+				}
+					
+			}
+			}
 		
 		for (HouseholdAgent h : households)
 			Database.getInstance().logNewHousehold(context.conn, h);
