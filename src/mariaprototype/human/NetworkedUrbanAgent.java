@@ -1,15 +1,20 @@
 package mariaprototype.human;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 import javolution.util.FastMap;
 import mariaprototype.MariaPriorities;
 import mariaprototype.SimpleAgent;
+import mariaprototype.human.messaging.EnvelopePool;
 import mariaprototype.human.messaging.Message;
 import mariaprototype.human.messaging.MessageEnvelope;
 import mariaprototype.human.messaging.NetworkAgent;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -34,6 +39,7 @@ public class NetworkedUrbanAgent extends SimpleAgent implements NetworkAgent {
 	}
 	
 	public void addNetworkedHousehold(HouseholdAgent h) {
+		
 		networkedHouseholds.add(h);
 	}
 	
@@ -80,34 +86,65 @@ public class NetworkedUrbanAgent extends SimpleAgent implements NetworkAgent {
 		
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.HARVEST + 1)
+/*	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.HARVEST + 1)
 	public void shareWealthPreHarvest() {
-		double sharedCapital = capital / 2; // for now, networked households remit 100% of their capital
+		double sharedCapital = capital / 2; // for now, networked households remit 50% of their capital
 		double sharedPerHousehold = sharedCapital / (double) networkedHouseholds.size();
 		
 		// get connected households
 		for (HouseholdAgent h : networkedHouseholds) {
+		//	h.setCapital(h.getCapital() + sharedPerHousehold);
+			h.setWage(sharedPerHousehold);
 			h.setCapital(h.getCapital() + sharedPerHousehold);
+			//Yue Nov 10,2014
+		//	System.out.println(h.getID()+" shared capital="+sharedPerHousehold);
+			System.out.println(h.getID()+ "wage before havest="+h.getWage());
 		}
 		
 		capital -= sharedCapital;
-	//	System.out.println("Networkd capital="+capital);
+		
+
 		//it means this urban agent gives 50% to the households in rural
 	}
+	*/
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.HARVEST - 1)
+/*	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.HARVEST - 1)
 	public void shareWealthPostHarvest() {
 		double sharedCapital = capital; // for now, networked households remit 100% of their capital
 		double sharedPerHousehold = sharedCapital / (double) networkedHouseholds.size();
 		
 		// get connected households
 		for (HouseholdAgent h : networkedHouseholds) {
-			h.setCapital(h.getCapital() + sharedPerHousehold);
-	//		System.out.println(h.getID()+"hhd capital="+h.getCapital());
+		//	h.setCapital(h.getCapital() + sharedPerHousehold);
+			h.setWage(sharedPerHousehold+h.getWage());
+			h.setCapital(h.getCapital() + h.getWage());
+	//	System.out.println(h.getID()+" hhd capital="+h.getCapital());
+		System.out.println(h.getID()+" wage="+h.getWage());
 		}
 		
 		capital -= sharedCapital;
 	}
+	*/
+// @ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.HARVEST )
+/*	public void shareWealthPreHarvest() {
+		double sharedCapital = capital ; // for now, networked households remit 0% of their capital
+	//	double sharedPerHousehold = sharedCapital / (double) networkedHouseholds.size();
+		
+		// get connected households
+		for (HouseholdAgent h : networkedHouseholds) {
+		//	h.setCapital(h.getCapital() + sharedPerHousehold);
+			h.setWage(sharedCapital);
+			h.setCapital(h.getCapital() + h.getWage());
+			//Yue Nov 10,2014
+		//	System.out.println(h.getID()+" shared capital="+sharedPerHousehold);
+		//	System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount() +" hhdID=" +h.getID()+ " wage ="+h.getWage());
+		}
+		
+		capital -= sharedCapital;
+		
+
+		//it means this urban agent gives 50% to the households in rural
+	}*/
 	
 	public Person removePerson() {
 		Person p = person;

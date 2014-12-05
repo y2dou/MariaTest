@@ -49,6 +49,7 @@
   <attributes label="familySizeRandomSeed" ID="familySizeRandomSeed" pluralLabel="familySizeRandomSeeds" sType="INTEGER" defaultValue="1"/>
   <attributes label="plotSizeRandomSeed" ID="plotSizeRandomSeed" pluralLabel="plotSizeRandomSeeds" sType="INTEGER" defaultValue="1"/>
   <attributes label="cashTransfer" ID="cashTransfer" pluralLabel="cashTransfers" sType="FLOAT" defaultValue="0.0" units=""/>
+  <attributes label="alpha" ID="alpha" pluralLabel="alphas" description="alpha" sType="FLOAT" defaultValue="0.5" units=""/>
   <implementation package="mariaprototype" className="" basePath="../MariaPrototype" mode="AUTO" binDir="bin,lib/windows,lib"/>
   <agents label="SimpleAgent" ID="simpleAgent" pluralLabel="SimpleAgents">
     <implementation className="SimpleAgent"/>

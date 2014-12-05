@@ -90,7 +90,7 @@ public class MySQLDatabase extends Database {
 					"numHouseholds, numPersons, numOffers, lambdaOffers, offerValueLow, offerValueHigh, " +
 					"percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, "+
 					"labourMultiplier, capitalMultiplier, " + 
-					"cashTransfer," +
+					"cashTransfer, alpha," + 
 					"acaiMultiplier, maniocMultiplier, timberMultiplier, " +
 					"acaiPrice, maniocPrice, timberPrice, " +
 					"acaiLabour, maniocLabour, fallowLabour, forestFallowLabour, maintainAcaiLabour, maintainManiocLabour, " +
@@ -102,7 +102,7 @@ public class MySQLDatabase extends Database {
 					"?, ?, ?, ?, ?, ?, " +
 					"?, ?, ?, ?, " +
 					"?, ?, " +
-					"?,"+
+					"?, ?, "+
 					"?, ?, ?, " +
 					"?, ?, ?, " +
 					"?, ?, ?, ?, ?, ?, " +
@@ -137,6 +137,8 @@ public class MySQLDatabase extends Database {
 			s.setDouble(i++, (Double) p.getValue("capitalMultiplier"));
 			
 			s.setDouble(i++, (Double) p.getValue("cashTransfer") );
+			s.setDouble(i++, (Double) p.getValue("alpha"));
+			//Yue, Nov 11, 2014 
 			
 			double globalMultiplier = (Double) p.getValue("priceStreamMultiplier");
 			double acaiMultiplier = (Double) p.getValue("acaiMultiplier"); 
@@ -378,28 +380,34 @@ public class MySQLDatabase extends Database {
 	//				"harvestAcai, harvestManioc, harvestTimber) VALUES " +
 	//				"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO tblHouseholdState" +
-					"(householdID, runID, tick, stage, capital, labour, cashTran, acai, maniocgarden, fields, forest, fallow, other, " +
+					"(householdID, runID, tick, stage, " +
+					"aveFemaleEdu, husEdu," +
+					"capital, labour, cashTran, wage," +
+					"acai, maniocgarden, fields, forest, fallow, other, " +
 					"harvestAcai, harvestManioc, harvestTimber) VALUES " +
-					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");		
+					"(?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");		
 			
 			ps.setInt(1, a.getID());
 			ps.setInt(2, getRunID(conn));
 			ps.setDouble(3, RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount());
 			ps.setString(4, stage);
-			ps.setDouble(5, a.getCapital());
-			ps.setDouble(6, labour);
-			ps.setDouble(7, a.getCashTran());
+			ps.setDouble(5, a.getAveFemaleEdu());
+			ps.setDouble(6, a.getHusbandEdu());
+			ps.setDouble(7, a.getCapital());
+			ps.setDouble(8, labour);
+			ps.setDouble(9, a.getCashTran());
+			ps.setDouble(10,a.getWage());
 			//new add;
 			
-			ps.setInt(8, numAcai);
-			ps.setInt(9, numManiocGarden);
-			ps.setInt(10, numFields);
-			ps.setInt(11, numForest);
-			ps.setInt(12, numFallow);
-			ps.setInt(13, numOther);
-			ps.setDouble(14, a.getAcaiYield());
-			ps.setDouble(15, a.getManiocYield());
-			ps.setDouble(16, a.getTimberYield());
+			ps.setInt(11, numAcai);
+			ps.setInt(12, numManiocGarden);
+			ps.setInt(13, numFields);
+			ps.setInt(14, numForest);
+			ps.setInt(15, numFallow);
+			ps.setInt(16, numOther);
+			ps.setDouble(17, a.getAcaiYield());
+			ps.setDouble(18, a.getManiocYield());
+			ps.setDouble(19, a.getTimberYield());
 			ps.execute();
 			ps.close();
 		} catch (SQLException e) {

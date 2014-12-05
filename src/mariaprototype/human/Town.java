@@ -33,10 +33,11 @@ public class Town extends SimpleAgent implements NetworkAgent {
 	
 	private List<NetworkedUrbanAgent> residents = new LinkedList<NetworkedUrbanAgent>();
 	
-	private int numOffers = 50;
+	private int numOffers = 10;
+	//reads from batch file/parameter file, Yue Nov 10, 2014
 	private double lambdaOffers = 0;
 	private double offerValueLow = 1000000;
-	private double offerValueHigh = 10000000;
+	private double offerValueHigh = 20000000;
 	
 	private int[] offerSchedule;
 	
@@ -125,38 +126,40 @@ public class Town extends SimpleAgent implements NetworkAgent {
 		EnvelopePool pool = hc.getEnvelopePool();
 		
 		ArrayList<HouseholdAgent> households = new ArrayList<HouseholdAgent>(hc.households);
+
 		
+		
+		for(HouseholdAgent myAgent : households){
+		}
 		Collections.sort(households,new Comparator<HouseholdAgent>(){
 
 			@Override
 			public int compare(HouseholdAgent arg0, HouseholdAgent arg1) {
+		
 				// TODO Auto-generated method stub
-				Double obj1=(double) arg0.getTotalEdu()/arg0.familyMembers.size();
-				Double obj2=(double) arg1.getTotalEdu()/arg1.familyMembers.size();
+				Double obj1=(double) arg0.getJobPossibility();
+				Double obj2=(double) arg1.getJobPossibility();
+
+			
 				int retval=obj1.compareTo(obj2);
 				return retval;
 				
 			}
-			//sort households based on the total education of a household. 
+			//sort households based on job probability of a household. 
 		});
 		
-	//	for (int i=0;i<households.size();i++){
-	//		System.out.println("the "+i+" TotalEducation="+households.get(households.size()-i-1).getTotalEdu());
-	//	}
-	/*	
-		for (int i=0;i<households.size();i++)
-		{   int eduMax=0;
-		    if (households.get(i).getTotalEdu()>households.get(i+1).getTotalEdu())
-		    {
-		    	eduMax
-		    }
-			
-		}
-		*/
 		//ArrayList<HouseholdAgent> eligibleHouseholds = new ArrayList<HouseholdAgent>();
 		//Collections.shuffle(households);
 		for (int i = 0; i < currentOffers && i < households.size(); i++) {
-			MessageEnvelope messageEnvelope = pool.getEnvelope(this, households.get(households.size()-i-1), new JobOffer(this, offerValueLow + RandomHelper.getDistribution("offerValue").nextDouble() * (offerValueHigh - offerValueLow)));
+		//	MessageEnvelope messageEnvelope = pool.getEnvelope(this, households.get(households.size()-i-1), new JobOffer(this, offerValueLow + RandomHelper.getDistribution("offerValue").nextDouble() * (offerValueHigh - offerValueLow)));
+			//is this the message including value of wage? Yue, Oct 29, 2014
+			int j=households.size()-i-1;
+			double wage=households.get(j).getHusbandEdu()*316.8+households.get(j).getHusbandAge()*76.1+3238.0;
+		//	System.out.println("hhdID="+households.get(j).getID()+" husAge="+households.get(j).getHusbandAge()
+			//		+" husEdu="+households.get(j).getHusbandEdu()+" wage="+wage/100);
+			//acai price in simulation is 0.0008; so the wage should be divided by 1000;
+			MessageEnvelope messageEnvelope = pool.getEnvelope(this, households.get(households.size()-i-1), new JobOffer(this, wage/100));			
+			//System.out.println(this.getID());
 			messageEnvelope.send();
 			messageEnvelope.discard();
 		}

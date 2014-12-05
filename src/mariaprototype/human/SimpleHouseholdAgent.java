@@ -89,6 +89,7 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 			} else if (sourceType.equals(AgentType.TOWN)) {
 				if (message.getMessageType().equals(MessageType.JOB_OFFER)) {
 					processJobOffer((JobOffer) e.getValue());
+			//		System.out.println(e.getValue());
 				}
 			}
 		}
@@ -267,7 +268,7 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 	@SuppressWarnings("unchecked")
 	protected void send(Person p, JobOffer o) {
 		Town t = o.getTown();
-		
+	//    System.out.println(t.broadcastJobs());
 		NetworkedUrbanAgent a = new NetworkedUrbanAgent(p);
 		a.setWage(o.getWage());
 		a.setColor(this.getColor());

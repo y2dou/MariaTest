@@ -48,7 +48,8 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected double percentFullForwardOptimalHouseholds;
 	
 	protected float cashTransfer;
-	
+	protected float alpha;
+//	protected float beta;
 	protected Connection conn;
 	
 	protected EnvelopePool envelopePool;	

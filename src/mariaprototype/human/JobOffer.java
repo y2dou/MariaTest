@@ -21,6 +21,7 @@ public class JobOffer implements Message {
 	}
 	
 	public double getWage() {
+	//	System.out.println("wage="+this.wage);
 		return wage;
 	}
 }

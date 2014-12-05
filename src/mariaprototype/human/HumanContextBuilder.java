@@ -111,7 +111,13 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 	//	System.out.println(p.getValue("cashTransfer"));
 		double cashTransfer = (Double) p.getValue("cashTransfer");
 		context.cashTransfer=(float) cashTransfer;
-	//	System.out.println("cashTransfer="+cashTransfer);
+		double alpha=(Double) p.getValue("alpha");
+	//	double beta=(Double) p.getValue("beta");
+		
+		context.alpha=(float) alpha;
+	//	context.beta=(float) beta;
+		System.out.println("alpha="+alpha+" beta="+(1-alpha));
+		System.out.println("cashTransfer="+cashTransfer);
 		if (cashTransfer>0) 
 		    { 
 			    Policy.cashTransferProgram=true;
@@ -255,10 +261,10 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		maleSelector.add(new Range<Integer>(25, 29), 5.55556);
 		maleSelector.add(new Range<Integer>(35, 39), 1.38889);
 		maleSelector.add(new Range<Integer>(40, 44), 4.86111);
-		maleSelector.add(new Range<Integer>(50, 54), 0.69444);
-		maleSelector.add(new Range<Integer>(55, 59), 0.69444);
-		maleSelector.add(new Range<Integer>(60, 64), 1.38889);
-		maleSelector.add(new Range<Integer>(80, 85), 1.38889);
+	//	maleSelector.add(new Range<Integer>(50, 54), 0.69444);
+	//	maleSelector.add(new Range<Integer>(55, 59), 0.69444);
+	//	maleSelector.add(new Range<Integer>(60, 64), 1.38889);
+	//	maleSelector.add(new Range<Integer>(80, 85), 1.38889);
 		context.demographicSelector.add(maleSelector, maleSelector.getCumulativeProbability());
 		
 		
@@ -273,9 +279,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		femaleSelector.add(new Range<Integer>(30, 34), 4.166667);
 		femaleSelector.add(new Range<Integer>(35, 39), 2.083333);
 		femaleSelector.add(new Range<Integer>(40, 44), 0.694444);
-		femaleSelector.add(new Range<Integer>(60, 64), 0.694444);
-		femaleSelector.add(new Range<Integer>(75, 79), 2.083333);
-		femaleSelector.add(new Range<Integer>(80, 85), 0.694444);
+	//	femaleSelector.add(new Range<Integer>(60, 64), 0.694444);
+	//	femaleSelector.add(new Range<Integer>(75, 79), 2.083333);
+	//	femaleSelector.add(new Range<Integer>(80, 85), 0.694444);
 		context.demographicSelector.add(femaleSelector, femaleSelector.getCumulativeProbability());
 		//where is this score from? and what for? Yue Dou May 14, 2014
 		//now i can answer this question, they're the distribution of the data, Oct 1, 2014
@@ -502,6 +508,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		for (HouseholdAgent h : households) {
 			if (!males.isEmpty()) {
 				Person person = new Person(false, males.get(males.size() - 1));
+				
 				context.add(person);
 				h.add(person);
 			}

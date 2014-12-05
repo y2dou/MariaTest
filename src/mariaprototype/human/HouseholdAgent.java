@@ -2,6 +2,9 @@ package mariaprototype.human;
 
 import java.awt.Color;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,8 +85,25 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	protected double subsistenceRequirements;
 	protected double cashTran ;
 	//add cash transfer to hhd agent, June 17, 2014;
-	private int totalEdu;
-	//this is the household education level, Yue, Oct 3, 2014;
+	private double aveFemaleEdu;
+	private double husbandEdu;
+	private int husbandAge;
+	private double utility;
+	private double alpha;
+	//private double beta;
+	private double wage=0.0;
+	
+
+
+	public void setUtility(double utility) {
+		this.utility = utility;
+	}
+	public double getUtility(){
+		return this.utility;
+	}
+
+	private double jobProb;
+	//this is the average female household member's education level, Yue, Oct 27, 2014;
 
 
 	protected FastTable<Person> familyMembers = new FastTable<Person>();
@@ -150,7 +170,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		harvestManiocLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestManiocLabour");
 		harvestTimberLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestTimberLabour");
 		cashTran = (Double) RunEnvironment.getInstance().getParameters().getValue("cashTransfer");
-			
+		alpha = (Double)	RunEnvironment.getInstance().getParameters().getValue("alpha");
+	//	beta = (Double)	RunEnvironment.getInstance().getParameters().getValue("beta");
 		color = new Color((id * 1291 + 1297) % 256, (id * 2267 + 337) % 256, (id * 1553 + 3) % 256);
 		jobOffers = new LinkedList<JobOffer>();
 		
@@ -172,6 +193,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		{familyMembers.add(person);
 	//	 System.out.println("Member age <100");
 		}
+		
 	}
 	
 	//update familyMember every tick, to remove who are too old 
@@ -211,6 +233,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	
 		if (new Random().nextDouble() < 0.5)
 		{ this.familyMembers.add(pp);}
+	//	System.out.println("aveFemaleEdu="+this.aveFemaleEdu+";husbandedu="+this.husbandEdu+";probability="+jobProb);
 	}
 	
 	
@@ -297,10 +320,10 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	}
 	
 	public final double getCapital() {
-		this.setCashTran();
+	//	this.setCashTran();
 	//	System.out.println("setCashTran="+this.cashTran);
-		capital = capital + this.getCashTran();
-	//	System.out.println("getCashTran="+(this.capital-this.cashTran));
+		capital = capital + this.getCashTran()+this.getWage();
+	//	System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+" hhdID "+this.getID()+" getWage="+this.getWage());
 		return capital;
 		
 	}
@@ -308,7 +331,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	public void setCapital(double capital) {
 		//setCapital only happens at the initialization stage; 
 		//it's not called every stage;
-		this.setCashTran();
+	//	this.setCashTran();
 		//this.capital = capital+this.getCashTran();
 		//i don't want to add a new variable called totalCapital, there will be too many revision; 
 		//This way can include cash Transfer into capital;
@@ -317,17 +340,92 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		this.capital=capital;
 	}
 	
+	public double getWage() {
+	//	System.out.println();
+		return wage;
+	}
+	public void setWage(double wage) {
+		this.wage = wage;
+	}
+	
+	public void setHusband () {
+	
+		ArrayList<Person> ps = new ArrayList<Person>();
+	
+		for (int i=0;i<this.familyMembers.size();i++) {
+	
+			Person p= this.familyMembers.get(i);
+			if ( p == null){
+		
+			}
+			if (p.isFemale() == false) {
+		
+				//ps.add(i, p);
+				ps.add(p);
+
+			}
+		}
+
+           
+		Collections.sort(ps,new Comparator<Person>(){
+
+			@Override
+			public int compare(Person arg0, Person arg1) {
+				// TODO Auto-generated method stub
+		
+				int obj0= arg0.getAge();
+				int obj1= arg1.getAge();
+				int retval=((Integer)obj0).compareTo(obj1);
+	
+				return retval;			
+			}
+			//sort family members based on the age. which order?
+		});
+		
+		this.husbandEdu=ps.get(ps.size()-1).getEducation();
+		this.husbandAge=ps.get(ps.size()-1).getAge();
+	
+	}
+	
+	public double getHusbandEdu() {
+		return husbandEdu;
+	}
+	public int getHusbandAge() {
+		return husbandAge;
+	}
+	
+	
+	public double getJobPossibility(){
+		double e = java.lang.Math.E;
+		setHusband();
+		aveFemaleEdu=this.getAveFemaleEdu();
+		double t=-1.463+0.064*aveFemaleEdu+0.148*this.husbandEdu;	
+		jobProb = Math.pow(e, t)/(Math.pow(e, t)+1);	
+		this.jobProb=jobProb;
+	//	System.out.println("aveFemaleEdu="+aveFemaleEdu+";husbandedu="+this.husbandEdu+";probability="+jobProb);
+		return jobProb;
+	}
+	
 	public double getLabour() {
 		return labour;
 	}
 	
 	public double getCashTran() {
 	//	System.out.println("getCashTran="+cashTran);
+		double cashTran=0;
+		int n=this.familyMembers.size();
+	//	System.out.println("n="+n);
+		for (int i=0;i<n;i++){
+			cashTran +=this.familyMembers.get(i).getPension();
+		}
+		
+			this.cashTran=cashTran;
+		//	System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+"  hhdID="+this.getID()+" cashTrans="+cashTran);
 		return cashTran;
 		
 	}
 
-	public void setCashTran( ) {
+	/*public void setCashTran( ) {
 		double cashTran=0;
 		int n=this.familyMembers.size();
 	//	System.out.println("n="+n);
@@ -338,19 +436,26 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 			this.cashTran=cashTran;
 	//		System.out.println("hhdCash="+this.cashTran);
 			//get the household cash transfer by counting all pension that eligible persons have.
-	}
+	}*/
 	
-	public int getTotalEdu() {
+	public double getAveFemaleEdu() {
 	//
-		totalEdu=0;
-		
+		aveFemaleEdu=0;
+		int memberEdu=0;
+		int j=0;
 		for (int i=0;i<this.familyMembers.size();i++)
-		{ int memberEdu=this.familyMembers.get(i).getEducation();
-		  this.totalEdu = totalEdu+memberEdu;
+		{  if (this.familyMembers.get(i).isFemale())
+			{ j=j+1;
+			 memberEdu=this.familyMembers.get(i).getEducation()+memberEdu;
+		     }
 	     }
+		if (j==0){aveFemaleEdu=0;}
+		//just in case if there's no female member;
+		else {aveFemaleEdu = (double) memberEdu/j;}
 	//	System.out.println("totalEdu="+totalEdu);
-		return totalEdu;
-	    
+		this.aveFemaleEdu = aveFemaleEdu;
+        return aveFemaleEdu;
+	    //calculate average female education level; Yue, Oct 27, 2014.
 	}
 
 	
@@ -481,7 +586,13 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	public double getTimberYield() {
 		return timberYield;
 	}
-
+    public double getAlpha(){
+    	return alpha;
+    }
+  /* public double getBeta(){
+    	return beta;
+    }
+    */
 	protected void processJobOffer(JobOffer o) {
 		// add it to knowledge base
 		jobOffers.add(o);

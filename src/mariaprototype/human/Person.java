@@ -14,6 +14,7 @@ public class Person extends SimpleAgent {
 	private double labour;
 	private int age;
 	private boolean isFemale;
+	private boolean isHusband;
 	private double pension;
 	private int education;
 	private int educationLevel;
@@ -91,6 +92,13 @@ public class Person extends SimpleAgent {
 		this.age = age;
 		calculateLabour();
 		calculatePension();
+	}
+	
+	public boolean isHusband() {
+		return isHusband;
+	}
+	public void setHusband(boolean isHusband) {
+		this.isHusband = isHusband;
 	}
 	
 	//@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)
@@ -181,7 +189,8 @@ public class Person extends SimpleAgent {
 		return ageProb;
 	} */
 	
-	public double getJobProbability(){
+/*	public double getJobProbability(){
+		
 		setAgeRange(this.age);
 		setEduLevel(this.education);
 		setAgeEduLevel(ageRange,educationLevel);
@@ -233,8 +242,10 @@ public class Person extends SimpleAgent {
 		jobP.put(133, 0.235);
 		jobP.put(134, 0.325);
 		//the key = agerange*10+educationLevel; probability is in Appendix_age_edu_probability.xlsx sheet 2
+		
+		
 		this.jobProb=jobP.get(ageEdu).doubleValue();
 	//	System.out.println("ageRange="+ageRange+"=eduRange="+educationLevel+"=jobProb"+jobProb);
 		return jobProb;
-	}
+	}*/
 }

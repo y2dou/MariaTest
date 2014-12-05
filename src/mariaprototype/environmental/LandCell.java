@@ -134,7 +134,10 @@ public class LandCell extends LandscapeCell {
 		}
 		
 		// unless... they didn't maintain the plot
+		//oh my goodness, acaiDensity has always been zero!!How can there be any acai yield!!
+		//Yue Nov 11, 2014
 		if (!isMaintained) {
+		//	acaiDensity=fieldsDensity;
 			if (acaiDensity > 0.8) {
 				acaiDensity -= 0.2;
 				capoeiraDensity += 0.2;
@@ -158,9 +161,13 @@ public class LandCell extends LandscapeCell {
 		maniocgardenHealth = FuzzyUtility.constrain(maniocgardenHealth);
 		
 		acaiYield = acaiDensity * acaiHealth * RandomHelper.getDistribution("acaiYield").nextDouble();
-		//System.out.println(" density "+acaiDensity+" health "+acaiHealth+
-		//		" distribution "+RandomHelper.getDistribution("acaiYield").nextDouble());
-	//	if (acaiDensity>0) { System.out.println( "acaiYield="+acaiYield);}
+		//acaiYield has been always 0, and there's no place it has been set not zero, so let's try to test this.
+		//acaiYield =  acaiHealth * RandomHelper.getDistribution("acaiYield").nextDouble();
+
+	//	System.out.println("L167 "+"acai yield "+acaiYield+" health "+acaiHealth);
+		if (acaiDensity>0) { //System.out.println( " L168  acaiYield="+acaiYield);
+			
+		}
 		
 		intenseAcaiYield = acaiDensity * acaiHealth * 15000d; // * some constant
 		gardenYield = maniocgardenDensity * maniocgardenHealth * RandomHelper.getDistribution("maniocYield").nextDouble();
