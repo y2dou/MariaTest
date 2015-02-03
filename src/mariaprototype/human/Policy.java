@@ -19,9 +19,12 @@ import mariaprototype.human.messaging.Message;
  */
 public abstract class Policy implements Message {
 	// a set of payouts and conditions (state variables, transport costs)
-	public  static boolean cashTransferProgram=true;
-	public static double cashTransferVolume=10.0;
+	public  static boolean pensionProgram=true;
+	public static double pensionVolume=10.0;
+	public static boolean bfProgram=true;
+	public static double bfVolume=0;
 	public static int lifeExpectancy=75;
+	public static int perCapitaIncomeThreshold=600;
 	//public static double alpha=1.0;
 	//public static double beta=0.0;
 	//this number, the average life expectancy is from brasil stat website

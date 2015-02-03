@@ -46,8 +46,11 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected double percentOptimalHouseholds;
 	protected double percentForwardOptimalHouseholds;
 	protected double percentFullForwardOptimalHouseholds;
+	protected double percentChayanovHouseholds;
+	//added by Yue,Dec 5, 2014
 	
-	protected float cashTransfer;
+	protected float pension;
+	protected float bf;
 	protected float alpha;
 //	protected float beta;
 	protected Connection conn;

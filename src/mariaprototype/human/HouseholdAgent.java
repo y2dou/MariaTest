@@ -83,8 +83,9 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	protected double capital;
 	protected double labour;
 	protected double subsistenceRequirements;
-	protected double cashTran ;
+	protected double pension ;
 	//add cash transfer to hhd agent, June 17, 2014;
+	protected double bf;
 	private double aveFemaleEdu;
 	private double husbandEdu;
 	private int husbandAge;
@@ -92,7 +93,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	private double alpha;
 	//private double beta;
 	private double wage=0.0;
-	
+	private double perCapitaIncome;
 
 
 	public void setUtility(double utility) {
@@ -169,7 +170,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		harvestAcaiLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestAcaiLabour");
 		harvestManiocLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestManiocLabour");
 		harvestTimberLabour = (Double) RunEnvironment.getInstance().getParameters().getValue("harvestTimberLabour");
-		cashTran = (Double) RunEnvironment.getInstance().getParameters().getValue("cashTransfer");
+		pension = (Double) RunEnvironment.getInstance().getParameters().getValue("pension");
+		bf = (Double) RunEnvironment.getInstance().getParameters().getValue("bf");
 		alpha = (Double)	RunEnvironment.getInstance().getParameters().getValue("alpha");
 	//	beta = (Double)	RunEnvironment.getInstance().getParameters().getValue("beta");
 		color = new Color((id * 1291 + 1297) % 256, (id * 2267 + 337) % 256, (id * 1553 + 3) % 256);
@@ -188,12 +190,9 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	}
 	
 	//this add(Person) function is for data initialization, it doesn't update everytime.
-	public final void add(Person person) {
-		if (person.getAge()<100) 
-		{familyMembers.add(person);
+	public final void add(Person person) {		
+		familyMembers.add(person);
 	//	 System.out.println("Member age <100");
-		}
-		
 	}
 	
 	//update familyMember every tick, to remove who are too old 
@@ -201,41 +200,160 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	//@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)
 	
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.ACTION)	
-	  public void updateAge () {
-		for ( Person p:this.familyMembers)
-			
-		 {  //System.out.println("age/100="+(double)(p.getAge())/100);
-			p.age();
-			//i changed this part, before there's no p.age, because the aging happens at Person.java @scheduled method; age++;
-			if (p.getAge()>= Policy.lifeExpectancy && new Random().nextDouble()< (double)(p.getAge())/100.00)
-			// if a person is older than life Expectancy age, the chance he dies is his age/100
-			{ 
-			  this.familyMembers.remove(p);
-			}
-			if (p.getAge()==8)
-			{
-				p.setEducation(1);
-			}
-			if (p.getAge()>8&&p.getAge()<=18)
-			{
-				p.setEducation(p.getEducation()+1);
-			}
+	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)	
+	  public void demography () {
+		double deathProb=0.0;
+		boolean reproduceCapability=false;
+		boolean isFemale= RandomHelper.getDistribution("isFemale").nextInt() == 1;//random generate the gender
 		
-	      }		
+		for ( Person p:this.familyMembers)
+		 {  
+			if (p.getAge()>50) {
+				switch (p.getAgeRange()) {
+				case 9: deathProb=0.005;
+				break;
+				case 10: deathProb=0.010;
+				break;
+				case 11: deathProb=0.026;
+				break;
+				case 12: deathProb=0.098;
+				break;}
+			if (new Random().nextDouble()< deathProb)
+				//generate a random number to compare with the death probability, 
+				//which is calculated from Table 3223, in population_deathrate.xlsx
+			{
+				this.familyMembers.remove(p);
+				System.out.println("death"+" id="+this.id+" size="+this.familyMembers.size());
+			//	System.out.println("one person died");
+			}
+		                 }
+			else {if (p.getReproduce()) 
+			         {
+				      Person pp= new Person (isFemale,0);			
+			//	this.familyMembers.add(pp);
+				      this.familyMembers.addLast(pp);
+				      System.out.println("id="+this.id+"  a baby is born!!!Boooo  "+this.familyMembers.size());
+			          }
+			    }
+			}
 	}
 	
-	@ScheduledMethod(start = 1, interval = 3, priority = MariaPriorities.ACTION)	
-	//household reproduce, add new familyMember and labour , edited by Yue Dou, Sep 29, 2014
-	public void reproduce (){
-		boolean isFemale= RandomHelper.getDistribution("isFemale").nextInt() == 1;
+	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)
+	public void updateEducation(){
+		//children under age and adults, their education is zero or ++;
+		/*here're two situations:
+		(1) there is BF program or not
+		(2) there is BF program but hhd have it or not
+		*/
+		int n=this.familyMembers.size();
+		int age;
+		//case One, no bolsaFamilia
+		for (int i=0;i<n;i++) {
+			Person p=this.familyMembers.get(i);
+			age=p.getAge();
+			p.setAge(age+1);
+			//p.calculateLabour();
+		//	p.calculatePension();
+		//	p.calculateBf();
+			p.setAgeRange(p.getAge());
+			p.setEduLevel(p.getEducation());
+			p.setAgeEdu(p.getAge(), p.getEduLevel());
+			
+		}
+		
+		System.out.println("id="+this.id+" size="+this.familyMembers.size());
+        if (Policy.bfVolume==0){
+        	if (this.perCapitaIncome>=Policy.perCapitaIncomeThreshold) {
+        		//CaseOne.one family income is larger than perCapitaThreshold
+        		for (int i=0;i<n;i++){
+        			Person p=this.familyMembers.get(i);
+        			if (p.getAge()>18) {p.setEducation(p.getEducation());}
+        			else if (p.getAge()<7)  {p.setEducation(0);}	
+        		       	else if (new Random().nextDouble()<0.8){
+    					p.setEducation(p.getEducation()+1);}  
+        	//		System.out.println(p.getEducation());
+    			}
+        	}
+        	else {//CaseOne.two family income is larger than perCapitaThreshold
+        		for (int i=0;i<n;i++){
+    			Person p=this.familyMembers.get(i);
+    			if (p.getAge()>18) {p.setEducation(p.getEducation());}
+    			else if (p.getAge()<7)  {p.setEducation(0);}	
+    		       	else {
+    		       		double prob=new Random().nextDouble();
+    		       		switch (p.getEduLevel()){
+    		       		case 1: if (prob<0.6) {p.setEducation(p.getEducation()+1);}
+    		       		        break;
+    		       		case 2: if (prob<0.4) {p.setEducation(p.getEducation()+1);}
+    		       		        break;
+    		       		case 3: if (prob<0.2) {p.setEducation(p.getEducation()+1);}
+    		       		        break;
+    		       		                         }
+    		         	 }
+    		//	System.out.println(p.getEducation());
+        		}
+        	}
+        }
+        //CaseTwo, when there is bolsa Familia
+        if (Policy.bfVolume>0) {
+        	if (this.perCapitaIncome>=Policy.perCapitaIncomeThreshold) {
+        		//CaseOne.one family income is larger than perCapitaThreshold
+        		for (int i=0;i<n;i++){
+        			Person p=this.familyMembers.get(i);
+        			if (p.getAge()>18) {p.setEducation(p.getEducation());}
+        			else if (p.getAge()<7)  {p.setEducation(0);}	
+        		       	else if (new Random().nextDouble()<0.8){
+    					p.setEducation(p.getEducation()+1);}                               	
+    			}
+        	}
+        	else {
+        		for (int i=0;i<n;i++){
+        			Person p=this.familyMembers.get(i);
+        			if (p.getAge()>18) {p.setEducation(p.getEducation());}
+        			else {if (p.getAge()<7)  {p.setEducation(0);}	
+        		       	else {
+        		       		double prob=new Random().nextDouble();
+        		       		switch (p.getEduLevel()){
+        		       		case 1: p.setEducation(p.getEducation()+1);
+        		       		break;
+        		       		case 2: p.setEducation(p.getEducation()+1);
+        		       		break;
+        		       		case 3: if (prob<0.5) {p.setEducation(p.getEducation()+1);}
+        		       		break;
+        		       		                         }
+        		         	 }
+            		
+            		      }
+            	                      }
+        	     }
+        }
+	}
+        	
+	
+
+/*	public void reproduce (){
+		//check if there's eligible woman in this household
+		boolean reproduceCapability=false;
+		for ( Person p:this.familyMembers){
+			if(p.getGenderAge()>20 && p.getGenderAge()<50) {
+				reproduceCapability=true;
+			}
+		}
+		
+		if (reproduceCapability==true) {
+		boolean isFemale= RandomHelper.getDistribution("isFemale").nextInt() == 1;	
 		Person pp= new Person (isFemale,0);
-	
+		//random generate the gender
 		if (new Random().nextDouble() < 0.5)
-		{ this.familyMembers.add(pp);}
+		{ this.familyMembers.add(pp);} 
+		//50% chance that this member will be added to the household.
 	//	System.out.println("aveFemaleEdu="+this.aveFemaleEdu+";husbandedu="+this.husbandEdu+";probability="+jobProb);
-	}
-	
+		}
+		else {
+			System.out.println(" can't reproduce" );
+		}
+		}
+	*/
 	
 	protected final void resetLabour() {
 		labour = 0;
@@ -322,7 +440,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	public final double getCapital() {
 	//	this.setCashTran();
 	//	System.out.println("setCashTran="+this.cashTran);
-		capital = capital + this.getCashTran()+this.getWage();
+		capital = capital + this.getPension()+this.getBf()+this.getWage();
 	//	System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+" hhdID "+this.getID()+" getWage="+this.getWage());
 		return capital;
 		
@@ -346,6 +464,14 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	}
 	public void setWage(double wage) {
 		this.wage = wage;
+	}
+//	public void setPerCapitaIncome(double perCapitaIncome){
+//		this.perCapitaIncome=perCapitaIncome;
+//	}
+	public double getPerCapitaIncome(){
+		int n=this.familyMembers.size();
+		perCapitaIncome = (this.capital-this.pension-this.bf)/n;
+		return perCapitaIncome;
 	}
 	
 	public void setHusband () {
@@ -410,21 +536,52 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		return labour;
 	}
 	
-	public double getCashTran() {
+	public double getPension() {
 	//	System.out.println("getCashTran="+cashTran);
-		double cashTran=0;
+		double pension=0;
 		int n=this.familyMembers.size();
 	//	System.out.println("n="+n);
 		for (int i=0;i<n;i++){
-			cashTran +=this.familyMembers.get(i).getPension();
+			pension +=this.familyMembers.get(i).getPension();
 		}
-		
-			this.cashTran=cashTran;
+			this.pension=pension;
 		//	System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+"  hhdID="+this.getID()+" cashTrans="+cashTran);
-		return cashTran;
+		return pension;
+		
+	}
+	
+	public double getBf(){
+		double bf=0;
+		int n=this.familyMembers.size();		
+		if ( this.perCapitaIncome<Policy.perCapitaIncomeThreshold) { 
+			//looks like 500 is a reasonble threshold, otherwise there's no family eligible
+			//to check if this family is eligible to get the bolsa familia;
+			//Bolsa Família currently gives families with per-capita monthly income below $140 BRL (poverty line, ~$56 USD) 
+			//a monthly stipend of $32 BRL (~$13 USD) per vaccinated child (< 16 years old) attending school (up to 5),
+			//which =84 annual income in this model;
+			//if pension is 20in program=500*12 in reality;324times
+			//then bf=32*12/324=15
+			int j=0;
+			for (int i=0;i<n;i++) 
+			{   
+				if (j<5&&this.familyMembers.get(i).getBf()>0)
+				{bf += this.familyMembers.get(i).getBf();
+				j++;
+				}
+			   }
+		//	System.out.println("bf="+bf);
+		 }	
+		this.bf=bf;
+	//	if(bf>0) 
+	//	{		System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+
+	//			"  hhdID="+this.getID()+" bolsa familia="+bf);}
+
+		return bf;
 		
 	}
 
+
+        
 	/*public void setCashTran( ) {
 		double cashTran=0;
 		int n=this.familyMembers.size();

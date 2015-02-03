@@ -88,9 +88,9 @@ public class MySQLDatabase extends Database {
 			
 			PreparedStatement s = conn.prepareStatement("INSERT INTO tblrun(randomSeed, sweepName, rundate, " +
 					"numHouseholds, numPersons, numOffers, lambdaOffers, offerValueLow, offerValueHigh, " +
-					"percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, "+
+					"percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, percentChayanovHouseholds,"+
 					"labourMultiplier, capitalMultiplier, " + 
-					"cashTransfer, alpha," + 
+					"pension, BF, alpha," + 
 					"acaiMultiplier, maniocMultiplier, timberMultiplier, " +
 					"acaiPrice, maniocPrice, timberPrice, " +
 					"acaiLabour, maniocLabour, fallowLabour, forestFallowLabour, maintainAcaiLabour, maintainManiocLabour, " +
@@ -100,9 +100,9 @@ public class MySQLDatabase extends Database {
 					
 					"VALUES (?, ?, ?, " +
 					"?, ?, ?, ?, ?, ?, " +
-					"?, ?, ?, ?, " +
+					"?, ?, ?, ?, ?, " +
 					"?, ?, " +
-					"?, ?, "+
+					"?, ?, ?,"+
 					"?, ?, ?, " +
 					"?, ?, ?, " +
 					"?, ?, ?, ?, ?, ?, " +
@@ -132,11 +132,13 @@ public class MySQLDatabase extends Database {
 			s.setDouble(i++, (Double) p.getValue("percentOptimalHouseholds"));
 			s.setDouble(i++, (Double) p.getValue("percentForwardOptimalHouseholds"));
 			s.setDouble(i++, (Double) p.getValue("percentFullForwardOptimalHouseholds"));
+			s.setDouble(i++, (Double) p.getValue("percentChayanovHouseholds"));
 			
 			s.setDouble(i++, (Double) p.getValue("labourMultiplier"));
 			s.setDouble(i++, (Double) p.getValue("capitalMultiplier"));
 			
-			s.setDouble(i++, (Double) p.getValue("cashTransfer") );
+			s.setDouble(i++, (Double) p.getValue("pension") );
+			s.setDouble(i++ , (Double) p.getValue("bf"));
 			s.setDouble(i++, (Double) p.getValue("alpha"));
 			//Yue, Nov 11, 2014 
 			
@@ -382,7 +384,7 @@ public class MySQLDatabase extends Database {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO tblHouseholdState" +
 					"(householdID, runID, tick, stage, " +
 					"aveFemaleEdu, husEdu," +
-					"capital, labour, cashTran, wage," +
+					"capital, labour, pension, wage," +
 					"acai, maniocgarden, fields, forest, fallow, other, " +
 					"harvestAcai, harvestManioc, harvestTimber) VALUES " +
 					"(?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");		
@@ -395,7 +397,7 @@ public class MySQLDatabase extends Database {
 			ps.setDouble(6, a.getHusbandEdu());
 			ps.setDouble(7, a.getCapital());
 			ps.setDouble(8, labour);
-			ps.setDouble(9, a.getCashTran());
+			ps.setDouble(9, a.getPension());
 			ps.setDouble(10,a.getWage());
 			//new add;
 			

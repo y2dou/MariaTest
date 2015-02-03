@@ -13,7 +13,7 @@ public class HouseholdAgentState implements Message {
 	public void update(HouseholdAgent agent) {
 		capital = agent.getCapital();
 		labour = agent.getLabour();
-		cashTran=agent.getCashTran();
+		cashTran=agent.getPension()+agent.getBf();
 		subsistenceRequirements = agent.getSubsistenceRequirements();
 		
 	}

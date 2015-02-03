@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <sweep runs="1">
-	<parameter name="cashTransfer" type="list" value_type="double" values="0">
+	<parameter name="pension" type="list" value_type="double" values="20">
+	<parameter name="bf" type="list" value_type="double" values="2.1"/>
 	<parameter name="alpha" type="list" value_type="double" values="0.8"/>
 	
 	<parameter name="demographicRandomSeed" type="constant" constant_type="number" value="1"/>
@@ -15,15 +16,15 @@
 	<parameter name="outputParametersAsFile" type="constant" constant_type="boolean" value="true"/>
 	<parameter name="outputNetworkCSV" type="constant" constant_type="boolean" value="false"/>
 
-	<parameter name="runlength" type="constant" constant_type="number" value="40.0"/>
+	<parameter name="runlength" type="constant" constant_type="number" value="30.0"/>
 	<parameter name="width" type="constant" constant_type="number" value="765"/>
 	<parameter name="height" type="constant" constant_type="number" value="808"/>
 	<parameter name="cellsize" type="constant" constant_type="number" value="15.0"/>
 	<parameter name="originx" type="constant" constant_type="number" value="0.0"/>
 	<parameter name="originy" type="constant" constant_type="number" value="0.0"/>
 	
-	<parameter name="numHouseholds" type="constant" constant_type="number" value="45"/>
-	<parameter name="numPersons" type="constant" constant_type="number" value="300"/>
+	<parameter name="numHouseholds" type="constant" constant_type="number" value="15"/>
+	<parameter name="numPersons" type="constant" constant_type="number" value="100"/>
 
 	<parameter name="acaiMultiplier" type="constant" constant_type="number" value="-1.01" />
 	<parameter name="maniocMultiplier" type="constant" constant_type="number" value="-1.01" />
@@ -34,7 +35,7 @@
 	<parameter name="offerValueAverage" type="constant" constant_type="number" value="100.0" />
 	<parameter name="offerValueSpread" type="constant" constant_type="number" value="0.0" />
 	
-	<parameter name="numOffers" type="list" value_type="int" values="15" />
+	<parameter name="numOffers" type="list" value_type="int" values="5" />
 		<parameter name="labourMultiplier" type="list" value_type="double" values="1.0" />
 		<parameter name="capitalMultiplier" type="list" value_type="double" values="1.0" />
 	
@@ -60,7 +61,8 @@
 								<parameter name="percentOptimalHouseholds" type="list" value_type="double" values="0.0  " />
 								<parameter name="percentForwardOptimalHouseholds" type="list" value_type="double" values="0.0  " />
 								<parameter name="percentFullForwardOptimalHouseholds" type="list" value_type="double" values="0.0  " />
-								<parameter name="percentHeuristicHouseholds" type="list" value_type="double" values="1.0 " />	
+								<parameter name="percentHeuristicHouseholds" type="list" value_type="double" values="0.0 " />	
+								<parameter name="percentChayanovHouseholds" type="list" value_type="double" values="1.0 " />
 	
 </parameter>
 

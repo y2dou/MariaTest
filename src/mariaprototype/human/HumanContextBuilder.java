@@ -93,7 +93,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.percentOptimalHouseholds = (Double) p.getValue("percentOptimalHouseholds");
 		context.percentForwardOptimalHouseholds = (Double) p.getValue("percentForwardOptimalHouseholds");
 		context.percentFullForwardOptimalHouseholds = (Double) p.getValue("percentFullForwardOptimalHouseholds");
-	   
+		context.percentChayanovHouseholds = (Double) p.getValue("percentChayanovHouseholds");
+		
 		context.conn = (Connection) RunState.getInstance().getFromRegistry("connection");
 		
 		int demographicRandomSeed = (Integer) p.getValue("demographicRandomSeed");
@@ -107,28 +108,38 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		
 		double globalMultiplier = (Double) p.getValue("priceStreamMultiplier");
 		
-		//load cashTranfer
+		//load pension
 	//	System.out.println(p.getValue("cashTransfer"));
-		double cashTransfer = (Double) p.getValue("cashTransfer");
-		context.cashTransfer=(float) cashTransfer;
+		double pension = (Double) p.getValue("pension");
+		context.pension=(float) pension;
+		double bf = (Double) p.getValue("bf");
+		context.bf=(float)bf;
 		double alpha=(Double) p.getValue("alpha");
 	//	double beta=(Double) p.getValue("beta");
 		
 		context.alpha=(float) alpha;
 	//	context.beta=(float) beta;
 		System.out.println("alpha="+alpha+" beta="+(1-alpha));
-		System.out.println("cashTransfer="+cashTransfer);
-		if (cashTransfer>0) 
+		System.out.println("pension="+pension);
+		System.out.println("bf="+bf);
+		if (pension>0) 
 		    { 
-			    Policy.cashTransferProgram=true;
-			    Policy.cashTransferVolume=cashTransfer;
+			    Policy.pensionProgram=true;
+			    Policy.pensionVolume=pension;
 			    }
 		else {
-			    Policy.cashTransferProgram=false;
-			    Policy.cashTransferVolume=0;
+			    Policy.pensionProgram=false;
+			    Policy.pensionVolume=0;
 		}
-		
-		
+		if (bf>0)
+		{
+			Policy.bfProgram=true;
+			Policy.bfVolume=bf;
+		}
+		else {
+			Policy.bfProgram=false;
+		    Policy.bfVolume=0;
+		}
 		setUpRandomDistributions();
 		
 		// load data: prices
@@ -422,11 +433,13 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		dmm.add(2, context.percentOptimalHouseholds);
 		dmm.add(3, context.percentForwardOptimalHouseholds);
 		dmm.add(4, context.percentFullForwardOptimalHouseholds);
+		dmm.add(5, context.percentChayanovHouseholds);
 		
 		if (context.percentHeuristicHouseholds <= 0 && 
 				context.percentOptimalHouseholds <= 0 && 
 				context.percentForwardOptimalHouseholds <= 0 &&
-				context.percentFullForwardOptimalHouseholds <= 0) {
+				context.percentFullForwardOptimalHouseholds <= 0 &&
+				context.percentChayanovHouseholds <= 0) {
 			return;
 		}
 		
@@ -447,6 +460,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				break;
 			case 4:
 				h = new FullForwardLPHouseholdAgent(e.getKey());
+				break;
+			case 5:
+				h = new ChayanovHouseholdAgent(e.getKey());
 				break;
 			default:
 				throw new UnsupportedOperationException("Invalid decision-making method selected.");
@@ -615,6 +631,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		dmm.add(2, context.percentOptimalHouseholds);
 		dmm.add(3, context.percentForwardOptimalHouseholds);
 		dmm.add(4, context.percentFullForwardOptimalHouseholds);
+		dmm.add(5, context.percentChayanovHouseholds);
 		
 		List<HouseholdAgent> households = new LinkedList<HouseholdAgent>();
 		
@@ -633,6 +650,10 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			case 4:
 				h = new FullForwardLPHouseholdAgent(e.getKey());
 				break;
+			case 5:
+				h= new ChayanovHouseholdAgent (e.getKey());
+				break;
+				//added by Yue, Dec 5th, 2014;
 			default:
 				throw new UnsupportedOperationException("Invalid decision-making method selected.");
 			}
