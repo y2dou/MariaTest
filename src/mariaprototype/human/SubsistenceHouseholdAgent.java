@@ -399,33 +399,33 @@ public class SubsistenceHouseholdAgent extends SimpleHouseholdAgent{
 				}
 			}
 			//Yue March 9, 2015, produce the basic subsistence requirement--manioc;
-			if (retVal == 0 ) {
-					lp.setAddRowmode(false);
-					
-					j=0;
-					
-					colno[j]=1;
-					row[j++]=0;
-					
-					colno[j]=2;
-					row[j++]=0;
-					
-					colno[j]=3;
-					row[j++]=1;
-					
-					colno[j]=4;
-					row[j++]=0;
-					
-					Iterator<NetworkedUrbanAgent> linkedIter = recallSolutions.iterator();
-					while (linkedIter.hasNext()) {
-						Person p = linkedIter.next().getPerson();
-						colno[j] = j + 1;
-						row[j++] = 0;
-					}
-					// add the row to lpsolve 
-				//	System.out.println("L432="+this.getSubManiocRequirement());
-					lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubManiocRequirement()/3000);
-				} 
+//			if (retVal == 0 ) {
+//					lp.setAddRowmode(false);
+//					
+//					j=0;
+//					
+//					colno[j]=1;
+//					row[j++]=0;
+//					
+//					colno[j]=2;
+//					row[j++]=0;
+//					
+//					colno[j]=3;
+//					row[j++]=1;
+//					
+//					colno[j]=4;
+//					row[j++]=0;
+//					
+//					Iterator<NetworkedUrbanAgent> linkedIter = recallSolutions.iterator();
+//					while (linkedIter.hasNext()) {
+//						Person p = linkedIter.next().getPerson();
+//						colno[j] = j + 1;
+//						row[j++] = 0;
+//					}
+//					// add the row to lpsolve 
+//				//	System.out.println("L432="+this.getSubManiocRequirement());
+//					lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubManiocRequirement()/3000);
+//				} 
 			
 			// add objective function
 			if (retVal == 0) {
@@ -711,7 +711,7 @@ public class SubsistenceHouseholdAgent extends SimpleHouseholdAgent{
 		
 			//Yue March 9, 2015, produce the basic subsistence requirement--manioc;
 			if (retVal == 0 ) {
-				lp.setAddRowmode(false);
+				//lp.setAddRowmode(false);
 				
 				j=0;
 				
