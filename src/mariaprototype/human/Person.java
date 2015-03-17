@@ -18,7 +18,6 @@ public class Person extends SimpleAgent {
 	private double labour;
 	private int age;
 
-
 	private boolean isFemale;
 	private boolean isHusband;
 	private double pension;
@@ -31,7 +30,15 @@ public class Person extends SimpleAgent {
 	private int ageEdu;
 	private double reproduceProbility;
 	private boolean reproduceThisTime;
- //   HashMap<Integer,Double> ageP = new HashMap<Integer,Double>();
+	private boolean schoolAttendence=false;//for sum up labour 
+	private double wage;
+	
+
+	private double subsistenceUnit;
+    private double subAcaiUnit;
+    private double subManiocUnit;
+
+	//   HashMap<Integer,Double> ageP = new HashMap<Integer,Double>();
     HashMap<Integer,Double> jobP = new HashMap<Integer,Double>();
 	
 	
@@ -94,17 +101,26 @@ public class Person extends SimpleAgent {
 		// use boolean to deliver the checking results to householdAgent;
 		boolean reproduceCheck=false;
 		if (this.getGenderAge()>15&&this.getGenderAge()<50) {
-		/*	switch (this.ageRange) {
-			case 1: this.reproduceProbility=0.045*1000;
-			case 2: this.reproduceProbility=0.082*1000;
-			case 3: this.reproduceProbility=0.195*1000;
-			case 4: this.reproduceProbility=0.113*1000;
-			case 5: this.reproduceProbility=0.066*1000;
-			case 6: this.reproduceProbility=0.035*1000;
-			case 7: this.reproduceProbility=0.020*1000;
-			case 8: this.reproduceProbility=0.020*1000;
-			}*/ //total reproduceProbility, average birth rate across all education level
-		    switch(this.ageEdu){
+			switch (this.ageRange) {
+			case 1: this.reproduceProbility=0.045;
+			break;
+			case 2: this.reproduceProbility=0.082;
+			break;
+			case 3: this.reproduceProbility=0.195;
+			break;
+			case 4: this.reproduceProbility=0.113;
+			break;
+			case 5: this.reproduceProbility=0.066;
+			break;
+			case 6: this.reproduceProbility=0.035;
+			break;
+			case 7: this.reproduceProbility=0.020;
+			break;
+			case 8: this.reproduceProbility=0.020;
+			break;
+			}
+			//total reproduceProbility, average birth rate across all education level
+		/*    switch(this.ageEdu){
 		    case 101:  this.reproduceProbility=0.07;
 		    break;
 		    case 102:  this.reproduceProbility=0.13;
@@ -175,6 +191,7 @@ public class Person extends SimpleAgent {
 		    //high school or above
 		    //data in table_96.xlsx
 		    }
+		    */
 		}
 		else {this.reproduceProbility=0.00;}
 	//	System.out.println("ageEdu="+ageEdu+" reproduceProb="+this.reproduceProbility);
@@ -253,12 +270,32 @@ public class Person extends SimpleAgent {
 	// FIXME: set contributing labour for acai, other agroforestry
 	public void calculateLabour() {
 		// labour (person-months)
-		if (age >= 18)
-			labour = 1;
-		else
-			labour = age / 18d;
+		
+		
+		if(!this.isSchoolAttendence())
+			
+		{ switch (this.ageRange) {
+		    case 0: 
+		    	if(this.age<7) { labour=0.05;}
+		    	else {labour=0.1;}
+		    	break;
+		    case 1: case 2:
+		    	labour = age/19d;
+		    	break;
+		    case 3: case 4: case 5: case 6: case 7: case 8: case 9:
+		    	labour =1;
+		    	break;
+		    case 10: case 11: case 12: 
+		    	labour =(double)60.0/age;
+		    	break;
+		}
+			
+		}
 		
 		if (isFemale) labour /= 2; // reduce contributing labour: same as LUCITA
+		
+		
+		if (this.isSchoolAttendence())  {labour=0;}
 	}
 	
 	public double getLabour() {
@@ -293,7 +330,93 @@ public class Person extends SimpleAgent {
 		this.education = education;
 	}	
 	
-
+	 public double getSubsistenceUnit() {
+			return subsistenceUnit;
+		}
 	
+	 public void setSubsistenceUnit(int age) {
+	//		
+		   Random r= new Random();
+	/*		if (age<7){subsistenceUnit=r.nextGaussian()*2+10;}
+		//   if (age<7){subsistenceUnit=10;}
+			else {
+				if (age<18) { subsistenceUnit=r.nextGaussian()*3+20;	}
+		//		if (age<18) { subsistenceUnit=20;	}
+				else { 	if (age<50) {subsistenceUnit=r.nextGaussian()*4+30;	}
+		//		else { 	if (age<50) {subsistenceUnit=30;	}
+		//		else { subsistenceUnit=20;}
+					    else { subsistenceUnit=r.nextGaussian()*3+20;}
+				     }
+			      }*/
+		   if (age<7){subsistenceUnit=r.nextGaussian()*2+20;}
+			//   if (age<7){subsistenceUnit=10;}
+				else {
+					if (age<18) { subsistenceUnit=r.nextGaussian()*3+30;	}
+			//		if (age<18) { subsistenceUnit=20;	}
+					else { 	if (age<50) {subsistenceUnit=r.nextGaussian()*4+40;	}
+			//		else { 	if (age<50) {subsistenceUnit=30;	}
+			//		else { subsistenceUnit=20;}
+						    else { subsistenceUnit=r.nextGaussian()*3+30;}
+					     }
+				      }
+			
+			this.subsistenceUnit = subsistenceUnit;
+		
+		}
+	 
+		public double getSubAcaiUnit() {
+			return subAcaiUnit;
+		}
+		public void setSubAcaiUnit(int age) {
+			Random r= new Random();
+			   if (age<7){subAcaiUnit=r.nextGaussian()*2+200;}
+				//   if (age<7){subsistenceUnit=10;}
+					else {
+						if (age<18) { subAcaiUnit=r.nextGaussian()*3+300;	}
+				//		if (age<18) { subsistenceUnit=20;	}
+						else { 	if (age<50) {subAcaiUnit=r.nextGaussian()*4+400;	}
+				//		else { 	if (age<50) {subsistenceUnit=30;	}
+				//		else { subsistenceUnit=20;}
+							    else { subAcaiUnit=r.nextGaussian()*3+300;}
+						     }
+					      }
+				
+				this.subAcaiUnit = subAcaiUnit;
+		}
+		public double getSubManiocUnit() {
+			return subManiocUnit;
+		}
+		public void setSubManiocUnit(int age) {
+			
+			Random r= new Random();
+			   if (age<7){subManiocUnit=r.nextGaussian()*2+200;}
+				//   if (age<7){subsistenceUnit=10;}
+					else {
+						if (age<18) { subManiocUnit=r.nextGaussian()*30+300;	}
+				//		if (age<18) { subsistenceUnit=20;	}
+						else { 	if (age<50) {subManiocUnit=r.nextGaussian()*40+400;	}
+				//		else { 	if (age<50) {subsistenceUnit=30;	}
+				//		else { subsistenceUnit=20;}
+							    else { subManiocUnit=r.nextGaussian()*30+200;}
+						     }
+					      }
+				
+				this.subManiocUnit = subManiocUnit;
+			
+		}
+
+		public boolean isSchoolAttendence() {
+			return schoolAttendence;
+		}
+		public void setSchoolAttendence(boolean schoolAttendence) {
+			this.schoolAttendence = schoolAttendence;
+		}
+		
+		public double getWage() {
+			return wage;
+		}
+		public void setWage(double wage) {
+			this.wage = wage;
+		}
 
 }

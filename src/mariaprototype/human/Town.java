@@ -83,6 +83,7 @@ public class Town extends SimpleAgent implements NetworkAgent {
 		} else {
 			for (int i = 0; i < offerSchedule.length; i++) {
 				offerSchedule[i] = numOffers;
+		//		System.out.println("town L86,num of offers="+offerSchedule[i]);
 			}
 		}
 	}
@@ -126,11 +127,9 @@ public class Town extends SimpleAgent implements NetworkAgent {
 		EnvelopePool pool = hc.getEnvelopePool();
 		
 		ArrayList<HouseholdAgent> households = new ArrayList<HouseholdAgent>(hc.households);
-
 		
-		
-		for(HouseholdAgent myAgent : households){
-		}
+	//	for(HouseholdAgent myAgent : households){
+		//}
 		Collections.sort(households,new Comparator<HouseholdAgent>(){
 
 			@Override
@@ -155,11 +154,14 @@ public class Town extends SimpleAgent implements NetworkAgent {
 			//is this the message including value of wage? Yue, Oct 29, 2014
 			int j=households.size()-i-1;
 			double wage=households.get(j).getHusbandEdu()*316.8+households.get(j).getHusbandAge()*76.1+3238.0;
-		//	System.out.println("hhdID="+households.get(j).getID()+" husAge="+households.get(j).getHusbandAge()
+		//    double wage=10;
+			//	System.out.println("hhdID="+households.get(j).getID()+" husAge="+households.get(j).getHusbandAge()
 			//		+" husEdu="+households.get(j).getHusbandEdu()+" wage="+wage/100);
 			//acai price in simulation is 0.0008; so the wage should be divided by 1000;
-			MessageEnvelope messageEnvelope = pool.getEnvelope(this, households.get(households.size()-i-1), new JobOffer(this, wage/100));			
+			MessageEnvelope messageEnvelope = pool.getEnvelope(this, households.get(households.size()-i-1), new JobOffer(this, wage/50));			
 			//System.out.println(this.getID());
+			 
+		//	MessageEnvelope messageEnvelope = pool.getEnvelope(this, households.get(i), new JobOffer(this, offerValueLow + RandomHelper.getDistribution("offerValue").nextDouble() * (offerValueHigh - offerValueLow)));
 			messageEnvelope.send();
 			messageEnvelope.discard();
 		}

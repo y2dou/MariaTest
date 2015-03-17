@@ -139,7 +139,7 @@ public class WeightedSelector<T> {
 		RandomHelper.registerGenerator("test", (int) System.currentTimeMillis());
 		WeightedSelector<String> selector = new WeightedSelector<String>("test");
 		selector.add("1/100", 1);
-			selector.add("55/155", 55); // to be removed
+		selector.add("55/155", 55); // to be removed
 		selector.add("5/100", 5);
 		selector.add("15/100", 15); //21
 		selector.add("19/100", 19); //40

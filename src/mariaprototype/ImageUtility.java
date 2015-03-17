@@ -14,7 +14,9 @@ import mariaprototype.human.HouseholdAgent;
 import mariaprototype.human.MyLandCell;
 import repast.simphony.space.Dimensions;
 import repast.simphony.valueLayer.GridValueLayer;
-
+/*This class controls the output file
+ * 
+ */
 public class ImageUtility {
 	private static int nodata = -9999;
 	
@@ -26,7 +28,7 @@ public class ImageUtility {
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = img.createGraphics();
 		
-		g.setColor(Color.white);
+		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, width, height);
 		
 		for (int i = 0; i < width; i++) {
@@ -61,6 +63,8 @@ public class ImageUtility {
 			while (cellIter.hasNext()) {
 				MyLandCell c = cellIter.next();
 				g.setColor(c.getLandUse().getColor());
+				//this paints the output file based on land use types
+			//	g.setColor(Color.black);
 				g.drawRect(c.getCell().getX(), height - c.getCell().getY() - 1, 1, 1);
 			}
 			

@@ -51,6 +51,7 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		GridValueLayer tenureField = (GridValueLayer) context.getValueLayer("Land Holder Field");
 		
 		takePossession(tenureField, landscapeGrid, RandomHelper.getDistribution("hectares").nextDouble(), environmentalContext.getCellsize(), coordinates);
+		//takePossession(tenureField, landscapeGrid, 2, environmentalContext.getCellsize(), coordinates);
 	}
 	
 	protected void processMessages() {
@@ -265,6 +266,8 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		}
 	}
 	
+
+	
 	@SuppressWarnings("unchecked")
 	protected void send(Person p, JobOffer o) {
 		Town t = o.getTown();
@@ -273,6 +276,7 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		a.setWage(o.getWage());
 		a.setColor(this.getColor());
 		familyMembers.remove(p);
+	//	System.out.println("family send");
 		t.add(a);
 		a.setEmployer(t);
 		a.addNetworkedHousehold(this);
@@ -297,7 +301,8 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		
 		familyMembers.add(a.getPerson());
 		capital += a.getCapital();
-		
+	//	System.out.println("simpleHHD="+this.getID()+" recall capital="+a.getCapital());
+		setWage(this.getWage()+a.getPerson().getWage()/2);
 		a.getEmployer().remove(a);
 		a.setEmployer(null);
 		a.setLocation(null);
@@ -332,5 +337,6 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 			 * at the end of the run, that's ok. 
 			 */
 		}
+		
 	}
 }

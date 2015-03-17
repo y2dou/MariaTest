@@ -1,4 +1,5 @@
 //need to run tblrun first//
+//updated March 12
 CREATE TABLE `tblhousehold` (
   `householdID` int(11) NOT NULL DEFAULT '0',
   `runID` int(11) NOT NULL DEFAULT '0',
@@ -41,10 +42,13 @@ CREATE TABLE `tblhouseholdstate` (
   `stage` varchar(12) NOT NULL,
   `aveFemaleEdu` double NOT NULL,
   `husEdu` double NOT NULL,
+  `perCapitaIncome` double NOT NULL,
   `capital` double NOT NULL,
   `labour` double NOT NULL,
   `pension` double NOT NULL,
+  `bf` int NOT NULL,
   `wage` double NOT NULL,
+  `subReq` double NOT NULL,
   `acai` int(11) NOT NULL,
   `maniocgarden` int(11) NOT NULL,
   `fields` int(11) NOT NULL,
@@ -78,7 +82,7 @@ CREATE TABLE `tblrun` (
   `labourMultiplier` double NOT NULL,
   `capitalMultiplier` double NOT NULL,
   `pension` double NOT NULL,
-  `BF` double NOT NULL,
+  `bf` double NOT NULL,
   `alpha` double NOT NULL,
   `acaiMultiplier` double NOT NULL,
   `maniocMultiplier` double NOT NULL,
@@ -101,6 +105,8 @@ CREATE TABLE `tblrun` (
   `harvestTimberLabour` double NOT NULL DEFAULT '0',
   `percentHeuristicHouseholds` double NOT NULL DEFAULT '1',
   `percentOptimalHouseholds` double NOT NULL DEFAULT '0',
+  `percentMinLabourHouseholds` double NOT NULL DEFAULT '0',
+  `percentSubsistenceHouseholds` double NOT NULL DEFAULT '0',
   `percentForwardOptimalHouseholds` double NOT NULL DEFAULT '0',
   `percentFullForwardOptimalHouseholds` double NOT NULL DEFAULT '0',
   `percentChayanovHouseholds` double NOT NULL DEFAULT '0',

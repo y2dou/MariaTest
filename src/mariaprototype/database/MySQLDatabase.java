@@ -88,9 +88,9 @@ public class MySQLDatabase extends Database {
 			
 			PreparedStatement s = conn.prepareStatement("INSERT INTO tblrun(randomSeed, sweepName, rundate, " +
 					"numHouseholds, numPersons, numOffers, lambdaOffers, offerValueLow, offerValueHigh, " +
-					"percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, percentChayanovHouseholds,"+
+					"percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, percentChayanovHouseholds, percentMinLabourHouseholds, percentSubsistenceHouseholds,"+
 					"labourMultiplier, capitalMultiplier, " + 
-					"pension, BF, alpha," + 
+					"pension, bf, alpha," + 
 					"acaiMultiplier, maniocMultiplier, timberMultiplier, " +
 					"acaiPrice, maniocPrice, timberPrice, " +
 					"acaiLabour, maniocLabour, fallowLabour, forestFallowLabour, maintainAcaiLabour, maintainManiocLabour, " +
@@ -100,7 +100,7 @@ public class MySQLDatabase extends Database {
 					
 					"VALUES (?, ?, ?, " +
 					"?, ?, ?, ?, ?, ?, " +
-					"?, ?, ?, ?, ?, " +
+					"?, ?, ?, ?, ?, ?, ?," +
 					"?, ?, " +
 					"?, ?, ?,"+
 					"?, ?, ?, " +
@@ -133,7 +133,8 @@ public class MySQLDatabase extends Database {
 			s.setDouble(i++, (Double) p.getValue("percentForwardOptimalHouseholds"));
 			s.setDouble(i++, (Double) p.getValue("percentFullForwardOptimalHouseholds"));
 			s.setDouble(i++, (Double) p.getValue("percentChayanovHouseholds"));
-			
+			s.setDouble(i++, (Double) p.getValue("percentMinLabourHouseholds"));
+			s.setDouble(i++, (Double) p.getValue("percentSubsistenceHouseholds"));
 			s.setDouble(i++, (Double) p.getValue("labourMultiplier"));
 			s.setDouble(i++, (Double) p.getValue("capitalMultiplier"));
 			
@@ -383,33 +384,36 @@ public class MySQLDatabase extends Database {
 	//				"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO tblHouseholdState" +
 					"(householdID, runID, tick, stage, " +
-					"aveFemaleEdu, husEdu," +
-					"capital, labour, pension, wage," +
+					"aveFemaleEdu, husEdu,perCapitaIncome," +
+					"capital, labour, pension, bf, wage,subReq," +
 					"acai, maniocgarden, fields, forest, fallow, other, " +
 					"harvestAcai, harvestManioc, harvestTimber) VALUES " +
-					"(?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");		
-			
-			ps.setInt(1, a.getID());
-			ps.setInt(2, getRunID(conn));
-			ps.setDouble(3, RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount());
-			ps.setString(4, stage);
-			ps.setDouble(5, a.getAveFemaleEdu());
-			ps.setDouble(6, a.getHusbandEdu());
-			ps.setDouble(7, a.getCapital());
-			ps.setDouble(8, labour);
-			ps.setDouble(9, a.getPension());
-			ps.setDouble(10,a.getWage());
+					"(?, ?, ?, ?, ?, ?,?, ?, ?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");		
+			int i=1;
+			ps.setInt(i++, a.getID());
+			ps.setInt(i++, getRunID(conn));
+			ps.setDouble(i++, RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount());
+			ps.setString(i++, stage);
+			ps.setDouble(i++, a.getAveFemaleEdu());
+			ps.setDouble(i++, a.getHusbandEdu());
+			ps.setDouble(i++,a.getPerCapitaIncome());
+			ps.setDouble(i++, a.getCapital());
+			ps.setDouble(i++, a.getLabour());
+			ps.setDouble(i++, a.getPension());
+			ps.setDouble(i++, a.getBf());
+			ps.setDouble(i++,a.getWage());
+			ps.setDouble(i++, a.getSubsistenceRequirements());
 			//new add;
 			
-			ps.setInt(11, numAcai);
-			ps.setInt(12, numManiocGarden);
-			ps.setInt(13, numFields);
-			ps.setInt(14, numForest);
-			ps.setInt(15, numFallow);
-			ps.setInt(16, numOther);
-			ps.setDouble(17, a.getAcaiYield());
-			ps.setDouble(18, a.getManiocYield());
-			ps.setDouble(19, a.getTimberYield());
+			ps.setInt(i++, numAcai);
+			ps.setInt(i++, numManiocGarden);
+			ps.setInt(i++, numFields);
+			ps.setInt(i++, numForest);
+			ps.setInt(i++, numFallow);
+			ps.setInt(i++, numOther);
+			ps.setDouble(i++, a.getAcaiYield());
+			ps.setDouble(i++, a.getManiocYield());
+			ps.setDouble(i++, a.getTimberYield());
 			ps.execute();
 			ps.close();
 		} catch (SQLException e) {

@@ -51,7 +51,9 @@ public class FeasibleAllocations {
 		toManiocGarden.clear();
 		toIntensifyAcai.clear();
 		
-		employables.clear();
+		employables.clear(); 
+		
+		
 	}
 	
 	public FastTable<MyLandCell> getToFallow() {

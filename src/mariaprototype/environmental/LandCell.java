@@ -1,5 +1,7 @@
 package mariaprototype.environmental;
 
+import java.util.Random;
+
 import mariaprototype.FuzzyUtility;
 import mariaprototype.MariaPriorities;
 import mariaprototype.human.HouseholdAgent;
@@ -164,13 +166,19 @@ public class LandCell extends LandscapeCell {
 		//acaiYield has been always 0, and there's no place it has been set not zero, so let's try to test this.
 		//acaiYield =  acaiHealth * RandomHelper.getDistribution("acaiYield").nextDouble();
 
-	//	System.out.println("L167 "+"acai yield "+acaiYield+" health "+acaiHealth);
+	//	if (acaiYield>0) System.out.println("L167 "+"acai yield "+acaiYield+" health "+acaiHealth);
 		if (acaiDensity>0) { //System.out.println( " L168  acaiYield="+acaiYield);
 			
 		}
 		
-		intenseAcaiYield = acaiDensity * acaiHealth * 15000d; // * some constant
+		// intenseAcaiYield = acaiDensity * acaiHealth * 15000d; // * some constant
+		
+	//	intenseAcaiYield = acaiDensity * acaiHealth * 14000d;
+		intenseAcaiYield = acaiDensity * acaiHealth * 10000d;
+		//try this Feb 05, 2015 Yue
+	//	if(intenseAcaiYield>0) System.out.println("Line 173 "+intenseAcaiYield);
 		gardenYield = maniocgardenDensity * maniocgardenHealth * RandomHelper.getDistribution("maniocYield").nextDouble();
+	//	if (gardenYield>0) System.out.println("L174 "+"manioc yield "+gardenYield);
 		timberYield = forestDensity * 5000d;
 	}
 	
@@ -211,6 +219,7 @@ public class LandCell extends LandscapeCell {
 	
 	public double getIntenseAcaiYield() {
 		// calculate kgPerHa (or kgPerCell)
+		
 		return intenseAcaiYield;
 	}
 	

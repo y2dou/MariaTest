@@ -51,6 +51,8 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 	// retrospective variables
 	private double lastCapital;
 	private double profitPerLabour = Double.MAX_VALUE;
+	private double opportunityFarmCost = Double.MAX_VALUE;
+	private double farmLabour = Double.MAX_VALUE;
 	
 	public HeuristicHouseholdAgent() {
 		super();
@@ -68,7 +70,8 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 		landUseSelector = new WeightedSelector<LandUse>("householdLandUseSelector" + Integer.toString(getID()));
 		
 		lastCapital = capital;
-		
+		opportunityFarmCost = 0;
+		farmLabour=0;
 		// init labour and capital
 		resetLabour();
 	}
@@ -106,12 +109,12 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 			int females = 0;
 			while (members.hasNext()) {
 				Person p = members.next();
-				if (p.getAge() >= 70) {
+				if (p.getAge() >= 60) {
 					if (p.isFemale())
 						females++;
 					else
 						males++;
-				} else if (p.getAge() >= 16) {
+				} else if (p.getAge() > 18) {
 					eligibleMembers.add(p);
 					if (p.isFemale())
 						females++;
@@ -144,9 +147,14 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 				JobOffer o = jobOffers.remove(0);
 				
 				Person p = eligibleMembers.get(RandomHelper.nextIntFromTo(0, eligibleMembers.size() - 1));
+	//			System.out.println("L150 wage revenue="+o.getWage()+" Labour="+p.getLabour() +" profitPerLabour="+profitPerLabour);
 				if (o.getWage() / p.getLabour() > profitPerLabour) {
+					
 					send(p, o);
 					eligibleMembers.remove(p);
+					p.setWage(o.getWage());
+				//	this.setWage(o.getWage());
+					
 				}
 			}
 		}
@@ -493,9 +501,12 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 
 						double yield = cell.getIntenseAcaiYield();
 						
-						if (labour >= harvestAcaiLabour	* labourMultiplier && capital >= yield * marketPrices.get(LandUse.ACAI))
+					//	if (labour >= harvestAcaiLabour	* labourMultiplier && capital >= yield * marketPrices.get(LandUse.ACAI))
+							if (labour >= harvestAcaiLabour	* labourMultiplier )
 						{
 							labour -= harvestAcaiLabour	* labourMultiplier;
+							farmLabour +=harvestAcaiLabour	* labourMultiplier;
+							opportunityFarmCost +=yield*marketPrices.get(LandUse.ACAI);
 							capital += yield * marketPrices.get(LandUse.ACAI);
 							
 							acaiYield += yield;
@@ -514,8 +525,11 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 
 						double yield = cell.getAcaiYield();
 						
-						if (labour >= harvestAcaiLabour	* labourMultiplier && capital >= yield * marketPrices.get(LandUse.ACAI)) {
+					//	if (labour >= harvestAcaiLabour	* labourMultiplier && capital >= yield * marketPrices.get(LandUse.ACAI)) {
+						if (labour >= harvestAcaiLabour	* labourMultiplier ) {	
 							labour -= harvestAcaiLabour	* labourMultiplier;
+							farmLabour +=harvestAcaiLabour	* labourMultiplier;
+							opportunityFarmCost +=yield*marketPrices.get(LandUse.ACAI);
 							capital += yield * marketPrices.get(LandUse.ACAI);
 							
 							acaiYield += yield;
@@ -540,8 +554,11 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 						LandCell cell = timberCell.getCell();
 						double yield = cell.getTimberYield();
 						
-						if (labour >= harvestTimberLabour * labourMultiplier && capital >= yield * marketPrices.get(LandUse.FOREST)) {
+					//	if (labour >= harvestTimberLabour * labourMultiplier && capital >= yield * marketPrices.get(LandUse.FOREST)) {
+							if (labour >= harvestTimberLabour * labourMultiplier ) {
 							labour -= harvestTimberLabour * labourMultiplier; // labour to clear land
+							farmLabour +=harvestAcaiLabour	* labourMultiplier;
+							opportunityFarmCost +=yield*marketPrices.get(LandUse.FOREST);
 							capital += yield * marketPrices.get(LandUse.FOREST);
 	
 							// clear land
@@ -571,8 +588,11 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 						LandCell cell = myCell.getCell();
 
 						double yield = cell.getGardenYield();
-						if (labour >= harvestManiocLabour * labourMultiplier && capital >= yield * marketPrices.get(LandUse.MANIOCGARDEN)) {
+					//	if (labour >= harvestManiocLabour * labourMultiplier && capital >= yield * marketPrices.get(LandUse.MANIOCGARDEN)) {
+							if (labour >= harvestManiocLabour * labourMultiplier ) {	
 							labour -= harvestManiocLabour * labourMultiplier;
+							farmLabour +=harvestAcaiLabour	* labourMultiplier;
+							opportunityFarmCost +=yield*marketPrices.get(LandUse.MANIOCGARDEN);
 							capital += yield * marketPrices.get(LandUse.MANIOCGARDEN);
 							
 							maniocYield += yield;
@@ -591,8 +611,13 @@ public class HeuristicHouseholdAgent extends SimpleHouseholdAgent {
 	@Override
 	public void retrospect() {
 		// calculate income per unit labour
-		profitPerLabour = (capital - lastCapital) / labour;
+//		profitPerLabour = (capital - lastCapital) / labour;
+		//above is ray's original code, but I think it's not really agricultural opportunity cost;
+//		profitPerLabour = (capital - lastCapital-getWage()) / getLabour();
+	//	profitPerLabour = opportunityFarmCost / getLabour();
+		profitPerLabour = opportunityFarmCost / farmLabour;
 		lastCapital = capital;
+		opportunityFarmCost=0;
 		
 		resetLabour();
 	}

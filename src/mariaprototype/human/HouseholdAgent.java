@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javolution.util.FastMap;
@@ -83,6 +84,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	protected double capital;
 	protected double labour;
 	protected double subsistenceRequirements;
+	protected double subAcaiRequirement;
+	protected double subManiocRequirement;
 	protected double pension ;
 	//add cash transfer to hhd agent, June 17, 2014;
 	protected double bf;
@@ -94,8 +97,9 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	//private double beta;
 	private double wage=0.0;
 	private double perCapitaIncome;
+    private int hhdSize;
 
-
+	
 	public void setUtility(double utility) {
 		this.utility = utility;
 	}
@@ -223,7 +227,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 				//which is calculated from Table 3223, in population_deathrate.xlsx
 			{
 				this.familyMembers.remove(p);
-				System.out.println("death"+" id="+this.id+" size="+this.familyMembers.size());
+		//		System.out.println("death"+" id="+this.id+" size="+this.familyMembers.size());
 			//	System.out.println("one person died");
 			}
 		                 }
@@ -232,7 +236,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 				      Person pp= new Person (isFemale,0);			
 			//	this.familyMembers.add(pp);
 				      this.familyMembers.addLast(pp);
-				      System.out.println("id="+this.id+"  a baby is born!!!Boooo  "+this.familyMembers.size());
+		//		      System.out.println("id="+this.id+"  a baby is born!!!Boooo  "+this.familyMembers.size());
 			          }
 			    }
 			}
@@ -252,41 +256,66 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 			Person p=this.familyMembers.get(i);
 			age=p.getAge();
 			p.setAge(age+1);
-			//p.calculateLabour();
-		//	p.calculatePension();
-		//	p.calculateBf();
+		//	p.calculateLabour();
+			p.calculatePension();
+			p.calculateBf();
 			p.setAgeRange(p.getAge());
-			p.setEduLevel(p.getEducation());
-			p.setAgeEdu(p.getAge(), p.getEduLevel());
+	//		p.setEduLevel(p.getEducation());
+	//		p.setAgeEdu(p.getAge(), p.getEduLevel());
+			//labor and education has to be calculated after education update. therefore it's at the end
 			
 		}
 		
-		System.out.println("id="+this.id+" size="+this.familyMembers.size());
+	//	System.out.println("id="+this.id+" size="+this.familyMembers.size());
         if (Policy.bfVolume==0){
         	if (this.perCapitaIncome>=Policy.perCapitaIncomeThreshold) {
         		//CaseOne.one family income is larger than perCapitaThreshold
         		for (int i=0;i<n;i++){
         			Person p=this.familyMembers.get(i);
-        			if (p.getAge()>18) {p.setEducation(p.getEducation());}
-        			else if (p.getAge()<7)  {p.setEducation(0);}	
-        		       	else if (new Random().nextDouble()<0.8){
-    					p.setEducation(p.getEducation()+1);}  
-        	//		System.out.println(p.getEducation());
+        			if (p.getAge()>18) {p.setEducation(p.getEducation());
+        			                    p.setSchoolAttendence(false); }
+        			else if (p.getAge()<7)  {p.setEducation(0);
+        			                         p.setSchoolAttendence(false);}	
+        		  /*     	else if (new Random().nextDouble()<0.6){
+    					p.setEducation(p.getEducation()+1);//rich family can afford kids to go to school
+    					p.setSchoolAttendence(true);//change it to true for the labour summary;
+    					}  */
+        	       	else {
+    		       		double prob=new Random().nextDouble();
+    		       		switch (p.getEduLevel()){
+    		       		case 1: if (prob<0.6) {p.setEducation(p.getEducation()+1);
+    		       		                       p.setSchoolAttendence(true); }
+    		       		        break;
+    		       		case 2: if (prob<0.4) {p.setEducation(p.getEducation()+1);
+    		       		                       p.setSchoolAttendence(true); }
+    		       		        break;
+    		       		case 3: if (prob<0.2) {p.setEducation(p.getEducation()+1);
+    		       		                       p.setSchoolAttendence(true); }
+    		       		        break;
+    		       		                         }
+    		         	 }
+        			
+        		//	System.out.println(p.isSchoolAttendence());
     			}
         	}
-        	else {//CaseOne.two family income is larger than perCapitaThreshold
+        	else {//CaseOne.two family income is smaller than perCapitaThreshold
         		for (int i=0;i<n;i++){
     			Person p=this.familyMembers.get(i);
-    			if (p.getAge()>18) {p.setEducation(p.getEducation());}
-    			else if (p.getAge()<7)  {p.setEducation(0);}	
+    			if (p.getAge()>18) {p.setEducation(p.getEducation());
+    			                    p.setSchoolAttendence(false); }
+    			else if (p.getAge()<7)  {p.setEducation(0);
+    			                         p.setSchoolAttendence(false); }	
     		       	else {
     		       		double prob=new Random().nextDouble();
     		       		switch (p.getEduLevel()){
-    		       		case 1: if (prob<0.6) {p.setEducation(p.getEducation()+1);}
+    		       		case 1: if (prob<0.4) {p.setEducation(p.getEducation()+1);
+    		       		                       p.setSchoolAttendence(true); }
     		       		        break;
-    		       		case 2: if (prob<0.4) {p.setEducation(p.getEducation()+1);}
+    		       		case 2: if (prob<0.2) {p.setEducation(p.getEducation()+1);
+    		       		                       p.setSchoolAttendence(true); }
     		       		        break;
-    		       		case 3: if (prob<0.2) {p.setEducation(p.getEducation()+1);}
+    		       		case 3: if (prob<0.1) {p.setEducation(p.getEducation()+1);
+    		       		                       p.setSchoolAttendence(true); }
     		       		        break;
     		       		                         }
     		         	 }
@@ -296,29 +325,54 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
         }
         //CaseTwo, when there is bolsa Familia
         if (Policy.bfVolume>0) {
-        	if (this.perCapitaIncome>=Policy.perCapitaIncomeThreshold) {
+        	//if (this.perCapitaIncome>=Policy.perCapitaIncomeThreshold&&this.bf>0) {
+        		//here i think it should only be check perCapitaIncome
+        		if (this.perCapitaIncome>=Policy.perCapitaIncomeThreshold) {
         		//CaseOne.one family income is larger than perCapitaThreshold
         		for (int i=0;i<n;i++){
         			Person p=this.familyMembers.get(i);
-        			if (p.getAge()>18) {p.setEducation(p.getEducation());}
-        			else if (p.getAge()<7)  {p.setEducation(0);}	
-        		       	else if (new Random().nextDouble()<0.8){
-    					p.setEducation(p.getEducation()+1);}                               	
+        			if (p.getAge()>18) {p.setEducation(p.getEducation());
+        			                    p.setSchoolAttendence(false);}
+        			else if (p.getAge()<7)  {p.setEducation(0);
+        			                         p.setSchoolAttendence(false);}	
+        		       	else 
+        		       		/*if (new Random().nextDouble()<0.6){
+    					         p.setEducation(p.getEducation()+1);
+    					         p.setSchoolAttendence(true);}   */
+        		       	{
+        		       		double prob=new Random().nextDouble();
+        		       		switch (p.getEduLevel()){
+        		       		case 1: if (prob<0.6) {p.setEducation(p.getEducation()+1);
+        		       		                       p.setSchoolAttendence(true); }
+        		       		        break;
+        		       		case 2: if (prob<0.4) {p.setEducation(p.getEducation()+1);
+        		       		                       p.setSchoolAttendence(true); }
+        		       		        break;
+        		       		case 3: if (prob<0.2) {p.setEducation(p.getEducation()+1);
+        		       		                       p.setSchoolAttendence(true); }
+        		       		        break;
+        		       		                         }
+        		         	 }
     			}
         	}
         	else {
         		for (int i=0;i<n;i++){
         			Person p=this.familyMembers.get(i);
-        			if (p.getAge()>18) {p.setEducation(p.getEducation());}
-        			else {if (p.getAge()<7)  {p.setEducation(0);}	
+        			if (p.getAge()>18) {p.setEducation(p.getEducation());
+        			                    p.setSchoolAttendence(false);}
+        			else {if (p.getAge()<7)  {p.setEducation(0);
+        			                          p.setSchoolAttendence(false);}	
         		       	else {
         		       		double prob=new Random().nextDouble();
         		       		switch (p.getEduLevel()){
-        		       		case 1: p.setEducation(p.getEducation()+1);
+        		       		case 1: {p.setEducation(p.getEducation()+1);
+        		       		         p.setSchoolAttendence(true);	}
         		       		break;
-        		       		case 2: p.setEducation(p.getEducation()+1);
+        		       		case 2: {p.setEducation(p.getEducation()+1);
+        		       		         p.setSchoolAttendence(true);	}
         		       		break;
-        		       		case 3: if (prob<0.5) {p.setEducation(p.getEducation()+1);}
+        		       		case 3: if (prob<0.5) {p.setEducation(p.getEducation()+1);
+        		       		                       p.setSchoolAttendence(true);}
         		       		break;
         		       		                         }
         		         	 }
@@ -327,6 +381,15 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
             	                      }
         	     }
         }
+        
+		for (int i=0;i<n;i++) {
+			Person p=this.familyMembers.get(i);
+			p.calculateLabour();//labor and education has to be calculated after education update. 
+			p.setEduLevel(p.getEducation());
+			p.setAgeEdu(p.getAge(), p.getEduLevel());
+			
+		}
+        
 	}
         	
 	
@@ -358,6 +421,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	protected final void resetLabour() {
 		labour = 0;
 		for (Person p : familyMembers) {
+			p.calculateLabour();
 			labour += p.getLabour();
 		}
 	}
@@ -437,10 +501,28 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		return AgentType.HOUSEHOLD_AGENT;
 	}
 	
+	public int getHhdSize() {
+		int n=this.familyMembers.size();
+		if (this.getLinkedHouseholds().size()>0){		
+			List<NetworkedUrbanAgent> checkHus = new LinkedList<NetworkedUrbanAgent>();		
+			checkHus.addAll(this.getLinkedHouseholds().keySet());		
+			Iterator<NetworkedUrbanAgent> recallIter = checkHus.iterator();
+
+			while (recallIter.hasNext()) {
+				Person p=recallIter.next().getPerson();
+			n=n+1;			
+		//	System.out.println(this.id);
+		                                  } 
+		                                        	}
+		
+		return n;
+	}
+	
 	public final double getCapital() {
 	//	this.setCashTran();
 	//	System.out.println("setCashTran="+this.cashTran);
-		capital = capital + this.getPension()+this.getBf()+this.getWage();
+		capital = capital + this.getPension() + this.getBf() + this.wage - this.getSubsistenceRequirements();
+	//	this.getPension()+this.getBf()-this.getSubsistenceRequirements();
 	//	System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+" hhdID "+this.getID()+" getWage="+this.getWage());
 		return capital;
 		
@@ -469,7 +551,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 //		this.perCapitaIncome=perCapitaIncome;
 //	}
 	public double getPerCapitaIncome(){
-		int n=this.familyMembers.size();
+		//int n=this.familyMembers.size();
+		int n=this.getHhdSize();
 		perCapitaIncome = (this.capital-this.pension-this.bf)/n;
 		return perCapitaIncome;
 	}
@@ -479,20 +562,31 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		ArrayList<Person> ps = new ArrayList<Person>();
 	
 		for (int i=0;i<this.familyMembers.size();i++) {
-	
+	    
 			Person p= this.familyMembers.get(i);
 			if ( p == null){
 		
 			}
-			if (p.isFemale() == false) {
+			if (!p.isFemale() ) {
 		
 				//ps.add(i, p);
 				ps.add(p);
 
 			}
 		}
+		
+		if (this.getLinkedHouseholds().size()>0){		
+			List<NetworkedUrbanAgent> checkHus = new LinkedList<NetworkedUrbanAgent>();		
+			checkHus.addAll(this.getLinkedHouseholds().keySet());		
+			Iterator<NetworkedUrbanAgent> recallIter = checkHus.iterator();
 
-           
+			while (recallIter.hasNext()) {
+				Person p=recallIter.next().getPerson();
+				if (!p.isFemale()) {
+					ps.add(p);	
+			     }			
+		                                  } 
+		                                        	}         
 		Collections.sort(ps,new Comparator<Person>(){
 
 			@Override
@@ -533,6 +627,24 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 	}
 	
 	public double getLabour() {
+		labour=0;
+		for (Person p:this.familyMembers)
+		{ p.calculateLabour();
+		  labour += p.getLabour();
+		}
+		
+		if (this.getLinkedHouseholds().size()>0){		
+			List<NetworkedUrbanAgent> checkHus = new LinkedList<NetworkedUrbanAgent>();		
+			checkHus.addAll(this.getLinkedHouseholds().keySet());		
+			Iterator<NetworkedUrbanAgent> recallIter = checkHus.iterator();
+
+			while (recallIter.hasNext()) {
+				Person p=recallIter.next().getPerson();
+				p.calculateLabour();
+				labour +=p.getLabour();
+		                                  } 
+		                                        	}        	
+	
 		return labour;
 	}
 	
@@ -580,7 +692,76 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		
 	}
 
+	public final double getSubsistenceRequirements() {
+		//Feb 04, 2015, Yue
+		
+		double subsistenceRequirements=0;
+		for (int i=0;i<this.familyMembers.size();i++) {
+			Person p=this.familyMembers.get(i);
+			p.setSubsistenceUnit(p.getAge());
+			subsistenceRequirements += p.getSubsistenceUnit();
+		}
+		
+		if (this.getLinkedHouseholds().size()>0) {
+			List<NetworkedUrbanAgent> checkHus = new LinkedList<NetworkedUrbanAgent>();		
+			checkHus.addAll(this.getLinkedHouseholds().keySet());		
+			Iterator<NetworkedUrbanAgent> recallIter = checkHus.iterator();
 
+			while (recallIter.hasNext()) {
+				Person p=recallIter.next().getPerson();
+				p.setSubsistenceUnit(p.getAge());
+				subsistenceRequirements += p.getSubsistenceUnit();
+			}
+		}
+
+			return subsistenceRequirements;
+			
+		}
+	
+	public double getSubAcaiRequirement() {
+		double subAcaiRequirement=0;
+		for (int i=0;i<this.familyMembers.size();i++) {
+			Person p=this.familyMembers.get(i);
+			p.setSubAcaiUnit(p.getAge());
+			subAcaiRequirement += p.getSubAcaiUnit();
+		}
+		
+		if (this.getLinkedHouseholds().size()>0) {
+			List<NetworkedUrbanAgent> checkHus = new LinkedList<NetworkedUrbanAgent>();		
+			checkHus.addAll(this.getLinkedHouseholds().keySet());		
+			Iterator<NetworkedUrbanAgent> recallIter = checkHus.iterator();
+
+			while (recallIter.hasNext()) {
+				Person p=recallIter.next().getPerson();
+				p.setSubAcaiUnit(p.getAge());
+				subAcaiRequirement += p.getSubAcaiUnit();
+			}
+		}
+		return subAcaiRequirement;
+	}
+	public double getSubManiocRequirement() {
+		double subManiocRequirement=0;
+		for (int i=0;i<this.familyMembers.size();i++) {
+			Person p=this.familyMembers.get(i);
+			p.setSubManiocUnit(p.getAge());
+			subManiocRequirement += p.getSubManiocUnit();
+		}
+		
+		if (this.getLinkedHouseholds().size()>0) {
+			List<NetworkedUrbanAgent> checkHus = new LinkedList<NetworkedUrbanAgent>();		
+			checkHus.addAll(this.getLinkedHouseholds().keySet());		
+			Iterator<NetworkedUrbanAgent> recallIter = checkHus.iterator();
+
+			while (recallIter.hasNext()) {
+				Person p=recallIter.next().getPerson();
+				p.setSubManiocUnit(p.getAge());
+				subManiocRequirement += p.getSubManiocUnit();
+			}
+		}
+//		System.out.println("L761 Manioc Requirement "+subManiocRequirement);
+		return subManiocRequirement;
+		
+	}
         
 	/*public void setCashTran( ) {
 		double cashTran=0;
@@ -601,11 +782,28 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		int memberEdu=0;
 		int j=0;
 		for (int i=0;i<this.familyMembers.size();i++)
-		{  if (this.familyMembers.get(i).isFemale())
-			{ j=j+1;
-			 memberEdu=this.familyMembers.get(i).getEducation()+memberEdu;
+		{  
+			Person p= this.familyMembers.get(i);
+			if (p.getGenderAge()>18) //only get the average female adult education
+			{ 
+				j=j+1;
+			    memberEdu=p.getEducation()+memberEdu;
 		     }
 	     }
+		
+		if (this.getLinkedHouseholds().size()>0){		
+			List<NetworkedUrbanAgent> checkHus = new LinkedList<NetworkedUrbanAgent>();		
+			checkHus.addAll(this.getLinkedHouseholds().keySet());		
+			Iterator<NetworkedUrbanAgent> recallIter = checkHus.iterator();
+
+			while (recallIter.hasNext()) {
+				Person p=recallIter.next().getPerson();
+				if (p.getGenderAge()>18) {
+					j=j+1;
+					memberEdu=p.getEducation()+memberEdu;				
+			     }			
+		                                  } 
+		                                        	} 
 		if (j==0){aveFemaleEdu=0;}
 		//just in case if there's no female member;
 		else {aveFemaleEdu = (double) memberEdu/j;}
@@ -620,11 +818,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements NetworkAgent
 		return familyMembers;
 	}
 	
-	public final double getSubsistenceRequirements() {
-	//	System.out.println("subsistence requirement="+subsistenceRequirements);
-		return subsistenceRequirements;
-		
-	}
+
 	
 	public Map<GridDimensions, MyLandCell> getTenure() {
 		return tenure;

@@ -2,7 +2,7 @@
 <sweep runs="1">
 	<parameter name="pension" type="list" value_type="double" values="0">
 	<parameter name="bf" type="list" value_type="double" values="0"/>
-	<parameter name="alpha" type="list" value_type="double" values="0.8"/>
+	<parameter name="alpha" type="list" value_type="double" values="8"/>
 	
 	<parameter name="demographicRandomSeed" type="constant" constant_type="number" value="1"/>
 	<parameter name="familySizeRandomSeed" type="constant" constant_type="number" value="4"/>
@@ -35,7 +35,7 @@
 	<parameter name="offerValueAverage" type="constant" constant_type="number" value="100.0" />
 	<parameter name="offerValueSpread" type="constant" constant_type="number" value="0.0" />
 	
-	<parameter name="numOffers" type="list" value_type="int" values="0" />
+	<parameter name="numOffers" type="list" value_type="int" values="5" />
 		<parameter name="labourMultiplier" type="list" value_type="double" values="1.0" />
 		<parameter name="capitalMultiplier" type="list" value_type="double" values="1.0" />
 	
@@ -50,7 +50,7 @@
 					<parameter name="maintainAcaiLabour" type="list" value_type="double" values="0.1" />
 					<parameter name="maintainManiocLabour" type="list" value_type="double" values="0.1" />
 						<parameter name="acaiCost" type="list" value_type="double" values="1.0" />
-						<parameter name="maniocCost" type="list" value_type="double" values="2.8" />
+						<parameter name="maniocCost" type="list" value_type="double" values="3.0" />
 						<parameter name="fallowCost" type="list" value_type="double" values="0.0" />
 						<parameter name="forestFallowCost" type="list" value_type="double" values="0.0" />
 						<parameter name="maintainAcaiCost" type="list" value_type="double" values="0.5" />

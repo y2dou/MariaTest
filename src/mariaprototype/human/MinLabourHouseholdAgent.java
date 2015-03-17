@@ -1,13 +1,24 @@
+/**
+ * 
+ */
 package mariaprototype.human;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ListIterator;
+
+import mariaprototype.FuzzyUtility;
+import mariaprototype.environmental.LandCell;
+import mariaprototype.environmental.LandUse;
+
+
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -17,43 +28,29 @@ import repast.simphony.engine.environment.RunState;
 
 import lpsolve.LpSolve;
 import lpsolve.LpSolveException;
-import mariaprototype.FuzzyUtility;
-import mariaprototype.environmental.LandCell;
-import mariaprototype.environmental.LandUse;
+
 import mariaprototype.human.messaging.MessageEnvelope;
 
-/**
- * A <code>HouseholdAgent</code> based on linear optimization
- * 
- * @author Raymond Cabrera
- * @author DOU Yue, beta 2.0, Feb 20, 2015
- * so the problem is that when Ray design this, there's urban Network Agents;
- * however, my design is that household is a whole decision unit, so the off-farming work
- *  is one alternative livelihood activity.
+/**same as LinearOptimizing, but change the object as min labour, 
+ * add revenue>=subsistencerequrest as constrain
+ * @author DOU Yue
+ *
  */
-public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
-	// plan
+public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 	protected FeasibleAllocations feasibleAllocations = new FeasibleAllocations();
-	
-	/*
-	// yield estimates for optimization algorithm
-	private double expectedAcaiYield = 15000d;
-	private double expectedIntenseAcaiYield = 15000;
-	private double expectedManiocYield = 15000;
-	private double expectedTimberYield = 15000;
-	
-	private double acaiYieldCounter = 0;
-	private double intenseAcaiYieldCounter = 0;
-	*/
-	
-	public LinearOptimizingHouseholdAgent() {
+	/**
+	 * 
+	 */
+	public MinLabourHouseholdAgent() {
+		// TODO Auto-generated constructor stub
 		super();
 	}
 
-	public LinearOptimizingHouseholdAgent(int id) {
+	
+	public MinLabourHouseholdAgent(int id) {
 		super(id);
 	}
-
+	
 	@Override
 	public void init(HumanContext humanContext,	int... coordinates) {
 		super.init(humanContext, coordinates);
@@ -80,6 +77,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 
 	@Override
 	public void plan() {
+		// TODO Auto-generated method stub
 		processMessages();
 
 		resetActions();
@@ -223,39 +221,27 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			feasibleAllocations.getToIntensifyAcai().add(c);
 			feasibleAllocations.getToManiocGarden().add(c);
 		}
-	//	System.out.println("L238="+feasibleAllocations.getEmployables().size());
+	
 		// TODO: take over unmanaged property, if projected labour and capital allow
 	}
 	
-	protected void resetActions() {
+	private void resetActions() {
+		// TODO Auto-generated method stub
 		feasibleAllocations.reset();
 	}
-	
 	protected double getExpectedPrice(LandUse crop) {
 		return marketPrices.get(crop);
 	}
-	
 	protected double getActualPrice(LandUse crop) {
 		return marketPrices.get(crop);
 	}
-
 	protected HarvestSolution findHarvestSolution() {
 		/*
-		 * maximize: sum of [ (prices - immediate cost) * yield *
-		 * 	futureness_penalty] + wage * employment_labour 
-		 * 
-		 * s.t.
-		 * 
-		 * sum (cost * plots) <= capital sum (labour * plots) <= labour
-		 * available land non-negativity constraints
 		 * 
 		 * standard form
 		 * 
 		 * variables: harvested plots of: acai, maniocgarden, timber
 		 */
-	//	List<Entry<Person, JobOffer>> employableSolutions = new LinkedList<Entry<Person, JobOffer>>(); 
-	//	employableSolutions.addAll(feasibleAllocations.getEmployables().entrySet());
-	//	System.out.println("size of employableSolutions="+feasibleAllocations.getEmployables().size());
 		
 		resetActions();//why reset here. then off-farming work is null.
 	//	System.out.println("L273 after resetAction"+feasibleAllocations.getEmployables().size());
@@ -297,9 +283,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		int j;
 		int[] colno = new int[ncols];
 		double[] row = new double[ncols];
-	//	List<Entry<Person, JobOffer>> employableSolutions = new LinkedList<Entry<Person, JobOffer>>(); 
-    //	employableSolutions.addAll(feasibleAllocations.getEmployables().entrySet());
-	//	System.out.println("size of employableSolutions="+employableSolutions.size());
+	
 		
 		// get list of agents available for recall back to the household
 		// need to move keyset to ordered list for consistency
@@ -363,65 +347,10 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				/* add the row to lpsolve */
 				lp.addConstraintex(j, row, colno, LpSolve.LE, labour);
 				//set as objective
-			//	lp.setObjFnex(j, row, colno);
+		//		lp.setObjFnex(j, row, colno);
 		//		System.out.println("L377="+labour);
 			}
-			
-		/*	if (retVal == 0 ) {
-				lp.setAddRowmode(false);
-				
-				j=0;
-				
-				colno[j]=1;
-				row[j++]=10000d;
-				
-				colno[j]=2;
-				row[j++]=15000d;
-				
-				colno[j]=3;
-				row[j++]=0;
-				
-				colno[j]=4;
-				row[j++]=0;
-				
-				Iterator<NetworkedUrbanAgent> linkedIter = recallSolutions.iterator();
-				while (linkedIter.hasNext()) {
-					Person p = linkedIter.next().getPerson();
-					colno[j] = j + 1;
-					row[j++] = 0;
-				}
-				// add the row to lpsolve 
-				lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubAcaiRequirement());
-			} 
-		*/
-			//Yue March 9, 2015, produce the basic subsistence requirement--manioc;
-		/*	if (retVal == 0 ) {
-				lp.setAddRowmode(false);
-				
-				j=0;
-				
-				colno[j]=1;
-				row[j++]=0;
-				
-				colno[j]=2;
-				row[j++]=0;
-				
-				colno[j]=3;
-				row[j++]=1;
-				
-				colno[j]=4;
-				row[j++]=0;
-				
-				Iterator<NetworkedUrbanAgent> linkedIter = recallSolutions.iterator();
-				while (linkedIter.hasNext()) {
-					Person p = linkedIter.next().getPerson();
-					colno[j] = j + 1;
-					row[j++] = 0;
-				}
-				// add the row to lpsolve 
-			//	System.out.println("L432="+this.getSubManiocRequirement());
-				lp.addConstraintex(j, row, colno, LpSolve.GE, 1);
-			} */
+
 			
 			if (retVal == 0) {
 				// set up upper bounds on optimizing variables
@@ -499,8 +428,6 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 					row[j++] = e.getWage();
 			//		System.out.println("Linear L447, "+e.getWage());
 				}
-	
-				/* set the objective in lpsolve */
 				lp.setObjFnex(j, row, colno);
 				//set as a constrain.
 			//	lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubsistenceRequirements()-this.pension);
@@ -508,7 +435,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			
 			if (retVal == 0) {
 				lp.setMaxim();
-	         //   lp.setMinim();
+	       //     lp.setMinim();
 				// lp.writeLp("harvest" + getID() + ".lp");
 				
 				lp.setVerbose(LpSolve.IMPORTANT);
@@ -699,7 +626,8 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 					row[j++] = p.getLabour();
 				}
 				//lp.setObjFnex(j, row, colno);
-				lp.addConstraintex(j, row, colno, LpSolve.LE, labour);	
+		//		lp.addConstraintex(j, row, colno, LpSolve.LE, labour);	
+				lp.setObjFnex(j, row, colno);
 			}
 	
 			if (retVal == 0) {
@@ -749,6 +677,8 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 					lp.setBounds(i, 0, 1);
 				}
 			}
+			
+			//Yue March 9, 2015, produce the basic subsistence requirement--acai;
 			 
 			// add objective function
 			if (retVal == 0) {
@@ -794,15 +724,15 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			
 				
 				//set the objective
-				lp.setObjFnex(j, row, colno);
+			//	lp.setObjFnex(j, row, colno);
 				// add the row to lpsolve 
-			//	lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubsistenceRequirements()-this.pension);
+				lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubsistenceRequirements()-this.pension);
 				
 			}
 			
 			if (retVal == 0) {
-				lp.setMaxim();
-			//	lp.setMinim();
+			//	lp.setMaxim();
+				lp.setMinim();
 				// lp.writeLp(RunState.getInstance().getFromRegistry("path") + "_" + "development_nonpredictive_" + getID() + "_step" + Double.toString(RunEnvironment.getInstance().getCurrentSchedule().getTickCount()) + ".lp.txt");
 				
 				lp.setVerbose(LpSolve.IMPORTANT);
@@ -869,14 +799,10 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		return null;
 	}
 
-
-
-	@Override
-	public void intermediate() {
-	}
-
+	
 	@Override
 	public void act() {
+		// TODO Auto-generated method stub
 		// make land use changes, maintain old crops
 		// assumption of primary income: acai and annual crops
 		// secondary income: none (would be pensions and in-town labour for
@@ -965,13 +891,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			}
 		}
 	}
-	
-	/**
-	 * Intensify acai by a single, unspecified cell. The acai cell will be taken
-	 * from the <code>toIntensifyAcai</code> list.
-	 * 
-	 * @return <code>true</code> if successful.
-	 */
+
 	protected double intensifyAcai() {
 		MyLandCell c = null;
 		try {
@@ -1011,9 +931,9 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 			return false;
 		}
 	}
-
 	@Override
 	public void harvest() {
+		// TODO Auto-generated method stub
 		resetLabour();
 
 		HarvestSolution solution = findHarvestSolution();
@@ -1101,15 +1021,19 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		}
 	}
 
+
 	@Override
-	public void retrospect() {
+	public void intermediate() {
+		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
+	public void retrospect() {
+		// TODO Auto-generated method stub
+		
+	}
 	public void store(MessageEnvelope message) {
 		mailbox.put(message.getSource(), message.getContents());
 	}
-
-	
 }

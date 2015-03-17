@@ -14,7 +14,7 @@ public class HouseholdAgentState implements Message {
 		capital = agent.getCapital();
 		labour = agent.getLabour();
 		cashTran=agent.getPension()+agent.getBf();
-		subsistenceRequirements = agent.getSubsistenceRequirements();
+	//	subsistenceRequirements = agent.getSubsistenceRequirements();
 		
 	}
 	

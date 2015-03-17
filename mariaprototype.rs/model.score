@@ -19,6 +19,8 @@
   <attributes label="percentForwardOptimalHouseholds" ID="percentForwardOptimalHouseholds" pluralLabel="percentForwardOptimalHouseholdss" sType="FLOAT" defaultValue="0.0"/>
   <attributes label="percentFullForwardOptimalHouseholds" ID="percentFullForwardOptimalHouseholds" pluralLabel="percentFullForwardOptimalHouseholdss" sType="FLOAT" defaultValue="0.0"/>
   <attributes label="percentChayanovHouseholds" ID="percentChayanovHouseholds" pluralLabel="percentChayanovHouseholdss" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentMinLabourHouseholds" ID="percentMinLabourHouseholds" pluralLabel="percentMinLabourHouseholdss" sType="FLOAT" defaultValue="0.0" units=""/>
+  <attributes label="percentSubsistenceHouseholds" ID="percentSubsistenceHouseholds" pluralLabel="percentSubsistenceHouseholdss" description="" sType="FLOAT" defaultValue="0.0" units=""/>
   <attributes label="runlength" ID="runlength" pluralLabel="runlengths" sType="FLOAT" defaultValue="40" units=""/>
   <attributes label="labourMultiplier" ID="labourMultiplier" pluralLabel="labourMultipliers" sType="FLOAT" defaultValue="1"/>
   <attributes label="capitalMultiplier" ID="capitalMultiplier" pluralLabel="capitalMultipliers" sType="FLOAT" defaultValue="1"/>
@@ -52,6 +54,8 @@
   <attributes label="pension" ID="pension" pluralLabel="pensions" sType="FLOAT" defaultValue="0.0" units=""/>
   <attributes label="alpha" ID="alpha" pluralLabel="alphas" description="alpha" sType="FLOAT" defaultValue="0.5" units=""/>
   <attributes label="bf" ID="bf" pluralLabel="bfs" sType="FLOAT" defaultValue="0" units=""/>
+  <attributes label="capitalSizeRandomSeed" ID="capitalSizeRandomSeed" pluralLabel="capitalSizeRandomSeeds" sType="INTEGER" defaultValue="1"/>
+  <attributes label="educationRandomSeed" ID="educationRandomSeed" pluralLabel="educationRandomSeeds" sType="INTEGER" defaultValue="1"/>
   <implementation package="mariaprototype" className="" basePath="../MariaPrototype" mode="AUTO" binDir="bin,lib/windows,lib"/>
   <agents label="SimpleAgent" ID="simpleAgent" pluralLabel="SimpleAgents">
     <implementation className="SimpleAgent"/>
@@ -109,14 +113,20 @@
     <agents label="FullForwardLPHouseholdAgent" ID="fullForwardLPHouseholdAgent" pluralLabel="FullForwardLPHouseholdAgents">
       <implementation className="FullForwardLPHouseholdAgent"/>
     </agents>
+    <agents label="MinLabourHouseholdAgent" ID="minLabourHouseholdAgent" pluralLabel="MinLabourHouseholdAgents">
+      <implementation package="" className="MinLabourHouseholdAgent"/>
+    </agents>
+    <agents label="ChayanovHouseholdAgent" ID="ChayanovHouseholdAgent" pluralLabel="ChayanovHouseholdAgents">
+      <implementation className="ChayanovHouseholdAgent"/>
+    </agents>
+    <agents label="SubsistenceHouseholdAgent" ID="subsistenceHouseholdAgent" pluralLabel="SubsistenceHouseholdAgents" description="">
+      <implementation className="SubsistenceHouseholdAgent"/>
+    </agents>
     <agents label="Town" ID="town" pluralLabel="Towns">
       <implementation className="Town"/>
     </agents>
     <agents label="NetworkedUrbanAgent" ID="networkedUrbanAgent" pluralLabel="NetworkedUrbanAgents">
       <implementation className="NetworkedUrbanAgent"/>
-    </agents>
-    <agents label="ChayanovHouseholdAgent" ID="ChayanovHouseholdAgent" pluralLabel="ChayanovHouseholdAgents">
-      <implementation className="ChayanovHouseholdAgent"/>
     </agents>
     <projections xsi:type="score:SContinuousSpace" label="Person Space" ID="personSpace" pluralLabel="Person Spaces" borderRule="STRICT"/>
     <projections xsi:type="score:SNetwork" label="Multisited Household Network" ID="multisitedHouseholdNetwork" pluralLabel="Multisited Household Networks" directed="true"/>

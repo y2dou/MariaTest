@@ -31,6 +31,8 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected WeightedSelector<Integer> familySizeSelector;
 	protected WeightedSelector<DemographicWeightedSelector> demographicSelector;
 	protected WeightedSelector<Range<Integer>> educationSelector;
+	protected WeightedSelector<Range<Integer>> capitalSizeSelector; 
+	//Feb 04,2015, Yue,to change the initialized capital
 	
 	// private FastTable<HouseholdReport> householdReports = new FastTable<HouseholdReport>();
 	protected FastTable<HouseholdAgent> households;
@@ -47,6 +49,8 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected double percentForwardOptimalHouseholds;
 	protected double percentFullForwardOptimalHouseholds;
 	protected double percentChayanovHouseholds;
+	protected double percentMinLabourHouseholds;
+	protected double percentSubsistenceHouseholds;
 	//added by Yue,Dec 5, 2014
 	
 	protected float pension;
