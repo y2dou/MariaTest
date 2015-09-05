@@ -50,8 +50,8 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		
 		GridValueLayer tenureField = (GridValueLayer) context.getValueLayer("Land Holder Field");
 		
-		takePossession(tenureField, landscapeGrid, RandomHelper.getDistribution("hectares").nextDouble(), environmentalContext.getCellsize(), coordinates);
-		//takePossession(tenureField, landscapeGrid, 2, environmentalContext.getCellsize(), coordinates);
+	//	takePossession(tenureField, landscapeGrid, RandomHelper.getDistribution("hectares").nextDouble(), environmentalContext.getCellsize(), coordinates);
+		takePossession(tenureField, landscapeGrid, 0.5d, environmentalContext.getCellsize(), coordinates);
 	}
 	
 	protected void processMessages() {

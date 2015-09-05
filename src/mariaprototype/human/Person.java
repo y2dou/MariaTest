@@ -286,8 +286,14 @@ public class Person extends SimpleAgent {
 		    	labour =1;
 		    	break;
 		    case 10: case 11: case 12: 
-		    	labour =(double)60.0/age;
-		    	break;
+		    	if(this.getPension()>0)
+		    	{labour =0;
+		  //  	System.out.println("L291 Person lazy");
+		    	break;}
+		    	else
+		    	{labour =(double)60.0/age;
+		    //	System.out.println("L291 Person not lazy");
+		    	break;}
 		}
 			
 		}
@@ -348,15 +354,15 @@ public class Person extends SimpleAgent {
 					    else { subsistenceUnit=r.nextGaussian()*3+20;}
 				     }
 			      }*/
-		   if (age<7){subsistenceUnit=r.nextGaussian()*2+20;}
-			//   if (age<7){subsistenceUnit=10;}
+		  // if (age<7){subsistenceUnit=r.nextGaussian()*2+20;}
+			   if (age<7){subsistenceUnit=r.nextGaussian()*2+10;}
 				else {
-					if (age<18) { subsistenceUnit=r.nextGaussian()*3+30;	}
-			//		if (age<18) { subsistenceUnit=20;	}
-					else { 	if (age<50) {subsistenceUnit=r.nextGaussian()*4+40;	}
-			//		else { 	if (age<50) {subsistenceUnit=30;	}
-			//		else { subsistenceUnit=20;}
-						    else { subsistenceUnit=r.nextGaussian()*3+30;}
+			//		if (age<18) { subsistenceUnit=r.nextGaussian()*3+30;	}
+					if (age<18) { subsistenceUnit=r.nextGaussian()*2+20;	}
+			//		else { 	if (age<50) {subsistenceUnit=r.nextGaussian()*4+40;	}
+					else { 	if (age<50) {subsistenceUnit=r.nextGaussian()*2+30;	}
+					else { subsistenceUnit=r.nextGaussian()*2+20;}
+			//			    else { subsistenceUnit=r.nextGaussian()*3+30;}
 					     }
 				      }
 			
@@ -369,15 +375,15 @@ public class Person extends SimpleAgent {
 		}
 		public void setSubAcaiUnit(int age) {
 			Random r= new Random();
-			   if (age<7){subAcaiUnit=r.nextGaussian()*2+200;}
+			   if (age<7){subAcaiUnit=r.nextGaussian()*20+1000;}
 				//   if (age<7){subsistenceUnit=10;}
 					else {
-						if (age<18) { subAcaiUnit=r.nextGaussian()*3+300;	}
+						if (age<18) { subAcaiUnit=r.nextGaussian()*30+2000;	}
 				//		if (age<18) { subsistenceUnit=20;	}
-						else { 	if (age<50) {subAcaiUnit=r.nextGaussian()*4+400;	}
+						else { 	if (age<50) {subAcaiUnit=r.nextGaussian()*40+3000;	}
 				//		else { 	if (age<50) {subsistenceUnit=30;	}
 				//		else { subsistenceUnit=20;}
-							    else { subAcaiUnit=r.nextGaussian()*3+300;}
+							    else { subAcaiUnit=r.nextGaussian()*30+2500;}
 						     }
 					      }
 				
@@ -389,15 +395,15 @@ public class Person extends SimpleAgent {
 		public void setSubManiocUnit(int age) {
 			
 			Random r= new Random();
-			   if (age<7){subManiocUnit=r.nextGaussian()*2+200;}
+			   if (age<7){subManiocUnit=r.nextGaussian()*2+400;}
 				//   if (age<7){subsistenceUnit=10;}
 					else {
-						if (age<18) { subManiocUnit=r.nextGaussian()*30+300;	}
+						if (age<18) { subManiocUnit=r.nextGaussian()*30+500;	}
 				//		if (age<18) { subsistenceUnit=20;	}
-						else { 	if (age<50) {subManiocUnit=r.nextGaussian()*40+400;	}
+						else { 	if (age<50) {subManiocUnit=r.nextGaussian()*40+600;	}
 				//		else { 	if (age<50) {subsistenceUnit=30;	}
 				//		else { subsistenceUnit=20;}
-							    else { subManiocUnit=r.nextGaussian()*30+200;}
+							    else { subManiocUnit=r.nextGaussian()*30+500;}
 						     }
 					      }
 				

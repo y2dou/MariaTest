@@ -1,5 +1,7 @@
 package mariaprototype.environmental;
 
+import java.awt.Color;
+
 import mariaprototype.MariaPriorities;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -9,6 +11,7 @@ import repast.simphony.valueLayer.GridValueLayer;
 public class WaterCell extends LandscapeCell {
 	private double shrimp = 0;			// shrimp in the water
 	private double shrimpEff = 0;		// % harvest yield of population: can be modified by shrimping farms
+	private Color color;
 	
 	public WaterCell(Context<SpatialAgent> context, Grid<SpatialAgent> grid, int x, int y, double elevation) {
 		super(context, grid, x, y);
@@ -63,5 +66,11 @@ public class WaterCell extends LandscapeCell {
 		shrimp -= harvest;
 		return harvest;
 	}
-
+	private void WaterCellColor (Color color) {
+		this.color = color;
+	}
+	
+	public Color getColor() {
+		return color;
+	}
 }

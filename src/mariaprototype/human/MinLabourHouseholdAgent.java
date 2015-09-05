@@ -218,8 +218,12 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 		// order land uses by some goodness heuristic? (Chebyshev ordering done elsewhere)
 		for (MyLandCell c : feasibleAllocations.getToPossiblyDevelop()) {
 			c.setToDevelop(true);
-			feasibleAllocations.getToIntensifyAcai().add(c);
-			feasibleAllocations.getToManiocGarden().add(c);
+		//	feasibleAllocations.getToIntensifyAcai().add(c);
+		//	feasibleAllocations.getToManiocGarden().add(c);
+			if (c.getDistanceToWater() <= 40) {
+				feasibleAllocations.getToIntensifyAcai().add(c);}
+				if (c.getDistanceToWater() >= 30 ){
+				feasibleAllocations.getToManiocGarden().add(c);}
 		}
 	
 		// TODO: take over unmanaged property, if projected labour and capital allow
@@ -321,35 +325,7 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 				lp.setAddRowmode(true);
 			}
 			
-			if (retVal == 0) {
-				// labour requirements
-				j = 0;
 	
-				colno[j] = 1;
-				row[j++] = harvestAcaiLabour * labourMultiplier;
-	
-				colno[j] = 2;
-				row[j++] = harvestAcaiLabour * labourMultiplier;
-				
-				colno[j] = 3;
-				row[j++] = harvestManiocLabour * labourMultiplier;
-				
-				colno[j] = 4;
-				row[j++] = harvestTimberLabour * labourMultiplier;
-				
-				Iterator<NetworkedUrbanAgent> linkedIter = recallSolutions.iterator();
-				while (linkedIter.hasNext()) {
-					Person p = linkedIter.next().getPerson();
-					colno[j] = j + 1;
-					row[j++] = p.getLabour();
-				}
-	
-				/* add the row to lpsolve */
-				lp.addConstraintex(j, row, colno, LpSolve.LE, labour);
-				//set as objective
-		//		lp.setObjFnex(j, row, colno);
-		//		System.out.println("L377="+labour);
-			}
 
 			
 			if (retVal == 0) {
@@ -366,10 +342,10 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 				}
 			}
 			
-			// add objective function
+			// add monety function
 			if (retVal == 0) {
+				
 				lp.setAddRowmode(false);
-	
 				/* set the objective function (143 x + 60 y) */
 				j = 0;
 	
@@ -434,8 +410,40 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 			}
 			
 			if (retVal == 0) {
+				// labour requirements
+			//	lp.setAddRowmode(false);
+				
+				j = 0;
+	
+				colno[j] = 1;
+				row[j++] = harvestAcaiLabour * labourMultiplier;
+	
+				colno[j] = 2;
+				row[j++] = harvestAcaiLabour * labourMultiplier;
+				
+				colno[j] = 3;
+				row[j++] = harvestManiocLabour * labourMultiplier;
+				
+				colno[j] = 4;
+				row[j++] = harvestTimberLabour * labourMultiplier;
+				
+				Iterator<NetworkedUrbanAgent> linkedIter = recallSolutions.iterator();
+				while (linkedIter.hasNext()) {
+					Person p = linkedIter.next().getPerson();
+					colno[j] = j + 1;
+					row[j++] = p.getLabour();
+				}
+	
+				/* add the row to lpsolve */
+			lp.addConstraintex(j, row, colno, LpSolve.LE, labour);
+				//set as objective
+			//	lp.setObjFnex(j, row, colno);
+		//		System.out.println("L377="+labour);
+			}
+			
+			if (retVal == 0) {
 				lp.setMaxim();
-	       //     lp.setMinim();
+	        //    lp.setMinim();
 				// lp.writeLp("harvest" + getID() + ".lp");
 				
 				lp.setVerbose(LpSolve.IMPORTANT);
@@ -596,39 +604,7 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 			//	lp.addConstraintex(j, row, colno, LpSolve.LE, capital-this.getSubsistenceRequirements());
 			}
 	
-			if (retVal == 0) {
-				// labour requirements
-				j = 0;
-	
-				colno[j] = 1;
-				row[j++] = acaiLabour * labourMultiplier;
-	
-				colno[j] = 2;
-				row[j++] = maniocLabour * labourMultiplier;
-				
-				colno[j] = 3;
-				row[j++] = maintainAcaiLabour * labourMultiplier;
-				
-				colno[j] = 4;
-				row[j++] = maintainManiocLabour * labourMultiplier;
-				
-				Iterator<Entry<Person, JobOffer>> iter = employableSolutions.iterator();
-				while (iter.hasNext()) {
-					Entry<Person, JobOffer> e = iter.next();
-					colno[j] = j + 1;
-					row[j++] = e.getKey().getLabour();
-				}
-				
-				Iterator<NetworkedUrbanAgent> linkedIter = recallSolutions.iterator();
-				while (linkedIter.hasNext()) {
-					Person p = linkedIter.next().getPerson();
-					colno[j] = j + 1;
-					row[j++] = p.getLabour();
-				}
-				//lp.setObjFnex(j, row, colno);
-		//		lp.addConstraintex(j, row, colno, LpSolve.LE, labour);	
-				lp.setObjFnex(j, row, colno);
-			}
+			
 	
 			if (retVal == 0) {
 				// land requirements
@@ -663,26 +639,9 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 				/* add the row to lpsolve */
 				lp.addConstraintex(j, row, colno, LpSolve.LE, feasibleAllocations.getToPossiblyDevelop().size());
 			}
-	
-			if (retVal == 0) {
-				// set up upper bounds on optimizing variables
-		
-				lp.setBounds(1, 0, feasibleAllocations.getToIntensifyAcai().size());
-				lp.setBounds(2, 0, feasibleAllocations.getToManiocGarden().size());
-				lp.setBounds(3, 0, feasibleAllocations.getToMaintainAcai().size());
-				lp.setBounds(4, 0, feasibleAllocations.getToMaintainManiocGarden().size());
-				
-				// set upper bounds on binary variables
-				for (int i = nResourceCols + 1; i <= ncols; i++) {
-					lp.setBounds(i, 0, 1);
-				}
-			}
 			
-			//Yue March 9, 2015, produce the basic subsistence requirement--acai;
-			 
-			// add objective function
 			if (retVal == 0) {
-				lp.setAddRowmode(false); /*
+				/*		lp.setAddRowmode(false); 
 										 * rowmode should be turned off again when
 										 * done building the model
 										 */
@@ -700,7 +659,7 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 				
 				// maintenance
 				colno[j] = 3; /* third column */
-				row[j++] = 10000d * getExpectedPrice(LandUse.ACAI) - maintainAcaiCost;
+				row[j++] = 15000d * getExpectedPrice(LandUse.ACAI) - maintainAcaiCost;
 				
 				colno[j] = 4; /* fourth column */
 				//row[j++] = 5000d * getExpectedPrice(LandUse.MANIOCGARDEN) - maintainManiocCost;
@@ -729,6 +688,62 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 				lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubsistenceRequirements()-this.pension);
 				
 			}
+	
+			if (retVal == 0) {
+				// set up upper bounds on optimizing variables
+		
+				lp.setBounds(1, 0, feasibleAllocations.getToIntensifyAcai().size());
+				lp.setBounds(2, 0, feasibleAllocations.getToManiocGarden().size());
+				lp.setBounds(3, 0, feasibleAllocations.getToMaintainAcai().size());
+				lp.setBounds(4, 0, feasibleAllocations.getToMaintainManiocGarden().size());
+				
+				// set upper bounds on binary variables
+				for (int i = nResourceCols + 1; i <= ncols; i++) {
+					lp.setBounds(i, 0, 1);
+				}
+			}
+			
+			//Yue March 9, 2015, produce the basic subsistence requirement--acai;
+			 
+			// add objective function
+		
+			if (retVal == 0) {
+				// labour requirements
+				
+				lp.setAddRowmode(false); 
+				
+				j = 0;
+	
+				colno[j] = 1;
+				row[j++] = acaiLabour * labourMultiplier;
+	
+				colno[j] = 2;
+				row[j++] = maniocLabour * labourMultiplier;
+				
+				colno[j] = 3;
+				row[j++] = maintainAcaiLabour * labourMultiplier;
+				
+				colno[j] = 4;
+				row[j++] = maintainManiocLabour * labourMultiplier;
+				
+				Iterator<Entry<Person, JobOffer>> iter = employableSolutions.iterator();
+				while (iter.hasNext()) {
+					Entry<Person, JobOffer> e = iter.next();
+					colno[j] = j + 1;
+					row[j++] = e.getKey().getLabour();
+				}
+				
+				Iterator<NetworkedUrbanAgent> linkedIter = recallSolutions.iterator();
+				while (linkedIter.hasNext()) {
+					Person p = linkedIter.next().getPerson();
+					colno[j] = j + 1;
+					row[j++] = p.getLabour();
+				}
+				//lp.setObjFnex(j, row, colno);
+		//		lp.addConstraintex(j, row, colno, LpSolve.LE, labour);	
+				lp.setObjFnex(j, row, colno);
+			}
+			
 			
 			if (retVal == 0) {
 			//	lp.setMaxim();

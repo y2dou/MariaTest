@@ -100,6 +100,7 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 			File landUseFile = new File((String) RunState.getInstance().getFromRegistry("path") + "/landUse" + tick + ".png");
 			
 			ImageUtility.createLandUsePNG(households, width, height, landUseFile);
+			
 		}
 	}
 	

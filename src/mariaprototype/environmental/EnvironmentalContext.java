@@ -12,6 +12,7 @@ import repast.simphony.context.DefaultContext;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.parameter.Parameters;
+import repast.simphony.space.grid.Grid;
 import repast.simphony.valueLayer.GridValueLayer;
 
 public class EnvironmentalContext extends DefaultContext<SpatialAgent> {
@@ -89,4 +90,5 @@ public class EnvironmentalContext extends DefaultContext<SpatialAgent> {
 	public double getCellsize() {
 		return cellsize;
 	}
+
 }

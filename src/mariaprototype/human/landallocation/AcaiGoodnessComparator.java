@@ -19,7 +19,9 @@ public class AcaiGoodnessComparator implements Comparator<MyLandCell> {
 	}
 	
 	private double getWeight(MyLandCell c) {
-		return -c.getDistanceFromHouse() + c.getNeighbourLandUseCounts(LandUse.ACAI) * 100000000000d;
+	//	System.out.println("I'm comparing Acai plots");
+		return -c.getDistanceFromHouse() - c.getDistanceToWater() +
+		  c.getNeighbourLandUseCounts(LandUse.ACAI) * 100000000000d;
 		// return c.getNeighbourLandUseCounts(LandUse.ACAI) * 100000;
 	}
 }

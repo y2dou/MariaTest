@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
+import mariaprototype.ImageUtility;
 import mariaprototype.MariaPriorities;
 import mariaprototype.Range;
 import repast.simphony.context.Context;
@@ -127,7 +128,7 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 								new repast.simphony.space.grid.StrictBorders(),
 								new SimpleGridAdder<SpatialAgent>(), false, width, height));
 		context.addProjection(landscapeGrid);
-
+       
 		/*
 		GridValueLayer slopeField = createField(context, "Slope Field");
 		for (int i = 1; i < width - 1; i++) {
@@ -162,8 +163,11 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 				} else {
 					new WaterCell(context, landscapeGrid, i, j, elevation);
 				}
+				
 			}
 		}
+		
+		
 
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 		ScheduleParameters params;
@@ -186,6 +190,8 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 		
 		RandomHelper.registerDistribution("acaiYield", RandomHelper.createUniform(1800d, 3600d));
 		RandomHelper.registerDistribution("maniocYield", RandomHelper.createUniform(1800d, 3600d));
+	//	RandomHelper.registerDistribution("maniocYield", RandomHelper.createUniform(3600d, 4500d)); 
+		//Yue, Sept 3, 2015, i want to increase manioc yield;
 	}
 	
 	private GridValueLayer createField(EnvironmentalContext context, String fieldName) {

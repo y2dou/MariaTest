@@ -43,6 +43,7 @@ public class MyLandCell extends SimpleAgent {
 	private boolean toDevelop = false;
 	
 	private double distanceFromHouse;
+	private double distanceToWater;
 	
 	public MyLandCell(LandCell c, HouseholdAgent h) {
 		this.cell = c;
@@ -65,6 +66,7 @@ public class MyLandCell extends SimpleAgent {
 		}
 		
 		distanceFromHouse = h.getLocation().getDistanceTo(c.getX(), c.getY());
+		distanceToWater = c.getDistanceToWater();
 	}
 	
 	public void maintain() {
@@ -79,6 +81,10 @@ public class MyLandCell extends SimpleAgent {
 	
 	public double getDistanceFromHouse() {
 		return distanceFromHouse;
+	}
+	
+	public double getDistanceToWater () {
+		return distanceToWater;
 	}
 	
 	public LandUse getLandUse() {

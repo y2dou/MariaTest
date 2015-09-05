@@ -19,6 +19,8 @@ public class LandCell extends LandscapeCell {
 	 * Health and age are set by the transition() step.
 	 * 
 	 */
+	// I'm going to add a distance decay function for growing acai and manioc in upland and floodplain
+	//to show the difference.
 	
 	// upland land uses
 	//		capoeira (upland), fallowed land
@@ -62,12 +64,16 @@ public class LandCell extends LandscapeCell {
 	private boolean isMaintained = false;
 	private double yearDeforested = -9999;
 	
+	private boolean upland = false;
+	private double disToWater = 0;
+	//Yue, sept 5, 2015
 	public LandCell(Context<SpatialAgent> context, Grid<SpatialAgent> grid, int x, int y) {
 		this(context, grid, x, y, context.getValueLayer("Elevation Field").get(x, y), context.getValueLayer("Distance to Water").get(x, y));
 	}
 	
 	public LandCell(Context<SpatialAgent> context, Grid<SpatialAgent> grid, int x, int y, double elevation, double distanceToWater) {
-		super(context, grid, x, y, elevation);
+		super(context, grid, x, y, elevation, distanceToWater);
+		
 		((EnvironmentalContext) context).landCells.add(this);
 		
 		// calculate initial land uses
@@ -75,6 +81,7 @@ public class LandCell extends LandscapeCell {
 		forestAge = 100;
 		
 		lastLandUse = LandUse.FOREST;
+		disToWater = this.getDistanceToWater();
 	}
 
 	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.CLIMATOLOGY)
@@ -113,7 +120,8 @@ public class LandCell extends LandscapeCell {
 		// fertility -= maniocgardenDensity * RandomHelper.nextDoubleFromTo(0.4, 0.5);
 		fertility -= maniocgardenDensity * RandomHelper.getDistribution("maniocFertilityDiscount").nextDouble();
 		
-		// capoeira increases fertility
+		// capoeira increases fertility 
+		//why? Yue, Sept 4, 2015. if capoeira is upland, then it can only increase manioc's fertility not acai
 		// regenerate fertility: fallow after cattle half as quickly as for other land uses
 		if (lastLandUse.equals(LandUse.FIELDS)) {
 			fertility += (ssDensity + forestDensity) / 10;
@@ -149,7 +157,8 @@ public class LandCell extends LandscapeCell {
 			}
 			
 			if (maniocgardenDensity > 0.5) {
-				maniocgardenDensity -= 0.5;
+			//	maniocgardenDensity -= 0.5; Yue, Sept 3, 2015, I want to increase manioc's yield
+				maniocgardenDensity -= 0.4;
 				capoeiraDensity += 0.5;
 				lastLandUse = LandUse.MANIOCGARDEN;
 			} else {
@@ -176,10 +185,28 @@ public class LandCell extends LandscapeCell {
 	//	intenseAcaiYield = acaiDensity * acaiHealth * 14000d;
 		intenseAcaiYield = acaiDensity * acaiHealth * 10000d;
 		//try this Feb 05, 2015 Yue
-	//	if(intenseAcaiYield>0) System.out.println("Line 173 "+intenseAcaiYield);
+	//	if(intenseAcaiYield>0) System.out.println("Line 179 "+intenseAcaiYield);
+	//	gardenYield = maniocgardenDensity * maniocgardenHealth * RandomHelper.getDistribution("maniocYield").nextDouble();
+		
 		gardenYield = maniocgardenDensity * maniocgardenHealth * RandomHelper.getDistribution("maniocYield").nextDouble();
-	//	if (gardenYield>0) System.out.println("L174 "+"manioc yield "+gardenYield);
+	//		if (gardenYield>0) System.out.println("L174 "+"this.getDistanceToWater() "+this.getDistanceToWater());
+		
 		timberYield = forestDensity * 5000d;
+		
+		//below is the distance decay
+		//for acai: f(d)= e^(-(d/500)^2)
+		if (acaiYield > 0)
+		{
+    //    System.out.println("Sept 5 AcaiYield="+acaiYield);
+		acaiYield = acaiYield * 1.2 * Math.exp(-Math.pow(disToWater/50, 2));
+	//	System.out.println("Sept 5 AcaiCell Distance="+disToWater);
+		} 
+		
+		if (gardenYield > 0) {
+	//		System.out.println("ManiocYield="+gardenYield);
+			gardenYield = gardenYield * Math.pow(disToWater/20, 0.5);
+	//		System.out.println("Sept 5 ManiocYield Distance="+disToWater);
+		}
 	}
 	
 	private void age() {
@@ -338,4 +365,15 @@ public class LandCell extends LandscapeCell {
 	public double getYearDeforested() {
 		return yearDeforested;
 	}
+	
+/*	public boolean isUpland() {
+		return upland;
+	}
+
+	public void setUpland( ) {
+		if (disToWater>=200)
+		this.upland = true;
+		else 
+			this.upland = false;
+	}*/
 }

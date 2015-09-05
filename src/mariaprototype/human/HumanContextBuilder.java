@@ -98,12 +98,16 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.percentMinLabourHouseholds = (Double) p.getValue("percentMinLabourHouseholds");
 		context.percentSubsistenceHouseholds = (Double) p.getValue("percentSubsistenceHouseholds");
 		
+		
 		context.conn = (Connection) RunState.getInstance().getFromRegistry("connection");
 		
 		int demographicRandomSeed = (Integer) p.getValue("demographicRandomSeed");
 		int familySizeRandomSeed = (Integer) p.getValue("familySizeRandomSeed");
-		int plotSizeRandomSeed = (Integer) p.getValue("plotSizeRandomSeed");
+	//	int plotSizeRandomSeed = (Integer) p.getValue("plotSizeRandomSeed");
 		int capitalSizeRandomSeed= (Integer) p.getValue("capitalSizeRandomSeed");
+
+		
+	//	double capitalSizeRandomSeed = (Double) p.getValue("capitalSizeRandomSeed");
 		int educationRandomSeed = (Integer) p.getValue("educationRandomSeed");
 		//15 is the highest education year that households have; 
 		
@@ -212,14 +216,15 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.add(new DynamicMarketAgent(priceLists, priceMultipliers));
 		
 		// load distributions
-		RandomHelper.registerGenerator("plotSizeSelector", plotSizeRandomSeed);
+	/*	RandomHelper.registerGenerator("plotSizeSelector", plotSizeRandomSeed);
 		context.plotSizeSelector = new WeightedSelector<Range<Integer>>("plotSizeSelector"); // plot size distribution, in cells
 		context.plotSizeSelector.add(new Range<Integer>(0, 200), 76);
 		context.plotSizeSelector.add(new Range<Integer>(201, 400), 26);
 		context.plotSizeSelector.add(new Range<Integer>(401, 600), 9);
 		context.plotSizeSelector.add(new Range<Integer>(601, 800), 4);
 		context.plotSizeSelector.add(new Range<Integer>(801, 1000), 1);
-		context.plotSizeSelector.add(new Range<Integer>(1001, 1200), 2);
+		context.plotSizeSelector.add(new Range<Integer>(1001, 1200), 2); */
+		//Yue Sept3, try to solve forest distribution
 		
 	//	RandomHelper.registerGenerator("capitalSizeSelector", RandomHelper.getGenerator("capitalWeightedSelector").nextInt());
 		RandomHelper.registerGenerator("capitalSizeSelector", capitalSizeRandomSeed);
@@ -349,8 +354,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		//		RandomHelper.createUniform(-0.00888, 0.00888), RandomHelper.createUniform(-0.006705, 0.006705), 1));
 		
 		// add households (must call after all other random distributions have been created)
-		addHouseholdsAtRandom(context, numHouseholds, numPersons, projectionFile, multisitedNetwork, personGeography, personSpace);
-     //   addHouseholdsHomogeneous(context, numHouseholds, numPersons, projectionFile, multisitedNetwork, personGeography, personSpace);
+	//	addHouseholdsAtRandom(context, numHouseholds, numPersons, projectionFile, multisitedNetwork, personGeography, personSpace);
+        addHouseholdsHomogeneous(context, numHouseholds, numPersons, projectionFile, multisitedNetwork, personGeography, personSpace);
 		// schedule reports
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 		ScheduleParameters params = ScheduleParameters.createRepeating(1, 1, MariaPriorities.REPORT);
@@ -371,11 +376,13 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		RandomHelper.registerDistribution("isFemale", RandomHelper.createUniform(0, 1));
 		RandomHelper.registerDistribution("age", RandomHelper.createUniform(4, 54));
 		
-		RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(0.5, 10));
+	//	RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(0.5, 10));
 	//	RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(5,6));
+	//	RandomHelper.registerDistribution("hectares", 5);
 		//this is the control for plot size;
 		//I'll change it to a homogeneous value for now.
 		//Yue, feb 19, 2015
+		//and also I need to change the setting in SimpleHouseholdAgent
 		RandomHelper.registerDistribution("offerValue", RandomHelper.createUniform(0, 1));
 	}
 	public static int randInt(int min, int max){
@@ -524,7 +531,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				}
 			}
 			//until here, it's all the same;
-			h.setCapital(10000d); // set hhd capital homogeneous, all 5000;
+			h.setCapital(5000d); // set hhd capital homogeneous, all 5000;
 			
 			// initialize household
 			h.init(context, e.getValue().x, e.getValue().y);

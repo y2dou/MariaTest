@@ -54,8 +54,8 @@
   <attributes label="pension" ID="pension" pluralLabel="pensions" sType="FLOAT" defaultValue="0.0" units=""/>
   <attributes label="alpha" ID="alpha" pluralLabel="alphas" description="alpha" sType="FLOAT" defaultValue="0.5" units=""/>
   <attributes label="bf" ID="bf" pluralLabel="bfs" sType="FLOAT" defaultValue="0" units=""/>
-  <attributes label="capitalSizeRandomSeed" ID="capitalSizeRandomSeed" pluralLabel="capitalSizeRandomSeeds" sType="INTEGER" defaultValue="1"/>
   <attributes label="educationRandomSeed" ID="educationRandomSeed" pluralLabel="educationRandomSeeds" sType="INTEGER" defaultValue="1"/>
+  <attributes label="capitalSizeRandomSeed" ID="capitalSizeRandomSeed" pluralLabel="capitalSizeRandomSeeds" description="" sType="INTEGER" defaultValue="1" units=""/>
   <implementation package="mariaprototype" className="" basePath="../MariaPrototype" mode="AUTO" binDir="bin,lib/windows,lib"/>
   <agents label="SimpleAgent" ID="simpleAgent" pluralLabel="SimpleAgents">
     <implementation className="SimpleAgent"/>

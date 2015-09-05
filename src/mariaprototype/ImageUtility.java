@@ -9,10 +9,14 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
+import mariaprototype.environmental.EnvironmentalContext;
 import mariaprototype.environmental.LandscapeCell;
+import mariaprototype.environmental.SpatialAgent;
+import mariaprototype.environmental.WaterCell;
 import mariaprototype.human.HouseholdAgent;
 import mariaprototype.human.MyLandCell;
 import repast.simphony.space.Dimensions;
+import repast.simphony.space.grid.Grid;
 import repast.simphony.valueLayer.GridValueLayer;
 /*This class controls the output file
  * 
@@ -55,14 +59,17 @@ public class ImageUtility {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, width, height);
 		
+	//	Iterator<LandscapeCell> waterCellIter = agents.;		
 		Iterator<HouseholdAgent> iter = agents.iterator();
 		while (iter.hasNext()) {
 			HouseholdAgent h = iter.next();
 			
 			Iterator<MyLandCell> cellIter = h.getTenure().values().iterator();
+			
 			while (cellIter.hasNext()) {
 				MyLandCell c = cellIter.next();
 				g.setColor(c.getLandUse().getColor());
+				
 				//this paints the output file based on land use types
 			//	g.setColor(Color.black);
 				g.drawRect(c.getCell().getX(), height - c.getCell().getY() - 1, 1, 1);
@@ -78,7 +85,13 @@ public class ImageUtility {
 		g.dispose();
 	}
 	
-	public static void createLandCoverPNGs(Iterable<LandscapeCell> cells, int width, int height, File file) {
+	public static void createLandCoverPNGs(EnvironmentalContext c, int width, int height) {
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = img.createGraphics();
+
+		
 		
 	}
+	
+	
 }
