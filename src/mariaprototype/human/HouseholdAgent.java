@@ -21,8 +21,10 @@ import mariaprototype.Point;
 import mariaprototype.SimpleAgent;
 import mariaprototype.environmental.House;
 import mariaprototype.environmental.LandCell;
+import mariaprototype.environmental.LandUse;
 import mariaprototype.environmental.LandscapeCell;
 import mariaprototype.human.messaging.EnvelopePool;
+import mariaprototype.human.messaging.MarketPrices;
 import mariaprototype.human.messaging.MessageEnvelope;
 import mariaprototype.human.messaging.NetworkAgent;
 import mariaprototype.utility.XYGenerator;
@@ -84,9 +86,17 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 
 	protected double capital;
 	protected double labour;
-	protected double subsistenceRequirements;
-	protected double subAcaiRequirement;
-	protected double subManiocRequirement;
+	protected double subsistenceRequirement;
+	public double getSubsistenceRequirement() {
+		return subsistenceRequirement;
+	}
+
+	public void setSubsistenceRequirement(double subsistenceRequirement) {
+		this.subsistenceRequirement = subsistenceRequirement;
+	}
+
+	protected double subsistenceAcaiRequirement;
+	protected double subsistenceManiocRequirement;
 	protected double pension;
 	// add cash transfer to hhd agent, June 17, 2014;
 	protected double bf;
@@ -600,8 +610,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 	public final double getCapital() {
 		// this.setCashTran();
 		// System.out.println("setCashTran="+this.cashTran);
-		capital = capital + this.getPension() + this.getBf() + this.wage
-				- this.getSubsistenceRequirements();
+		capital = capital + this.getPension() + this.getBf() + this.wage ;
+//				- this.getSubsistenceRequirements();
 		// this.getPension()+this.getBf()-this.getSubsistenceRequirements();
 		// System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+" hhdID "+this.getID()+" getWage="+this.getWage());
 		return capital;
@@ -779,7 +789,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 
 	}
 
-	public final double getSubsistenceRequirements() {
+/*	public final double getSubsistenceRequirements() {
 		// Feb 04, 2015, Yue
 		String className = this.getClass().getSimpleName();
 
@@ -799,9 +809,10 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 				Person p = recallIter.next().getPerson();
 				p.setSubsistenceUnit(p.getAge());
 				subsistenceRequirements += p.getSubsistenceUnit();
-			}
+			} 
+		
 		}
-
+         
 		// System.out.println("class name: " + className);
 	//	if (className.equals("SubsistenceHouseholdAgent")&&this.maniocYield>0) {
 		if (className.equals("SubsistenceHouseholdAgent")) {	
@@ -811,14 +822,21 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 			return subsistenceRequirements;
 		}
 
-	}
+		//second version, Yue, Sept 6, 2015
+		//Idea is that hhd except subsistence households have to pay 
+		//price*SubsistenceAmount 
+		String className = this.getClass().getSimpleName();
+		double subsistenceRequirements = 0;
+		
+//		subsistenceRequirements = this.getSubAcaiRequirement()* marketPrices.getPrice(acai);
+	} */
 
-	public double getSubAcaiRequirement() {
-		double subAcaiRequirement = 0;
+	public double getSubsistenceAcaiRequirement() {
+		double subsistenceAcaiRequirement = 0;
 		for (int i = 0; i < this.familyMembers.size(); i++) {
 			Person p = this.familyMembers.get(i);
-			p.setSubAcaiUnit(p.getAge());
-			subAcaiRequirement += p.getSubAcaiUnit();
+			p.setSubsistenceAcaiUnit(p.getAge());
+			subsistenceAcaiRequirement += p.getSubsistenceAcaiUnit();
 		}
 
 		if (this.getLinkedHouseholds().size() > 0) {
@@ -828,19 +846,19 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 
 			while (recallIter.hasNext()) {
 				Person p = recallIter.next().getPerson();
-				p.setSubAcaiUnit(p.getAge());
-				subAcaiRequirement += p.getSubAcaiUnit();
+				p.setSubsistenceAcaiUnit(p.getAge());
+				subsistenceAcaiRequirement += p.getSubsistenceAcaiUnit();
 			}
 		}
-		return subAcaiRequirement;
+		return subsistenceAcaiRequirement;
 	}
 
-	public double getSubManiocRequirement() {
-		double subManiocRequirement = 0;
+	public double getSubsistenceManiocRequirement() {
+		double subsistenceManiocRequirement = 0;
 		for (int i = 0; i < this.familyMembers.size(); i++) {
 			Person p = this.familyMembers.get(i);
-			p.setSubManiocUnit(p.getAge());
-			subManiocRequirement += p.getSubManiocUnit();
+			p.setSubsistenceManiocUnit(p.getAge());
+			subsistenceManiocRequirement += p.getSubsistenceManiocUnit();
 		}
 
 		if (this.getLinkedHouseholds().size() > 0) {
@@ -850,12 +868,12 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 
 			while (recallIter.hasNext()) {
 				Person p = recallIter.next().getPerson();
-				p.setSubManiocUnit(p.getAge());
-				subManiocRequirement += p.getSubManiocUnit();
+				p.setSubsistenceManiocUnit(p.getAge());
+				subsistenceManiocRequirement += p.getSubsistenceManiocUnit();
 			}
 		}
 		// System.out.println("L761 Manioc Requirement "+subManiocRequirement);
-		return subManiocRequirement;
+		return subsistenceManiocRequirement;
 
 	}
 

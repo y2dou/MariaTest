@@ -1120,6 +1120,13 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				timber -= 1;
 			}
 		}
+		double subsistenceRequirement;
+		subsistenceRequirement = this.getSubsistenceAcaiRequirement()*marketPrices.get(LandUse.ACAI)
+			           + this.getSubsistenceManiocRequirement()*marketPrices.get(LandUse.MANIOCGARDEN);
+		this.setSubsistenceRequirement(subsistenceRequirement);
+	
+		capital -= this.getSubsistenceRequirement();
+		//to deduct subsistence cost;
 	}
 
 	@Override

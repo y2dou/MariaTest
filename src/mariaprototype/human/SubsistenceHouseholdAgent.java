@@ -332,7 +332,7 @@ public class SubsistenceHouseholdAgent extends SimpleHouseholdAgent {
 					.getToHarvestHousegarden().size();
 			// System.out.println("L424 "+gardenYield);
 		}
-		int gardenSub=(int) (this.getSubManiocRequirement() / 3000d);
+		int gardenSub=(int) (this.getSubsistenceManiocRequirement() / 3000d);
 	//	System.out.println("gardenSub = "+gardenSub);
 		double timberYield = 0;
 		if (!feasibleAllocations.getToHarvestTimber().isEmpty()) {
@@ -861,7 +861,7 @@ public class SubsistenceHouseholdAgent extends SimpleHouseholdAgent {
 				// lp.addConstraintex(j, row, colno, LpSolve.GE,
 				// this.getLabour()*0.3);
 				lp.addConstraintex(j, row, colno, LpSolve.GE, this
-						.getSubManiocRequirement() / 3000);
+						.getSubsistenceManiocRequirement() / 3000);
 			}
 
 			 //Yue March 17, 2015, produce the basic subsistence
@@ -1288,7 +1288,21 @@ public class SubsistenceHouseholdAgent extends SimpleHouseholdAgent {
 				timber -= 1;
 			}
 		}
+		if (acaiYield > 0) {
+			acaiYield -= this.getSubsistenceAcaiRequirement();
+		} else {
+			capital -= this.getSubsistenceAcaiRequirement() * getActualPrice (LandUse.ACAI);
+		}
+		if (maniocYield > 0) {
+			maniocYield -= this.getSubsistenceManiocRequirement();
+		} else {
+			capital -= this.getSubsistenceManiocRequirement()* getActualPrice (LandUse.MANIOCGARDEN);
+		}
+		
+		
 	}
+	
+	
 
 	@Override
 	public void retrospect() {

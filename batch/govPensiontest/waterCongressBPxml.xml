@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<sweep runs="5">
+<sweep runs="1">
 
 	<parameter name="demographicRandomSeed" type="constant" constant_type="number" value="11"/>
 	<parameter name="familySizeRandomSeed" type="constant" constant_type="number" value="32"/>
@@ -37,7 +37,7 @@
 	<parameter name="bf" type="list" value_type="double" values="0">
 	
 	<parameter name="capitalSizeRandomSeed" type="list" value_type="int" values="131">
-	<parameter name="educationRandomSeed" type="list" value_type="int" values="72 73 74">
+	<parameter name="educationRandomSeed" type="list" value_type="int" values="72">
 	<parameter name="demographicRandomSeed" type="constant" constant_type="number" value="11">
 	<parameter name="familySizeRandomSeed" type="constant" constant_type="number" value="32">
 	<parameter name="plotSizeRandomSeed" type="constant" constant_type="number" value="50">

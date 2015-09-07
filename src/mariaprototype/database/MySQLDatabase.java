@@ -14,18 +14,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.hsqldb.Types;
 
 import mariaprototype.environmental.LandCell;
+import mariaprototype.environmental.LandUse;
 import mariaprototype.human.HouseholdAgent;
 import mariaprototype.human.MyLandCell;
 import mariaprototype.human.NetworkedUrbanAgent;
 import mariaprototype.human.Person;
 import mariaprototype.human.Policy;
+import mariaprototype.human.messaging.MarketPrices;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.parameter.Parameters;
 
 public class MySQLDatabase extends Database {
 	public static final String DRIVER = "com.mysql.jdbc.Driver";
-
+    public MarketPrices marketPrices;
 	private int connections = 1;
 
 	private BlockingQueue<Connection> connectionPool = new LinkedBlockingQueue<Connection>();
@@ -422,9 +424,9 @@ public class MySQLDatabase extends Database {
 			ps.setDouble(i++, a.getPension());
 			ps.setDouble(i++, a.getBf());
 			ps.setDouble(i++, a.getWage());
-			ps.setDouble(i++, a.getSubsistenceRequirements());
+			ps.setDouble(i++, a.getSubsistenceRequirement());
 			// new add;
-
+			
 			ps.setInt(i++, numAcai);
 			ps.setInt(i++, numManiocGarden);
 			ps.setInt(i++, numFields);

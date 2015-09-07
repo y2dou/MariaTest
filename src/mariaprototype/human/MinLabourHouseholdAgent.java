@@ -524,6 +524,9 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 		int[] colno = new int[ncols];
 		double[] row = new double[ncols];
 		
+		double subsistenceRequirement = this.getSubsistenceAcaiRequirement() * marketPrices.get(LandUse.ACAI) + 
+		                         this.getSubsistenceManiocRequirement() * marketPrices.get(LandUse.MANIOCGARDEN);
+		this.setSubsistenceRequirement(subsistenceRequirement);
 		// need to move sets to ordered lists for consistency
 		List<Entry<Person, JobOffer>> employableSolutions = new LinkedList<Entry<Person, JobOffer>>(); 
 		employableSolutions.addAll(feasibleAllocations.getEmployables().entrySet());
@@ -685,7 +688,7 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 				//set the objective
 			//	lp.setObjFnex(j, row, colno);
 				// add the row to lpsolve 
-				lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubsistenceRequirements()-this.pension);
+				lp.addConstraintex(j, row, colno, LpSolve.GE, subsistenceRequirement-this.pension);
 				
 			}
 	
@@ -1034,6 +1037,7 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 				timber -= 1;
 			}
 		}
+		capital -= subsistenceRequirement; //to deduct subsistence cost;
 	}
 
 

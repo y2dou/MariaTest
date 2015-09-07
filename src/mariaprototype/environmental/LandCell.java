@@ -195,7 +195,7 @@ public class LandCell extends LandscapeCell {
 		
 		//below is the distance decay
 		//for acai: f(d)= e^(-(d/500)^2)
-		if (acaiYield > 0)
+/*		if (acaiYield > 0)
 		{
     //    System.out.println("Sept 5 AcaiYield="+acaiYield);
 		acaiYield = acaiYield * 1.2 * Math.exp(-Math.pow(disToWater/50, 2));
@@ -206,7 +206,7 @@ public class LandCell extends LandscapeCell {
 	//		System.out.println("ManiocYield="+gardenYield);
 			gardenYield = gardenYield * Math.pow(disToWater/20, 0.5);
 	//		System.out.println("Sept 5 ManiocYield Distance="+disToWater);
-		}
+		}*/
 	}
 	
 	private void age() {

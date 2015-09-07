@@ -35,8 +35,8 @@ public class Person extends SimpleAgent {
 	
 
 	private double subsistenceUnit;
-    private double subAcaiUnit;
-    private double subManiocUnit;
+    private double subsistenceAcaiUnit;
+    private double subsistenceManiocUnit;
 
 	//   HashMap<Integer,Double> ageP = new HashMap<Integer,Double>();
     HashMap<Integer,Double> jobP = new HashMap<Integer,Double>();
@@ -370,44 +370,44 @@ public class Person extends SimpleAgent {
 		
 		}
 	 
-		public double getSubAcaiUnit() {
-			return subAcaiUnit;
+		public double getSubsistenceAcaiUnit() {
+			return subsistenceAcaiUnit;
 		}
-		public void setSubAcaiUnit(int age) {
+		public void setSubsistenceAcaiUnit(int age) {
 			Random r= new Random();
-			   if (age<7){subAcaiUnit=r.nextGaussian()*20+1000;}
+			   if (age<7){subsistenceAcaiUnit=r.nextGaussian()*20+1000;}
 				//   if (age<7){subsistenceUnit=10;}
 					else {
-						if (age<18) { subAcaiUnit=r.nextGaussian()*30+2000;	}
+						if (age<18) { subsistenceAcaiUnit=r.nextGaussian()*30+2000;	}
 				//		if (age<18) { subsistenceUnit=20;	}
-						else { 	if (age<50) {subAcaiUnit=r.nextGaussian()*40+3000;	}
+						else { 	if (age<50) {subsistenceAcaiUnit=r.nextGaussian()*40+3000;	}
 				//		else { 	if (age<50) {subsistenceUnit=30;	}
 				//		else { subsistenceUnit=20;}
-							    else { subAcaiUnit=r.nextGaussian()*30+2500;}
+							    else { subsistenceAcaiUnit=r.nextGaussian()*30+2500;}
 						     }
 					      }
 				
-				this.subAcaiUnit = subAcaiUnit;
+				this.subsistenceAcaiUnit = subsistenceAcaiUnit;
 		}
-		public double getSubManiocUnit() {
-			return subManiocUnit;
+		public double getSubsistenceManiocUnit() {
+			return subsistenceManiocUnit;
 		}
-		public void setSubManiocUnit(int age) {
+		public void setSubsistenceManiocUnit(int age) {
 			
 			Random r= new Random();
-			   if (age<7){subManiocUnit=r.nextGaussian()*2+400;}
+			   if (age<7){subsistenceManiocUnit=r.nextGaussian()*2+400;}
 				//   if (age<7){subsistenceUnit=10;}
 					else {
-						if (age<18) { subManiocUnit=r.nextGaussian()*30+500;	}
+						if (age<18) { subsistenceManiocUnit=r.nextGaussian()*30+500;	}
 				//		if (age<18) { subsistenceUnit=20;	}
-						else { 	if (age<50) {subManiocUnit=r.nextGaussian()*40+600;	}
+						else { 	if (age<50) {subsistenceManiocUnit=r.nextGaussian()*40+600;	}
 				//		else { 	if (age<50) {subsistenceUnit=30;	}
 				//		else { subsistenceUnit=20;}
-							    else { subManiocUnit=r.nextGaussian()*30+500;}
+							    else { subsistenceManiocUnit=r.nextGaussian()*30+500;}
 						     }
 					      }
 				
-				this.subManiocUnit = subManiocUnit;
+				this.subsistenceManiocUnit = subsistenceManiocUnit;
 			
 		}
 

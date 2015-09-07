@@ -339,4 +339,6 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		}
 		
 	}
+	
+	
 }
