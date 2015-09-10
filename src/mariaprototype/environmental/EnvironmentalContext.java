@@ -17,7 +17,8 @@ import repast.simphony.valueLayer.GridValueLayer;
 
 public class EnvironmentalContext extends DefaultContext<SpatialAgent> {
 	protected Range<Double> elevationRange;
-	
+	protected Range<Double> distanceToWaterRange;
+	//Yue, Sep 10, 2015
 	private boolean outputImages;
 	
 	protected int width;
@@ -53,7 +54,10 @@ public class EnvironmentalContext extends DefaultContext<SpatialAgent> {
 	public void finalReport() {
 		if (!(Boolean) RunState.getInstance().getFromRegistry("invalidRun")) {
 			if (outputImages)
-				ImageUtility.createPNG((GridValueLayer) getValueLayer("Elevation Field"), elevationRange, new File((String) RunState.getInstance().getFromRegistry("path") + "/elevation.png"));
+			//	ImageUtility.createPNG((GridValueLayer) getValueLayer("Elevation Field"), elevationRange, new File((String) RunState.getInstance().getFromRegistry("path") + "/elevation.png"));
+			ImageUtility.createPNG((GridValueLayer) getValueLayer("Distance to Water"), distanceToWaterRange, new File((String) RunState.getInstance().getFromRegistry("path") + "/distanceToWater.png"));
+	//		System.out.println("Water Layer has been drawn");
+			//ImageUtility.createPNG(G, range, file)
 			
 			Connection conn = (Connection) RunState.getInstance().getFromRegistry("connection");
 			

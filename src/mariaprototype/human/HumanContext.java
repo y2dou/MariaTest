@@ -19,6 +19,7 @@ import repast.simphony.context.DefaultContext;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.space.graph.Network;
+import repast.simphony.valueLayer.GridValueLayer;
 
 public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected int width;
@@ -99,7 +100,8 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 			String tick = String.format("%02d", (int) RunEnvironment.getInstance().getCurrentSchedule().getTickCount());
 			File landUseFile = new File((String) RunState.getInstance().getFromRegistry("path") + "/landUse" + tick + ".png");
 			
-			ImageUtility.createLandUsePNG(households, width, height, landUseFile);
+			ImageUtility.createLandUsePNG(households,(GridValueLayer) this.getEnvironmentalContext().
+					getValueLayer("Distance to Water"), width, height, landUseFile);
 			
 		}
 	}

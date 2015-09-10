@@ -83,18 +83,11 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 	protected HouseholdAgentState lastState;
 
 	protected Point location;
-
+    protected double annualIncome; 
+	//Yue, this is to track annual income, especially to solve subsistence problem.
 	protected double capital;
 	protected double labour;
 	protected double subsistenceRequirement;
-	public double getSubsistenceRequirement() {
-		return subsistenceRequirement;
-	}
-
-	public void setSubsistenceRequirement(double subsistenceRequirement) {
-		this.subsistenceRequirement = subsistenceRequirement;
-	}
-
 	protected double subsistenceAcaiRequirement;
 	protected double subsistenceManiocRequirement;
 	protected double pension;
@@ -1095,5 +1088,26 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		if (id != other.id)
 			return false;
 		return true;
+	}
+	
+	public double getSubsistenceRequirement() {
+		return subsistenceRequirement;
+	}
+
+	public void setSubsistenceRequirement(double subsistenceRequirement) {
+		this.subsistenceRequirement = subsistenceRequirement;
+	}
+	
+    public double getAnnualIncome() {
+		return annualIncome;
+	}
+
+	public void setAnnualIncome(double annualIncome) {
+		this.annualIncome = annualIncome;
+		//the definition of annualIncome is raw monetary income,
+		//for optimal profit and leisure hhd, it has not deduct subsistence
+		//for subsistence hhd, it has deduct crop subsistence 
+		//so to get net income, you should use
+		// annualIncome - subReq
 	}
 }

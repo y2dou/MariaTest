@@ -87,10 +87,12 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 		context.cellsize = cellsize;
 		context.elevationRange = elevationRange;
 		
+		Range<Double> distanceToWaterRange = new Range<Double>(0d, 0d);
 		GridValueLayer isLandField, distanceToWaterField;
 		try {
 			stream = new BufferedInputStream(new FileInputStream("gisdata/paricatuba/land.asc"));
-			isLandField = loadFieldFromStream(context, stream, "is Land");
+		//	isLandField = loadFieldFromStream(context, stream, "is Land");
+			isLandField = loadFieldFromStream(context, stream, "is Land", distanceToWaterRange);
 		} catch (IOException e) {
 			e.printStackTrace();
 			// if there is no land file, set elevation threshold to 0
@@ -109,7 +111,7 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 		
 		try {
 			stream = new BufferedInputStream(new FileInputStream("gisdata/paricatuba/disttowater.asc"));
-			distanceToWaterField = loadFieldFromStream(context, stream, "Distance to Water");
+			distanceToWaterField = loadFieldFromStream(context, stream, "Distance to Water", distanceToWaterRange);
 		} catch (IOException e) {
 			e.printStackTrace();
 			// if there is no distance to water, use a blank field

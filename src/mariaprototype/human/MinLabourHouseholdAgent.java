@@ -1037,6 +1037,14 @@ public class MinLabourHouseholdAgent extends SimpleHouseholdAgent {
 				timber -= 1;
 			}
 		}
+		
+	    double annualIncome;
+	    annualIncome = acaiYield * getActualPrice(LandUse.ACAI) 
+	                   + maniocYield*getActualPrice(LandUse.MANIOCGARDEN)
+	                   + timberYield * getActualPrice(LandUse.FOREST)
+	                   + this.getWage();
+		this.setAnnualIncome(annualIncome);
+
 		capital -= subsistenceRequirement; //to deduct subsistence cost;
 	}
 

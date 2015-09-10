@@ -395,7 +395,7 @@ public class Person extends SimpleAgent {
 		public void setSubsistenceManiocUnit(int age) {
 			
 			Random r= new Random();
-			   if (age<7){subsistenceManiocUnit=r.nextGaussian()*2+400;}
+			/*   if (age<7){subsistenceManiocUnit=r.nextGaussian()*2+400;}
 				//   if (age<7){subsistenceUnit=10;}
 					else {
 						if (age<18) { subsistenceManiocUnit=r.nextGaussian()*30+500;	}
@@ -405,8 +405,18 @@ public class Person extends SimpleAgent {
 				//		else { subsistenceUnit=20;}
 							    else { subsistenceManiocUnit=r.nextGaussian()*30+500;}
 						     }
+					      } */
+			   if (age<7){subsistenceManiocUnit=r.nextGaussian()*2+1000;}
+				//   if (age<7){subsistenceUnit=10;}
+					else {
+						if (age<18) { subsistenceManiocUnit=r.nextGaussian()*30+2000;	}
+				//		if (age<18) { subsistenceUnit=20;	}
+						else { 	if (age<50) {subsistenceManiocUnit=r.nextGaussian()*40+3000;	}
+				//		else { 	if (age<50) {subsistenceUnit=30;	}
+				//		else { subsistenceUnit=20;}
+							    else { subsistenceManiocUnit=r.nextGaussian()*30+2500;}
+						     }
 					      }
-				
 				this.subsistenceManiocUnit = subsistenceManiocUnit;
 			
 		}

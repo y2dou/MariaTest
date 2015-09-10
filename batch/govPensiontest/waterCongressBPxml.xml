@@ -9,7 +9,7 @@
 
 	<parameter name="outputEnabled" type="constant" constant_type="boolean" value="true"/>
 
-	<parameter name="outputImagesAsFiles" type="constant" constant_type="boolean" value="false"/>
+	<parameter name="outputImagesAsFiles" type="constant" constant_type="boolean" value="true"/>
 	<parameter name="outputParametersAsFile" type="constant" constant_type="boolean" value="true"/>
 	<parameter name="outputNetworkCSV" type="constant" constant_type="boolean" value="false"/>
 
@@ -20,8 +20,8 @@
 	<parameter name="originx" type="constant" constant_type="number" value="0.0"/>
 	<parameter name="originy" type="constant" constant_type="number" value="0.0"/>
 	
-	<parameter name="numHouseholds" type="constant" constant_type="number" value="50"/>
-	<parameter name="numPersons" type="constant" constant_type="number" value="400"/>
+	<parameter name="numHouseholds" type="constant" constant_type="number" value="20"/>
+	<parameter name="numPersons" type="constant" constant_type="number" value="160"/>
 
 	<parameter name="acaiMultiplier" type="constant" constant_type="number" value="-1.01" />
 	<parameter name="maniocMultiplier" type="constant" constant_type="number" value="-1.01" />

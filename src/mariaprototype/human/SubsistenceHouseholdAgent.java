@@ -1288,17 +1288,33 @@ public class SubsistenceHouseholdAgent extends SimpleHouseholdAgent {
 				timber -= 1;
 			}
 		}
-		if (acaiYield > 0) {
+		
+		//subsistence 
+		
+		if (acaiYield>this.getSubsistenceAcaiRequirement()) {
 			acaiYield -= this.getSubsistenceAcaiRequirement();
-		} else {
-			capital -= this.getSubsistenceAcaiRequirement() * getActualPrice (LandUse.ACAI);
-		}
-		if (maniocYield > 0) {
-			maniocYield -= this.getSubsistenceManiocRequirement();
-		} else {
-			capital -= this.getSubsistenceManiocRequirement()* getActualPrice (LandUse.MANIOCGARDEN);
+			this.setSubsistenceRequirement(0);
+		 } 
+		else {
+			this.setSubsistenceRequirement((this.getSubsistenceAcaiRequirement()-acaiYield)*getActualPrice(LandUse.ACAI));
+			acaiYield = 0;		
 		}
 		
+		
+		if (maniocYield > this.getSubsistenceManiocRequirement()) {
+			maniocYield -= this.getSubsistenceManiocRequirement();
+			this.setSubsistenceRequirement(this.getSubsistenceRequirement());
+		} else {
+			this.setSubsistenceRequirement(this.getSubsistenceRequirement()
+			+ (this.getSubsistenceManiocRequirement()-maniocYield)*getActualPrice(LandUse.MANIOCGARDEN));
+			maniocYield=0;
+		}
+		annualIncome = acaiYield * getActualPrice(LandUse.ACAI) 
+        + maniocYield*getActualPrice(LandUse.MANIOCGARDEN)
+        + timberYield * getActualPrice(LandUse.FOREST)
+        + this.getWage();
+        this.setAnnualIncome(annualIncome);
+		capital -= this.getSubsistenceRequirement();
 		
 	}
 	

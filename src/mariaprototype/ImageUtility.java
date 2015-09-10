@@ -15,8 +15,10 @@ import mariaprototype.environmental.SpatialAgent;
 import mariaprototype.environmental.WaterCell;
 import mariaprototype.human.HouseholdAgent;
 import mariaprototype.human.MyLandCell;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.space.Dimensions;
 import repast.simphony.space.grid.Grid;
+import repast.simphony.util.ContextUtils;
 import repast.simphony.valueLayer.GridValueLayer;
 /*This class controls the output file
  * 
@@ -32,10 +34,10 @@ public class ImageUtility {
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = img.createGraphics();
 		
-		g.setColor(Color.WHITE);
+		g.setColor(Color.GRAY);
 		g.fillRect(0, 0, width, height);
 		
-		for (int i = 0; i < width; i++) {
+	/*	for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				if ((int) grid.get(i, j) != nodata) {
 					int val = (int) (255d * (grid.get(i, j) - range.getLower()) / (range.getUpper() - range.getLower()));
@@ -43,8 +45,18 @@ public class ImageUtility {
 					g.drawRect(i, height - j - 1, 1, 1);
 				}
 			}
+		} */
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				if ((int) grid.get(i, j) == 0) {
+				//	int val = (int) (255d * (grid.get(i, j) - range.getLower()) / (range.getUpper() - range.getLower()));
+					g.setColor(Color.BLUE);
+					g.drawRect(i, height - j - 1, 1, 1);
+				}
+			}
 		}
 		try {
+	//		System.out.println("imgName "+img);
 			ImageIO.write(img, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -52,17 +64,30 @@ public class ImageUtility {
 		g.dispose();
 	}
 	
-	public static void createLandUsePNG(Iterable<HouseholdAgent> agents, int width, int height, File file) {
+	public static void createLandUsePNG(Iterable<HouseholdAgent> agents, GridValueLayer grid, int width, int height, File file) {
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = img.createGraphics();
 		
-		g.setColor(Color.white);
+		//background
+		g.setColor(new Color(255,255,204));
+		//light green gray ish;
 		g.fillRect(0, 0, width, height);
+		//water Cells
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				if ((int) grid.get(i, j) == 0) {
+				//	g.setColor(Color.BLUE);
+					g.setColor(new Color(140,200,233));
+					//light blue
+					g.drawRect(i, height - j - 1, 1, 1);
+				} 
+			}
+		}
 		
-	//	Iterator<LandscapeCell> waterCellIter = agents.;		
-		Iterator<HouseholdAgent> iter = agents.iterator();
+     	Iterator<HouseholdAgent> iter = agents.iterator();
 		while (iter.hasNext()) {
 			HouseholdAgent h = iter.next();
+	//		ContextUtils.getContext(h).getValueLayer("Distance to Water").get(coordinates)
 			
 			Iterator<MyLandCell> cellIter = h.getTenure().values().iterator();
 			
@@ -76,7 +101,7 @@ public class ImageUtility {
 			}
 			
 		}
-		
+	  
 		try {
 			ImageIO.write(img, "png", file);
 		} catch (IOException e) {

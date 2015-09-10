@@ -354,8 +354,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		//		RandomHelper.createUniform(-0.00888, 0.00888), RandomHelper.createUniform(-0.006705, 0.006705), 1));
 		
 		// add households (must call after all other random distributions have been created)
-	//	addHouseholdsAtRandom(context, numHouseholds, numPersons, projectionFile, multisitedNetwork, personGeography, personSpace);
-        addHouseholdsHomogeneous(context, numHouseholds, numPersons, projectionFile, multisitedNetwork, personGeography, personSpace);
+		addHouseholdsAtRandom(context, numHouseholds, numPersons, projectionFile, multisitedNetwork, personGeography, personSpace);
+    //    addHouseholdsHomogeneous(context, numHouseholds, numPersons, projectionFile, multisitedNetwork, personGeography, personSpace);
 		// schedule reports
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 		ScheduleParameters params = ScheduleParameters.createRepeating(1, 1, MariaPriorities.REPORT);
@@ -377,7 +377,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		RandomHelper.registerDistribution("age", RandomHelper.createUniform(4, 54));
 		
 	//	RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(0.5, 10));
-	//	RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(5,6));
+		RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(0.5,5));
 	//	RandomHelper.registerDistribution("hectares", 5);
 		//this is the control for plot size;
 		//I'll change it to a homogeneous value for now.

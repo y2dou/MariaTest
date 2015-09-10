@@ -406,10 +406,10 @@ public class MySQLDatabase extends Database {
 					.prepareStatement("INSERT INTO tblHouseholdState"
 							+ "(householdID, runID, tick, stage, "
 							+ "aveFemaleEdu, husEdu,perCapitaIncome,"
-							+ "capital, labour, pension, bf, wage,subReq,"
+							+ "capital, labour, pension, bf, wage,subReq, annualMonetaryIncome,"
 							+ "acai, maniocgarden, fields, forest, fallow, other, "
 							+ "harvestAcai, harvestManioc, harvestTimber) VALUES "
-							+ "(?, ?, ?, ?, ?, ?,?, ?, ?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+							+ "(?, ?, ?, ?, ?, ?,?, ?, ?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
 			int i = 1;
 			ps.setInt(i++, a.getID());
 			ps.setInt(i++, getRunID(conn));
@@ -425,6 +425,7 @@ public class MySQLDatabase extends Database {
 			ps.setDouble(i++, a.getBf());
 			ps.setDouble(i++, a.getWage());
 			ps.setDouble(i++, a.getSubsistenceRequirement());
+			ps.setDouble(i++, a.getAnnualIncome());
 			// new add;
 			
 			ps.setInt(i++, numAcai);
