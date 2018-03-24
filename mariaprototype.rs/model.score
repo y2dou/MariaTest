@@ -56,6 +56,10 @@
   <attributes label="bf" ID="bf" pluralLabel="bfs" sType="FLOAT" defaultValue="0" units=""/>
   <attributes label="educationRandomSeed" ID="educationRandomSeed" pluralLabel="educationRandomSeeds" sType="INTEGER" defaultValue="1"/>
   <attributes label="capitalSizeRandomSeed" ID="capitalSizeRandomSeed" pluralLabel="capitalSizeRandomSeeds" description="" sType="INTEGER" defaultValue="1" units=""/>
+  <attributes label="climateIndicator" ID="climateIndicator" pluralLabel="climateIndicators" description="climate indicator, &lt;0 read from file" sType="FLOAT" defaultValue="1.0f"/>
+  <attributes label="percentMovingAverageLinearOptimizingHouseholds" ID="percentMovingAverageLinearOptimizingHouseholds" pluralLabel="percentMovingAverageLinearOptimizingHouseholdss" description="" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentMovingAverageSubsistenceHouseholds" ID="percentMovingAverageSubsistenceHouseholds" pluralLabel="percentMovingAverageSubsistenceHouseholdss" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentMovingAverageMinLabourHouseholds" ID="percentMovingAverageMinLabourHouseholds" pluralLabel="percentMovingAverageMinLabourHouseholdss" sType="FLOAT" defaultValue="0.0"/>
   <implementation package="mariaprototype" className="" basePath="../MariaPrototype" mode="AUTO" binDir="bin,lib/windows,lib"/>
   <agents label="SimpleAgent" ID="simpleAgent" pluralLabel="SimpleAgents">
     <implementation className="SimpleAgent"/>
@@ -127,6 +131,15 @@
     </agents>
     <agents label="NetworkedUrbanAgent" ID="networkedUrbanAgent" pluralLabel="NetworkedUrbanAgents">
       <implementation className="NetworkedUrbanAgent"/>
+    </agents>
+    <agents label="MovingAverageLinearOptimizingHouseholdAgent" ID="MovingAverageLinearOptimizingHouseholdAgent" pluralLabel="MovingAverageLinearOptimizingHouseholdAgents">
+      <implementation className="MovingAverageLinearOptimizingHouseholdAgent"/>
+    </agents>
+    <agents label="MovingAverageSubsistenceHouseholdAgent" ID="movingAverageSubsistenceHouseholdAgent" pluralLabel="MovingAverageSubsistenceHouseholdAgents">
+      <implementation className="MovingAverageSubsistenceHouseholdAgent"/>
+    </agents>
+    <agents label="MovingAverageMinLabourHouseholdAgent" ID="movingAverageMinLabourHouseholdAgent" pluralLabel="MovingAverageMinLabourHouseholdAgents">
+      <implementation className="MovingAverageMinLabourHouseholdAgent"/>
     </agents>
     <projections xsi:type="score:SContinuousSpace" label="Person Space" ID="personSpace" pluralLabel="Person Spaces" borderRule="STRICT"/>
     <projections xsi:type="score:SNetwork" label="Multisited Household Network" ID="multisitedHouseholdNetwork" pluralLabel="Multisited Household Networks" directed="true"/>

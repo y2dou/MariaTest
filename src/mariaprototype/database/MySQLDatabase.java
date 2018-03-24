@@ -95,9 +95,12 @@ public class MySQLDatabase extends Database {
 					.prepareStatement(
 							"INSERT INTO tblrun(randomSeed, sweepName, rundate, "
 									+ "numHouseholds, numPersons, numOffers, lambdaOffers, offerValueLow, offerValueHigh, "
-									+ "percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, percentChayanovHouseholds, percentMinLabourHouseholds, percentSubsistenceHouseholds,"
+									+ "percentHeuristicHouseholds, percentOptimalHouseholds, percentForwardOptimalHouseholds, percentFullForwardOptimalHouseholds, " 
+									+ "percentChayanovHouseholds, percentMinLabourHouseholds, percentSubsistenceHouseholds, "
+									+ "percentMovingAverageLinearOptimizingHouseholds, percentMovingAverageSubsistenceHouseholds,percentMovingAverageMinLabourHouseholds,"
 									+ "labourMultiplier, capitalMultiplier, "
-									+ "pension, bf, alpha,"
+									+ "pension, bf,"
+									+ "climateIndicator,"
 									+ "acaiMultiplier, maniocMultiplier, timberMultiplier, "
 									+ "acaiPrice, maniocPrice, timberPrice, "
 									+ "acaiLabour, maniocLabour, fallowLabour, forestFallowLabour, maintainAcaiLabour, maintainManiocLabour, "
@@ -105,11 +108,19 @@ public class MySQLDatabase extends Database {
 									+ "harvestAcaiLabour, harvestManiocLabour, harvestTimberLabour "
 									+ ") " +
 
-									"VALUES (?, ?, ?, " + "?, ?, ?, ?, ?, ?, "
-									+ "?, ?, ?, ?, ?, ?, ?," + "?, ?, "
-									+ "?, ?, ?," + "?, ?, ?, " + "?, ?, ?, "
+									"VALUES (?, ?, ?, " 
 									+ "?, ?, ?, ?, ?, ?, "
-									+ "?, ?, ?, ?, ?, ?, " + "?, ?, ?" + ")",
+									+ "?, ?, ?, ?, "
+									+ "?,?,?,"
+									+ "?,?,?,"
+									+ "?, ?, "
+									+ "?, ?,"
+									+ "?,"
+									+ "?, ?, ?,"
+									+ "?, ?, ?,"
+									+ "?, ?, ?, ?, ?, ?, " 
+									+ "?, ?, ?, ?, ?, ?, " 
+									+ "?, ?, ?" + ")",
 
 							PreparedStatement.RETURN_GENERATED_KEYS);
 
@@ -131,22 +142,23 @@ public class MySQLDatabase extends Database {
 
 			s.setDouble(i++, (Double) p.getValue("percentHeuristicHouseholds"));
 			s.setDouble(i++, (Double) p.getValue("percentOptimalHouseholds"));
-			s.setDouble(i++, (Double) p
-					.getValue("percentForwardOptimalHouseholds"));
-			s.setDouble(i++, (Double) p
-					.getValue("percentFullForwardOptimalHouseholds"));
+			s.setDouble(i++, (Double) p.getValue("percentForwardOptimalHouseholds"));
+			s.setDouble(i++, (Double) p.getValue("percentFullForwardOptimalHouseholds"));
 			s.setDouble(i++, (Double) p.getValue("percentChayanovHouseholds"));
 			s.setDouble(i++, (Double) p.getValue("percentMinLabourHouseholds"));
-			s.setDouble(i++, (Double) p
-					.getValue("percentSubsistenceHouseholds"));
+			s.setDouble(i++, (Double) p.getValue("percentSubsistenceHouseholds"));
+			s.setDouble(i++, (Double) p.getValue("percentMovingAverageLinearOptimizingHouseholds"));
+			s.setDouble(i++, (Double) p.getValue("percentMovingAverageSubsistenceHouseholds"));
+			s.setDouble(i++, (Double) p.getValue("percentMovingAverageMinLabourHouseholds"));
+			
 			s.setDouble(i++, (Double) p.getValue("labourMultiplier"));
 			s.setDouble(i++, (Double) p.getValue("capitalMultiplier"));
 
 			s.setDouble(i++, (Double) p.getValue("pension"));
 			s.setDouble(i++, (Double) p.getValue("bf"));
-			s.setDouble(i++, (Double) p.getValue("alpha"));
-			// Yue, Nov 11, 2014
-
+			
+			 s.setDouble(i++, (Double) p.getValue("climateIndicator"));
+			 
 			double globalMultiplier = (Double) p
 					.getValue("priceStreamMultiplier");
 			double acaiMultiplier = (Double) p.getValue("acaiMultiplier");
@@ -164,7 +176,7 @@ public class MySQLDatabase extends Database {
 			s.setDouble(i++, (Double) p.getValue("acaiPrice"));
 			s.setDouble(i++, (Double) p.getValue("maniocPrice"));
 			s.setDouble(i++, (Double) p.getValue("timberPrice"));
-
+           
 			s.setDouble(i++, (Double) p.getValue("acaiLabour"));
 			s.setDouble(i++, (Double) p.getValue("maniocLabour"));
 			s.setDouble(i++, (Double) p.getValue("fallowLabour"));
@@ -250,9 +262,12 @@ public class MySQLDatabase extends Database {
 		try {
 			PreparedStatement ps = conn
 					.prepareStatement("INSERT INTO tblHousehold"
-							+ "(householdID, runID) VALUES " + "(?, ?)");
+							+ "(householdID, runID, isUpland) VALUES " + "(?, ?, ?)");
 			ps.setInt(1, a.getID());
 			ps.setInt(2, getRunID(conn));
+			ps.setBoolean(3, a.isUpLand());
+		//to record if this household is on upland;
+		//Yue, Sep 29, 2015
 			ps.execute();
 			ps.close();
 		} catch (SQLException e) {
@@ -356,11 +371,11 @@ public class MySQLDatabase extends Database {
 
 			PreparedStatement psM = conn
 					.prepareStatement("INSERT INTO tblHouseholdMembers "
-							+ "(householdID, runID, tick, stage, memberID, age, isFemale, education) VALUES (?, ?, ?, ?, ?, ?,?, ?)");
+							+ "(householdID, runID, tick, stage, memberID, age, isFemale, isAtSchool,education) VALUES (?, ?, ?, ?, ?, ?,?, ?, ?)");
 			for (Person p : a.getFamilyMembers()) {
-				labour += p.getLabour();
-
-				// log member's gender and age
+			//	labour += p.getLabour();
+				// log member's gender and age 
+				//and other information
 				psM.setInt(1, a.getID());
 				psM.setInt(2, getRunID(conn));
 				psM.setDouble(3, RunState.getInstance().getScheduleRegistry()
@@ -369,7 +384,10 @@ public class MySQLDatabase extends Database {
 				psM.setInt(5, p.getID());
 				psM.setInt(6, p.getAge());
 				psM.setBoolean(7, p.isFemale());
-				psM.setInt(8, p.getEducation());
+				psM.setBoolean(8, p.isSchoolAttendence());
+				psM.setInt(9, p.getEducation());
+		//		psM.setDouble(10, p.getLabour());
+			//	psM.setDouble(11, p.getTotalLabour());
 				psM.execute();
 			}
 			psM.close();
@@ -405,11 +423,11 @@ public class MySQLDatabase extends Database {
 			PreparedStatement ps = conn
 					.prepareStatement("INSERT INTO tblHouseholdState"
 							+ "(householdID, runID, tick, stage, "
-							+ "aveFemaleEdu, husEdu,perCapitaIncome,"
-							+ "capital, labour, pension, bf, wage,subReq, annualMonetaryIncome,"
+							+ "aveFemaleEdu, husEdu,"
+							+ "capital, labour, totalLabour, pension, bf, wage,subReq, "
 							+ "acai, maniocgarden, fields, forest, fallow, other, "
 							+ "harvestAcai, harvestManioc, harvestTimber) VALUES "
-							+ "(?, ?, ?, ?, ?, ?,?, ?, ?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
+							+ "(?, ?, ?, ?, ?, ?,?, ?, ?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			int i = 1;
 			ps.setInt(i++, a.getID());
 			ps.setInt(i++, getRunID(conn));
@@ -418,14 +436,15 @@ public class MySQLDatabase extends Database {
 			ps.setString(i++, stage);
 			ps.setDouble(i++, a.getAveFemaleEdu());
 			ps.setDouble(i++, a.getHusbandEdu());
-			ps.setDouble(i++, a.getPerCapitaIncome());
+	//		ps.setDouble(i++, a.getPerCapitaIncome());
 			ps.setDouble(i++, a.getCapital());
 			ps.setDouble(i++, a.getLabour());
+			ps.setDouble(i++, a.getTotalLabour());
 			ps.setDouble(i++, a.getPension());
 			ps.setDouble(i++, a.getBf());
 			ps.setDouble(i++, a.getWage());
-			ps.setDouble(i++, a.getSubsistenceRequirement());
-			ps.setDouble(i++, a.getAnnualIncome());
+			ps.setDouble(i++, a.getTotalSubsistenceRequirement());
+	//		ps.setDouble(i++, a.getAnnualIncome());
 			// new add;
 			
 			ps.setInt(i++, numAcai);
@@ -476,18 +495,19 @@ public class MySQLDatabase extends Database {
 
 		try {
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO tblLand"
-					+ "(cellID, runID, yearDeforested, owner) VALUES "
-					+ "(?, ?, ?, ?)");
+					+ "(cellID, runID, yearDeforested, isUpland, owner) VALUES "
+					+ "(?, ?, ?, ?,?)");
 			for (LandCell c : landCells) {
 				if (c.getYearDeforested() >= 0) {
 					ps.setInt(1, c.getID());
 					ps.setInt(2, getRunID(conn));
 					ps.setDouble(3, c.getYearDeforested());
-
+                    ps.setBoolean(4, c.isUpland());
+					
 					if (c.getLandHolder() == null)
-						ps.setNull(4, Types.INTEGER);
+						ps.setNull(5, Types.INTEGER);
 					else
-						ps.setInt(4, c.getLandHolder().getID());
+						ps.setInt(5, c.getLandHolder().getID());
 
 					ps.executeUpdate();
 				}

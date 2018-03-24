@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
@@ -244,7 +245,10 @@ public class ChayanovHouseholdAgent extends SimpleHouseholdAgent {
 		}
 		
 		protected double getActualPrice(LandUse crop) {
-			return marketPrices.get(crop);
+			double p=marketPrices.get(crop);	
+		    double r = new Random().nextDouble();
+	    	p= p+ (2*r-1.0)*0.05;  //this gives p a natural 0.05% variation of the price
+			return p;
 		}
 
 		protected HarvestSolution findHarvestSolution() {

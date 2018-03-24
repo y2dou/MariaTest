@@ -10,12 +10,16 @@ import java.util.Set;
 
 import mariaprototype.MariaPriorities;
 import mariaprototype.SimpleAgent;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
 
 public class Person extends SimpleAgent {
 
 	private double labour;
+	//available labour, exclude kids at school and elders who receive pension
+	private double totalLabour; 
+	//all labour at hhd;
 	private int age;
 
 	private boolean isFemale;
@@ -61,10 +65,11 @@ public class Person extends SimpleAgent {
 		if (age<40&&age>=35) {this.ageRange=6;}
 		if (age<45&&age>=40) {this.ageRange=7;}
 		if (age<50&&age>=45) {this.ageRange=8;}
-		if (age<60&&age>=50) {this.ageRange=9;}
-		if (age<70&&age>=60) {this.ageRange=10;}
-		if (age<80&&age>=70) {this.ageRange=11;}
-		if (age>=80) {this.ageRange=12;}
+		if (age<55&&age>=50) {this.ageRange=9;}
+		if (age<60&&age>=55) {this.ageRange=10;}
+		if (age<70&&age>=60) {this.ageRange=11;}
+		if (age<80&&age>=70) {this.ageRange=12;}
+		if (age>=80) {this.ageRange=13;}
 	//	System.out.println("ageRange="+this.ageRange);
 		
 	}
@@ -228,21 +233,28 @@ public class Person extends SimpleAgent {
 	public void calculatePension () {
 	// to get people's pension, male person who is older than 60, can get pension 100; 
 		//female who is older than 55, get a pension.
-		if (this.getGenderAge()>=55)
-		  {  pension=Policy.pensionVolume;}
-		else 
-			{if ( this.getGenderAge()<=-60 ) 
-		      pension=Policy.pensionVolume;}
+		double pnsn = 0;
+		double pension = 0;
+		if (Policy.pensionProgramStatic){
+			pnsn = Policy.pensionVolume;
+		}
+		else {
+			pnsn = Policy.pensionLists.get(RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()).doubleValue();
+		}
 		
-	//	System.out.println("GenderAge="+this.getGenderAge()+" pension="+pension);
-		/*if (age>=60) 
-			pension=Policy.cashTransferVolume;
-				
-		else
-			pension=0;
-		
-		this.pension=pension;*/
-	//	System.out.println("pension="+pension);
+		if (getGenderAge()>=55) {
+		    pension=pnsn;
+		   }
+		else {if ( getGenderAge()<=-60 ) {
+				pension=pnsn;
+	//		System.out.println("tick = "+ tick+", pension = "+ pension);
+				}
+		else {
+			pension = 0;
+		}
+		}
+		this.pension=pension;
+	//	System.out.println("pension: "+pension);
 	}
 	
 	
@@ -254,14 +266,26 @@ public class Person extends SimpleAgent {
 	//but not neccessarily get it tho, because families 
 	//with good income may not to
 	//to check average household income will be done in hhd.aget
-	public void calculateBf() {
-		if (this.age<18&&this.age>6) {
-			bf=Policy.bfVolume;
+	public void calculateBf(int age) {
+		double bolsafamilia = 0;
+//		if (Policy.bfProgramStatic){
+//			bolsafamilia = Policy.bfVolume;
+//		}
+		if (Policy.bfLists.containsKey(-1.0)){
+			bolsafamilia = Policy.bfLists.get(-1.0).doubleValue();
+		}
+		else {
+			bolsafamilia = Policy.bfLists.get(RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()).doubleValue();
+		}
+         double bf=0;
+		if (age<18&&age>6) {
+			bf=bolsafamilia;
 		}
 		else {
 			bf=0;
 		}
-		
+		this.bf=bf;
+	//	System.out.println("bolsa familia = "+bf);
 	}
 	public double getBf(){
 		return bf;
@@ -269,14 +293,12 @@ public class Person extends SimpleAgent {
 	
 	// FIXME: set contributing labour for acai, other agroforestry
 	public void calculateLabour() {
-		// labour (person-months)
-		
-		
-		if(!this.isSchoolAttendence())
-			
-		{ switch (this.ageRange) {
+		// labour (person-months)	
+		labour=0;
+		totalLabour=0;
+	 switch (this.ageRange) {
 		    case 0: 
-		    	if(this.age<7) { labour=0.05;}
+		    	if(this.age<7) { labour=0;}
 		    	else {labour=0.1;}
 		    	break;
 		    case 1: case 2:
@@ -285,27 +307,25 @@ public class Person extends SimpleAgent {
 		    case 3: case 4: case 5: case 6: case 7: case 8: case 9:
 		    	labour =1;
 		    	break;
-		    case 10: case 11: case 12: 
-		    	if(this.getPension()>0)
-		    	{labour =0;
-		  //  	System.out.println("L291 Person lazy");
-		    	break;}
-		    	else
-		    	{labour =(double)60.0/age;
+		    case 10: case 11: case 12: case 13:	    	
+		    	    labour = (double) 55.0/age;
 		    //	System.out.println("L291 Person not lazy");
-		    	break;}
+		    	break;
 		}
 			
-		}
-		
+    //		labour =(double)60.0/age;
 		if (isFemale) labour /= 2; // reduce contributing labour: same as LUCITA
+		totalLabour=labour;
 		
-		
-		if (this.isSchoolAttendence())  {labour=0;}
+		if (this.getPension()>0)     	{labour =0;}
+		if (this.isSchoolAttendence())  {labour =0;}
 	}
 	
 	public double getLabour() {
 		return labour;
+	}
+	public double getTotalLabour() {
+		return totalLabour;
 	}
 	
 	public boolean isFemale() {
@@ -336,14 +356,28 @@ public class Person extends SimpleAgent {
 		this.education = education;
 	}	
 	
+	public void setSubsistenceUnit(int age){
+		Random rand = new Random();
+		if (age<18) {
+			subsistenceUnit = 200 + rand.nextInt(20);
+		} else if (age<60) {
+			subsistenceUnit = 300 + rand.nextInt(50);
+		} else 
+			subsistenceUnit = 200+ rand.nextInt(20);
+		
+		//each person has to spend a random number between 1000-2000 per year;
+		this.subsistenceUnit = subsistenceUnit;
+	}
+
 	 public double getSubsistenceUnit() {
+		    
 			return subsistenceUnit;
 		}
 	
-	 public void setSubsistenceUnit(int age) {
+/*	 public void setSubsistenceUnit(int age) {
 	//		
 		   Random r= new Random();
-	/*		if (age<7){subsistenceUnit=r.nextGaussian()*2+10;}
+		if (age<7){subsistenceUnit=r.nextGaussian()*2+10;}
 		//   if (age<7){subsistenceUnit=10;}
 			else {
 				if (age<18) { subsistenceUnit=r.nextGaussian()*3+20;	}
@@ -353,7 +387,7 @@ public class Person extends SimpleAgent {
 		//		else { subsistenceUnit=20;}
 					    else { subsistenceUnit=r.nextGaussian()*3+20;}
 				     }
-			      }*/
+			      }
 		  // if (age<7){subsistenceUnit=r.nextGaussian()*2+20;}
 			   if (age<7){subsistenceUnit=r.nextGaussian()*2+10;}
 				else {
@@ -369,29 +403,32 @@ public class Person extends SimpleAgent {
 			this.subsistenceUnit = subsistenceUnit;
 		
 		}
-	 
+	 */
 		public double getSubsistenceAcaiUnit() {
 			return subsistenceAcaiUnit;
 		}
 		public void setSubsistenceAcaiUnit(int age) {
 			Random r= new Random();
-			   if (age<7){subsistenceAcaiUnit=r.nextGaussian()*20+1000;}
+			   if (age<7){subsistenceAcaiUnit=r.nextGaussian()*5+50;}
 				//   if (age<7){subsistenceUnit=10;}
 					else {
-						if (age<18) { subsistenceAcaiUnit=r.nextGaussian()*30+2000;	}
+						if (age<18) { subsistenceAcaiUnit=r.nextGaussian()*10+100;	}
 				//		if (age<18) { subsistenceUnit=20;	}
-						else { 	if (age<50) {subsistenceAcaiUnit=r.nextGaussian()*40+3000;	}
+						else { 	if (age<50) {subsistenceAcaiUnit=r.nextGaussian()*10+200;	}
 				//		else { 	if (age<50) {subsistenceUnit=30;	}
 				//		else { subsistenceUnit=20;}
-							    else { subsistenceAcaiUnit=r.nextGaussian()*30+2500;}
+							    else { subsistenceAcaiUnit=r.nextGaussian()*10+100;}
 						     }
 					      }
-				
+				if (this.isFemale) {
+					subsistenceAcaiUnit=subsistenceAcaiUnit * 0.5;
+				}
 				this.subsistenceAcaiUnit = subsistenceAcaiUnit;
 		}
 		public double getSubsistenceManiocUnit() {
 			return subsistenceManiocUnit;
 		}
+		
 		public void setSubsistenceManiocUnit(int age) {
 			
 			Random r= new Random();
@@ -406,17 +443,20 @@ public class Person extends SimpleAgent {
 							    else { subsistenceManiocUnit=r.nextGaussian()*30+500;}
 						     }
 					      } */
-			   if (age<7){subsistenceManiocUnit=r.nextGaussian()*2+1000;}
+			   if (age<7){subsistenceManiocUnit=r.nextGaussian()*20+50;}
 				//   if (age<7){subsistenceUnit=10;}
 					else {
-						if (age<18) { subsistenceManiocUnit=r.nextGaussian()*30+2000;	}
+						if (age<18) { subsistenceManiocUnit=r.nextGaussian()*30+100;	}
 				//		if (age<18) { subsistenceUnit=20;	}
-						else { 	if (age<50) {subsistenceManiocUnit=r.nextGaussian()*40+3000;	}
+						else { 	if (age<50) {subsistenceManiocUnit=r.nextGaussian()*30+200;	}
 				//		else { 	if (age<50) {subsistenceUnit=30;	}
 				//		else { subsistenceUnit=20;}
-							    else { subsistenceManiocUnit=r.nextGaussian()*30+2500;}
+							    else { subsistenceManiocUnit=r.nextGaussian()*30+100;}
 						     }
 					      }
+			   if (this.isFemale) {
+				   subsistenceManiocUnit = subsistenceManiocUnit*0.5;
+			   }
 				this.subsistenceManiocUnit = subsistenceManiocUnit;
 			
 		}

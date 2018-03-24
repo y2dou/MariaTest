@@ -58,15 +58,14 @@ public class MyLandCell extends SimpleAgent {
 		} else if (cell.getForestAge() > 0) {
 			landUse = LandUse.FOREST;
 		} else if (cell.getManiocGardenAge() > 0) {
-			//landUse = LandUse.FIELDS;
-			//shouldn't this be maniocGarden? July 16, 2014
-			landUse=LandUse.MANIOCGARDEN;
+			landUse = LandUse.FIELDS;
 		} else if (cell.getSecondarySuccessionAge() > 0) {
 			landUse = LandUse.FIELDS;
 		}
 		
 		distanceFromHouse = h.getLocation().getDistanceTo(c.getX(), c.getY());
 		distanceToWater = c.getDistanceToWater();
+	
 	}
 	
 	public void maintain() {

@@ -3,14 +3,18 @@ package mariaprototype.environmental;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
+import java.util.HashMap;
+import java.util.Map;
 
 import mariaprototype.ImageUtility;
 import mariaprototype.MariaPriorities;
 import mariaprototype.Range;
+import mariaprototype.human.StaticMarketAgent;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.grid.GridFactoryFinder;
 import repast.simphony.dataLoader.ContextBuilder;
@@ -31,7 +35,7 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 	private double originx;
 	private double originy;
 	private double cellsize;
-
+    
 	
 	private int nodata;
 	
@@ -54,8 +58,39 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 		width = (Integer) p.getValue("width");
 		height = (Integer) p.getValue("height");
 		cellsize = (Double) p.getValue("cellsize");
-	//	System.out.println (cellsize);
 		
+	//	System.out.println (cellsize);
+/*		double climateMultiplier = (Double) p.getValue("climateMultiplier");
+		double acaiClimateMultiplier = (Double) p.getValue("acaiClimateMultiplier");
+		double maniocClimateMultiplier = (Double) p.getValue("maniocClimateMultiplier");
+		//add this climate multiplier as a coefficient for crop yield for climatic scenarios.
+		//the idea is for climatic hazards, it will be 0.8(for instance) for the acai yield and manioc yield. 
+		
+		// load data: prices
+		Map<LandUse, InputStream> climateLists = new HashMap<LandUse, InputStream>();
+		StaticMarketAgent staticMarketAgent = new StaticMarketAgent();*/
+		
+	/*	
+		try {
+			double staticAcaiPrice = (Double) p.getValue("acaiPrice");
+			
+			
+			if (staticAcaiPrice >= 0) {
+				staticMarketAgent.setPrice(LandUse.ACAI, staticAcaiPrice);
+				System.out.println ("acaiPrice =" + staticAcaiPrice);
+			} else {
+				priceLists.put(LandUse.ACAI, new FileInputStream("auxdata/prices/acai.prices.test.txt"));
+				
+				double multiplier = (Double) p.getValue("acaiMultiplier");
+				if (multiplier <= 0)
+					multiplier = globalMultiplier;
+				
+				priceMultipliers.put(LandUse.ACAI, multiplier);
+			}
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+*/
 		setUpRandomDistributions();
 		
 		// create elevation layer
@@ -190,9 +225,25 @@ public class EnvironmentalContextBuilder implements ContextBuilder<SpatialAgent>
 		RandomHelper.registerDistribution("fieldFertilityDiscount", RandomHelper.createUniform(0.1, 0.2));    // 5-10 years of use
 		RandomHelper.registerDistribution("maniocFertilityDiscount", RandomHelper.createUniform(0.45, 0.55)); // 2 years of use
 		
-		RandomHelper.registerDistribution("acaiYield", RandomHelper.createUniform(1800d, 3600d));
-		RandomHelper.registerDistribution("maniocYield", RandomHelper.createUniform(1800d, 3600d));
-	//	RandomHelper.registerDistribution("maniocYield", RandomHelper.createUniform(3600d, 4500d)); 
+	/*	RandomHelper.registerDistribution("acaiYield", RandomHelper.createUniform(180d, 360d));
+		RandomHelper.registerDistribution("maniocYield", RandomHelper.createUniform(280d, 560d));
+		RandomHelper.registerDistribution("intenseAcaiYield", RandomHelper.createUniform(360d, 720d)); */
+		RandomHelper.registerDistribution("acaiYield", RandomHelper.createUniform(30d, 85d));
+	//	RandomHelper.registerDistribution("maniocYield", RandomHelper.createUniform(47d, 68d));
+		RandomHelper.registerDistribution("maniocYield", RandomHelper.createUniform(68d, 100d));
+		RandomHelper.registerDistribution("intenseAcaiYield", RandomHelper.createUniform(144d, 275d)); 
+		//hectares * 10000d / (cellsize * cellsize), the yield here is for per cell, which is 0.0225;
+		//from the article:agriculture intensification, economic identity, and shared invisibility in Amazonian 
+		// peasantry: Caboclos and colonists in comparative perspective, 
+		//acai yield range: 
+		//unmanaged: 1390 kg/ha/yr  --> 31.275 
+		//intermediately managed: 2600--3780 kg/ha/yr  --> 58.5 - 85.05
+		//intensively managed: 6400-12200 kg/ha/yr  --> 144 - 274.5
+		//from the article: the diversity of bitter manioc cultivation in a whitewater amazonian landscape
+		//manioc yield range: (table 4)
+		//oxisol: 2,250 kg/ha, ultisol: 2100 kg/ha -->47.25
+		//floodplain: 3000 kg/ha --> 67.5
+		
 		//Yue, Sept 3, 2015, i want to increase manioc yield;
 	}
 	

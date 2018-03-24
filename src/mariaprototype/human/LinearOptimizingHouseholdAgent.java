@@ -9,8 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+
+import cern.jet.random.engine.RandomGenerator;
 
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
@@ -32,18 +35,21 @@ import mariaprototype.human.messaging.MessageEnvelope;
 public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 	// plan
 	protected FeasibleAllocations feasibleAllocations = new FeasibleAllocations();
+//add this Jan 19, 2016; priceList to remember the past price
 	
-	/*
+//	private int MEMORY_LIMIT = 6; // memory limit of historic prices in years
+	
 	// yield estimates for optimization algorithm
-	private double expectedAcaiYield = 15000d;
-	private double expectedIntenseAcaiYield = 15000;
-	private double expectedManiocYield = 15000;
-	private double expectedTimberYield = 15000;
-	
-	private double acaiYieldCounter = 0;
-	private double intenseAcaiYieldCounter = 0;
-	*/
-	
+      Map<LandUse, Double> cropYields = new HashMap<LandUse, Double>();
+      private double UPLAND_ACAI_EXPECTED_YIELD = 30d;
+      private double UPLAND_INTENSEACAI_EXPECTED_YIELD = 30d;
+      private double UPLAND_MANIOC_EXPECTED_YIELD = 68d;
+      private double UPLAND_FOREST_EXPECTED_YIELD = 200d;
+      private double VARZEA_ACAI_EXPECTED_YIELD = 85d;
+      private double VARZEA_INTENSEACAI_EXPECTED_YIELD = 200d;
+      private double VARZEA_MANIOC_EXPECTED_YIELD = 47d;
+      private double VARZEA_FOREST_EXPECTED_YIELD = 50d;
+      
 	public LinearOptimizingHouseholdAgent() {
 		super();
 	}
@@ -58,6 +64,19 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		
 		// init labour and capital
 		resetLabour();
+		//init expected cropYields
+		if (this.upLand) {       		
+			cropYields.put(LandUse.ACAI, UPLAND_ACAI_EXPECTED_YIELD);      		
+			cropYields.put(LandUse.MANIOCGARDEN, UPLAND_MANIOC_EXPECTED_YIELD);
+			cropYields.put(LandUse.INTENSEACAI, UPLAND_INTENSEACAI_EXPECTED_YIELD);
+			cropYields.put(LandUse.FOREST, UPLAND_FOREST_EXPECTED_YIELD);
+      	} else {
+	     	cropYields.put(LandUse.ACAI, VARZEA_ACAI_EXPECTED_YIELD);      		
+	    	cropYields.put(LandUse.MANIOCGARDEN, VARZEA_MANIOC_EXPECTED_YIELD);
+	    	cropYields.put(LandUse.INTENSEACAI, VARZEA_INTENSEACAI_EXPECTED_YIELD);
+	     	cropYields.put(LandUse.FOREST, VARZEA_FOREST_EXPECTED_YIELD);
+	}
+	//	System.out.println("init: "+getExpectedCropYield(LandUse.INTENSEACAI));
 	}
 
 	@Override
@@ -81,7 +100,7 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		processMessages();
 
 		resetActions();
-
+		
 		// consider job offers, move people to town if desired
 		ArrayList<Person> eligibleMembers = new ArrayList<Person>();
 		int males = 0; // adults
@@ -173,7 +192,6 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 
 					if (cell.getAcaiDensity() > 0)
 						feasibleAllocations.getToHarvestIntenseAcai().add(c);
-
 					feasibleAllocations.getToMaintainManiocGarden().add(c);
 				}
 			} else if (c.getLandUse() == LandUse.FOREST) {
@@ -193,7 +211,6 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				switch (lastLandUse) {
 				case ACAI:
 					feasibleAllocations.getToHarvestAcai().add(c);
-				//	if (c.getYearsSinceLast() > 5)
 					if (c.getYearsSinceLast() > 5 )
 						feasibleAllocations.getToPossiblyDevelop().add(c);
 					break;
@@ -226,10 +243,13 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		for (MyLandCell c : feasibleAllocations.getToPossiblyDevelop()) {
 			c.setToDevelop(true);
 	//		System.out.println("distance To Water = "+c.getDistanceToWater());
-			if (c.getDistanceToWater() <= 40) {
+			if (c.getDistanceToWater() <= 1000) {
 			feasibleAllocations.getToIntensifyAcai().add(c);}
-			if (c.getDistanceToWater() >= 30 ){
-			feasibleAllocations.getToManiocGarden().add(c);}
+		 //   if (c.getCell().isUpland()) {
+			if (c.getDistanceToWater() >= 50 ){
+			feasibleAllocations.getToManiocGarden().add(c);
+	//		System.out.println("ok, here's an upland again "+c.getDistanceToWater());
+			}
 		}
 	//	System.out.println("L238="+feasibleAllocations.getEmployables().size());
 		// TODO: take over unmanaged property, if projected labour and capital allow
@@ -240,13 +260,28 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 	}
 	
 	protected double getExpectedPrice(LandUse crop) {
-		return marketPrices.get(crop);
+     	return marketPrices.get(crop);
 	}
 	
 	protected double getActualPrice(LandUse crop) {
-		return marketPrices.get(crop);
+		double p=marketPrices.get(crop);	
+	    double r = new Random().nextDouble();
+    	p= p+ (2*r-1.0)*0.05;  //this gives p a natural 0.05% variation of the price
+		return p;
 	}
-
+	
+    public void setExpectedCropYield(LandUse crop, double expectedCropYield){
+    //if it's first year, set up the expectation manually;
+    	//later years, it'll be the yield from last year;
+    		cropYields.put(crop, expectedCropYield);
+ //   	System.out.println("set expected crop yield: "+cropYields.toString());
+    }
+    protected double getExpectedCropYield(LandUse crop) {
+    	return cropYields.get(crop).doubleValue();		
+    }
+	protected double getLastYearCropYield(LandUse crop) {
+		return cropYields.get(crop).doubleValue();
+	}
 	protected HarvestSolution findHarvestSolution() {
 		/*
 		 * maximize: sum of [ (prices - immediate cost) * yield *
@@ -527,7 +562,12 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 		 * 
 		 * variables: NEW plots of: acai, maniocgarden
 		 */
-
+	    	
+		double acaiExpectedYield = getExpectedCropYield(LandUse.ACAI);
+		double maniocExpectedYield = getExpectedCropYield(LandUse.MANIOCGARDEN);
+        double intenseAcaiExpectedYield = getExpectedCropYield(LandUse.INTENSEACAI);
+        double timberExpectedYield = getExpectedCropYield(LandUse.FOREST);
+  //      System.out.println("acaiExpectedYield="+acaiExpectedYield);
 		// http://lpsolve.sourceforge.net/5.5/formulate.htm#Java
 		int nResourceCols = 4;
 		int ncols = nResourceCols + feasibleAllocations.getEmployables().size() + linkedHouseholds.size();
@@ -610,9 +650,9 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 					colno[j] = j + 1;
 					row[j++] = 0;
 				}
-				
+		//		System.out.println("capital Multiplier: "+capitalMultiplier);
 				/* add the row to lpsolve */
-				lp.addConstraintex(j, row, colno, LpSolve.LE, capital);
+				lp.addConstraintex(j, row, colno, LpSolve.LE, capital - getMonetarySubsistenceRequirement());
 			//	lp.addConstraintex(j, row, colno, LpSolve.LE, capital-this.getSubsistenceRequirements());
 			}
 	
@@ -713,8 +753,8 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				}
 	
 				/* add the row to lpsolve */
-				lp.addConstraintex(j, row, colno, LpSolve.LE, feasibleAllocations.getToPossiblyDevelop().size());
-			//	lp.addConstraintex(j, row, colno, LpSolve.LE, feasibleAllocations.getToIntensifyAcai().size());
+			//	lp.addConstraintex(j, row, colno, LpSolve.LE, feasibleAllocations.getToPossiblyDevelop().size());
+				lp.addConstraintex(j, row, colno, LpSolve.LE, feasibleAllocations.getToIntensifyAcai().size());
 						
 			}
 	
@@ -772,28 +812,31 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 										 * rowmode should be turned off again when
 										 * done building the model
 										 */
-	
+		
+				
 				/* set the objective function (143 x + 60 y) */
 				j = 0;
-	
+	        
 				// new plots
 				colno[j] = 1; /* first column */
 			//	row[j++] = 15000d * getExpectedPrice(LandUse.ACAI) - acaiCost;
-				row[j++] = 10000d * getExpectedPrice(LandUse.ACAI) - acaiCost;
+				row[j++] = acaiExpectedYield * getExpectedPrice(LandUse.ACAI) - acaiCost;
 				
 				colno[j] = 2; /* second column */
 			//	row[j++] = 5000d * getExpectedPrice(LandUse.MANIOCGARDEN) - maniocCost;
-				row[j++] = 3000d * getExpectedPrice(LandUse.MANIOCGARDEN) - maniocCost;
+				row[j++] = maniocExpectedYield * getExpectedPrice(LandUse.MANIOCGARDEN) - maniocCost;
 				
 				// maintenance
 				colno[j] = 3; /* third column */
-				row[j++] = 15000d * getExpectedPrice(LandUse.ACAI) - maintainAcaiCost;
+				row[j++] = intenseAcaiExpectedYield * getExpectedPrice(LandUse.ACAI) - maintainAcaiCost;
 			//	row[j++] = 10000d * getExpectedPrice(LandUse.ACAI) - maintainAcaiCost;
 				
 				colno[j] = 4; /* fourth column */
 			//	row[j++] = 5000d * getExpectedPrice(LandUse.MANIOCGARDEN) - maintainManiocCost;
-				row[j++] = 3000d * getExpectedPrice(LandUse.MANIOCGARDEN) - maintainManiocCost;
-				
+				row[j++] = maniocExpectedYield * getExpectedPrice(LandUse.MANIOCGARDEN) - maintainManiocCost;
+				 
+	//			System.out.println(RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+
+	//					" = manioc Expected Prce = "+getExpectedPrice(LandUse.ACAI)); 
 				Iterator<Entry<Person, JobOffer>> iter = employableSolutions.iterator();
 				while (iter.hasNext()) {
 					Entry<Person, JobOffer> e = iter.next();
@@ -813,6 +856,8 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				
 				//set the objective
 				lp.setObjFnex(j, row, colno);
+				 
+
 				// add the row to lpsolve 
 			//	lp.addConstraintex(j, row, colno, LpSolve.GE, this.getSubsistenceRequirements()-this.pension);
 				
@@ -1061,27 +1106,48 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				LandCell cell = acaiCell.getCell();
 
 				double yield = cell.getAcaiYield();
+			//	System.out.println("decision acai yield="+yield);
 				labour -= harvestAcaiLabour	* labourMultiplier;
-				capital += yield * getActualPrice(LandUse.ACAI);
+		//		capital += yield * getActualPrice(LandUse.ACAI);
 	//			System.out.println("LOhHD L939,capital="+capital+"=acaiprice="+getActualPrice(LandUse.ACAI));
-				acaiYield += yield;
-				
+				acaiYield += yield;			
 				acai -= 1;
 			}
 			
+			if (solution.getAcai()>0) {
+			    setExpectedCropYield(LandUse.ACAI, acaiYield/(solution.getAcai()));
+			} else {
+				if (isUpLand())
+				    setExpectedCropYield(LandUse.ACAI, UPLAND_ACAI_EXPECTED_YIELD );
+				else 
+				    setExpectedCropYield(LandUse.ACAI, VARZEA_ACAI_EXPECTED_YIELD);
+			}
+			
+	//		System.out.println(RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+
+	//				"=acai expected Yield: "+getExpectedCropYield(LandUse.ACAI));
 			while (intenseAcai >= 1) {
 				MyLandCell acaiCell = feasibleAllocations.getToHarvestIntenseAcai().remove(0);
 				LandCell cell = acaiCell.getCell();
 
 				double yield = cell.getIntenseAcaiYield();
+			//	System.out.println("decision intensified acai yield="+yield);
 				labour -= harvestAcaiLabour	* labourMultiplier;
-				capital += yield * getActualPrice(LandUse.ACAI);
+			//	capital += yield * getActualPrice(LandUse.ACAI);
 			//	System.out.println("LOhHD L952,capital="+capital+"=acaiprice="+getActualPrice(LandUse.ACAI));
-				acaiYield += yield;
-			
+				acaiYield += yield;			    
 				intenseAcai -= 1;
 			}
-			
+			if (solution.getIntenseAcai()>0) {
+			    setExpectedCropYield(LandUse.INTENSEACAI, acaiYield/(solution.getIntenseAcai()));
+			} else {
+				if (isUpLand())
+					setExpectedCropYield(LandUse.INTENSEACAI, UPLAND_INTENSEACAI_EXPECTED_YIELD );
+				else
+				    setExpectedCropYield(LandUse.INTENSEACAI, VARZEA_INTENSEACAI_EXPECTED_YIELD );
+				
+			}
+
+		    	
 			while (gardens >= 1) {
 				
 				MyLandCell myCell = feasibleAllocations.getToHarvestHousegarden().remove(0);
@@ -1090,13 +1156,21 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				double yield = cell.getGardenYield();
 				
 				labour -= harvestManiocLabour * labourMultiplier;
-				capital += yield * getActualPrice(LandUse.MANIOCGARDEN);
+			//	capital += yield * getActualPrice(LandUse.MANIOCGARDEN);
 			//	System.out.println("LOhHD L966,capital="+capital+"=maniocprice="+getActualPrice(LandUse.MANIOCGARDEN));
 				maniocYield += yield;
 				
 				gardens -= 1;
 			}
-			
+			if (solution.getGardens()>0) {
+			    setExpectedCropYield(LandUse.MANIOCGARDEN, maniocYield/solution.getGardens());
+		    } else {
+		    	if (isUpLand()) 
+		    		setExpectedCropYield(LandUse.MANIOCGARDEN,UPLAND_MANIOC_EXPECTED_YIELD);
+		    	else 
+		    	    setExpectedCropYield(LandUse.MANIOCGARDEN,VARZEA_MANIOC_EXPECTED_YIELD);
+		    }
+		    	
 			while (timber >= 1) {
 				MyLandCell timberCell = feasibleAllocations.getToHarvestTimber().remove(0);
 				LandCell cell = timberCell.getCell();
@@ -1113,26 +1187,36 @@ public class LinearOptimizingHouseholdAgent extends SimpleHouseholdAgent {
 				timberCell.setLandUse(LandUse.FALLOW); // is this correct?
 
 				labour -= harvestTimberLabour * labourMultiplier; // labour to clear land
-				capital += yield * getActualPrice(LandUse.FOREST);
+			//	capital += yield * getActualPrice(LandUse.FOREST);
 				
 				timberYield += yield;
 				
 				timber -= 1;
 			}
+			  if (solution.getTimber()>0) {
+				  setExpectedCropYield(LandUse.FOREST, timberYield/solution.getTimber());
+				  } 
+			  else {
+					  if (isUpLand())
+					      setExpectedCropYield(LandUse.FOREST, UPLAND_FOREST_EXPECTED_YIELD);
+					  else
+						  setExpectedCropYield(LandUse.FOREST, VARZEA_FOREST_EXPECTED_YIELD);
+				  }
 		}
 		
-		double subsistenceRequirement;
-		subsistenceRequirement = this.getSubsistenceAcaiRequirement()*marketPrices.get(LandUse.ACAI)
-			           + this.getSubsistenceManiocRequirement()*marketPrices.get(LandUse.MANIOCGARDEN);
-		this.setSubsistenceRequirement(subsistenceRequirement);
+	     double subReq = getSubsistenceAcaiRequirement()*marketPrices.get(LandUse.ACAI) + getSubsistenceManiocRequirement()*marketPrices.get(LandUse.MANIOCGARDEN) 
+	                      + getMonetarySubsistenceRequirement();
+	//	int randomInt = new Random().nextInt(25)+110;
+	//	this.setSubsistenceRequirement(subsistenceRequirement);
+		//*randomInt is because they may have other livelihood cost rather than food;
 	    double annualIncome;
 	    annualIncome = acaiYield * getActualPrice(LandUse.ACAI) 
 	                   + maniocYield*getActualPrice(LandUse.MANIOCGARDEN)
-	                   + timberYield * getActualPrice(LandUse.FOREST)
-	                   + this.getWage();
+	                   + timberYield * getActualPrice(LandUse.FOREST);
 		this.setAnnualIncome(annualIncome);
-		capital -= this.getSubsistenceRequirement();
-		//to deduct subsistence cost;
+		capital = capital + annualIncome - subReq; 
+	    setTotalSubsistenceRequirement(subReq);
+		
 	}
 
 	@Override

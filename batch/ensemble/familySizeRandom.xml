@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <sweep runs="1">
 
-	<parameter name="sweepName" type="constant" constant_type="string" value="govPensionTest"/>
+	<parameter name="sweepName" type="constant" constant_type="string" value="ensemble"/>
 	<parameter name="outputEnabled" type="constant" constant_type="boolean" value="true"/>
 
 	<parameter name="outputImagesAsFiles" type="constant" constant_type="boolean" value="true"/>
@@ -16,7 +16,7 @@
 	<parameter name="originy" type="constant" constant_type="number" value="0.0"/>
 	
 	<parameter name="numHouseholds" type="constant" constant_type="number" value="21"/>
-	<parameter name="numPersons" type="constant" constant_type="number" value="105"/>
+	<parameter name="numPersons" type="constant" constant_type="number" value="120"/>
 
 	<parameter name="acaiMultiplier" type="constant" constant_type="number" value="-1.01" />
 	<parameter name="maniocMultiplier" type="constant" constant_type="number" value="-1.01" />
@@ -31,11 +31,11 @@
 	<parameter name="alpha" type="list" value_type="double" values="0.8">
 	<parameter name="bf" type="list" value_type="double" values="20">
 		
-	<parameter name="capitalSizeRandomSeed" type="list" value_type="int" values="10 12">
-	<parameter name="educationRandomSeed" type="list" value_type="int" values="10 12">
-	<parameter name="demographicRandomSeed" type="list" value_type="int" values="10 12">
-	<parameter name="familySizeRandomSeed" type="list" value_type="int" values="10 12">
-	<parameter name="plotSizeRandomSeed" type="list" value_type="int" values="10 12">
+	<parameter name="capitalSizeRandomSeed" type="list" value_type="int" values="1">
+	<parameter name="educationRandomSeed" type="list" value_type="int" values="1">
+	<parameter name="demographicRandomSeed" type="list" value_type="int" values="1">
+	<parameter name="familySizeRandomSeed" type="list" value_type="int" values="6 7 8 9 10">
+	<parameter name="plotSizeRandomSeed" type="list" value_type="int" values="1">
 	
 	<parameter name="numOffers" type="list" value_type="int" values="21" >
 		<parameter name="labourMultiplier" type="list" value_type="double" values="1.0" >

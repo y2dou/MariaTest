@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Map;
 
 import javolution.util.FastTable;
 import mariaprototype.ImageUtility;
@@ -52,11 +53,16 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected double percentChayanovHouseholds;
 	protected double percentMinLabourHouseholds;
 	protected double percentSubsistenceHouseholds;
+	protected double percentMovingAverageLinearOptimizingHouseholds;
+	protected double percentMovingAverageSubsistenceHouseholds;
+	protected double percentMovingAverageMinLabourHouseholds;
 	//added by Yue,Dec 5, 2014
 	
 	protected float pension;
+//	protected Map <Double,Double> pensionLists;
 	protected float bf;
 	protected float alpha;
+	
 //	protected float beta;
 	protected Connection conn;
 	

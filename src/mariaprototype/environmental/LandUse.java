@@ -8,7 +8,11 @@ public enum LandUse {
 		public String toString() {
 			return "acai";
 		}
-	}, MANIOCGARDEN(0xFF534C) {  //red
+	}, INTENSEACAI(0x54CC3E)  {
+		public String toString(){
+			return "intenseacai";
+		}
+	},	MANIOCGARDEN(0xFF534C) {  //red
 		@Override
 		public String toString() {
 			return "maniocgarden";

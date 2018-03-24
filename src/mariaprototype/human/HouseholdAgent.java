@@ -19,6 +19,7 @@ import javolution.util.FastTable;
 import mariaprototype.MariaPriorities;
 import mariaprototype.Point;
 import mariaprototype.SimpleAgent;
+import mariaprototype.database.Database;
 import mariaprototype.environmental.House;
 import mariaprototype.environmental.LandCell;
 import mariaprototype.environmental.LandUse;
@@ -87,6 +88,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 	//Yue, this is to track annual income, especially to solve subsistence problem.
 	protected double capital;
 	protected double labour;
+	protected double totalLabour;
+	//the total labour in hhd, include kids and elders who receive ct.
 	protected double subsistenceRequirement;
 	protected double subsistenceAcaiRequirement;
 	protected double subsistenceManiocRequirement;
@@ -102,6 +105,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 	private double wage = 0.0;
 	private double perCapitaIncome;
 	private int hhdSize;
+    protected boolean upLand=false;
+
 
 	public void setUtility(double utility) {
 		this.utility = utility;
@@ -194,10 +199,20 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 				.getParameters().getValue("harvestManiocLabour");
 		harvestTimberLabour = (Double) RunEnvironment.getInstance()
 				.getParameters().getValue("harvestTimberLabour");
-		pension = (Double) RunEnvironment.getInstance().getParameters()
-				.getValue("pension");
-		bf = (Double) RunEnvironment.getInstance().getParameters().getValue(
-				"bf");
+	/*	if (Policy.pensionProgramStatic) {
+			pension = (Double) RunEnvironment.getInstance().getParameters()
+			.getValue("pension");
+		}
+		else {
+			pension = 0;
+		}
+		if (Policy.bfProgramStatic) {
+		   bf = (Double) RunEnvironment.getInstance().getParameters().getValue("bf");
+		}
+		else {
+			bf = 0;
+		}*/
+		
 		alpha = (Double) RunEnvironment.getInstance().getParameters().getValue(
 				"alpha");
 		// beta = (Double)
@@ -205,7 +220,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		color = new Color((id * 1291 + 1297) % 256, (id * 2267 + 337) % 256,
 				(id * 1553 + 3) % 256);
 		jobOffers = new LinkedList<JobOffer>();
-
+	
 		conn = (Connection) RunState.getInstance()
 				.getFromRegistry("connection");
 	}
@@ -231,7 +246,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 	// @ScheduledMethod(start = 1, interval = 1, priority =
 	// MariaPriorities.DATA_PREPARATION)
 
-	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)
+
+@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.AGENT_UPDATE_STATUES)
 	public void demography() {
 		double deathProb = 0.0;
 		boolean reproduceCapability = false;
@@ -264,7 +280,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 				{
 					this.familyMembers.remove(p);
 					// System.out.println("death"+" id="+this.id+" size="+this.familyMembers.size());
-					// System.out.println("one person died");
+			//		 System.out.println("one person died: "+this.familyMembers.size());
+			//		 age();
 				}
 			} else {
 				if (p.getReproduce()) {
@@ -277,33 +294,63 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		}
 	}
 
-	@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.DATA_PREPARATION)
+@ScheduledMethod(start = 1, interval = 1, priority = MariaPriorities.AGENT_UPDATE_STATUES)
+//@ScheduledMethod(start = 1, interval = 1, priority = 100)
+  public void updateStatues() {
+	    age();	
+		updateEducation(); //update school years;
+		setLabour();	
+		setPension();
+		setBf();
+	}
+
+	public void age(){
+	//	int n = this.familyMembers.size();
+	//	System.out.println("family size="+this.familyMembers.size());
+		
+	    int age;
+
+	    for (Person p : this.familyMembers) {
+			age = p.getAge();
+			p.setAge(age+1);
+			p.setAgeRange(p.getAge());
+			p.calculatePension();
+			p.calculateBf(age);
+			p.setSubsistenceUnit(age);
+		}
+		
+		if (this.getLinkedHouseholds().size() > 0) {
+			List<NetworkedUrbanAgent> checkHus = new LinkedList<NetworkedUrbanAgent>();
+			checkHus.addAll(this.getLinkedHouseholds().keySet());
+			Iterator<NetworkedUrbanAgent> recallIter = checkHus.iterator();
+
+			while (recallIter.hasNext()) {
+				Person p = recallIter.next().getPerson();
+				p.setAge(p.getAge()+1);
+			}
+		}
+	}
 	public void updateEducation() {
 		// children under age and adults, their education is zero or ++;
 		/*
 		 * here're two situations: (1) there is BF program or not (2) there is
 		 * BF program but hhd have it or not
 		 */
+		double tick = RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount();
+		double bfPolicy = 0;
 		int n = this.familyMembers.size();
-		int age;
+		
 		// case One, no bolsaFamilia
-		for (int i = 0; i < n; i++) {
-			Person p = this.familyMembers.get(i);
-			age = p.getAge();
-			p.setAge(age + 1);
-			// p.calculateLabour();
-			p.calculatePension();
-			p.calculateBf();
-			p.setAgeRange(p.getAge());
-			// p.setEduLevel(p.getEducation());
-			// p.setAgeEdu(p.getAge(), p.getEduLevel());
-			// labor and education has to be calculated after education update.
-			// therefore it's at the end
-
-		}
-
-		// System.out.println("id="+this.id+" size="+this.familyMembers.size());
-		if (Policy.bfVolume == 0) {
+	    if (Policy.bfLists.containsKey(-1.0)) {
+	    	bfPolicy = Policy.bfLists.get(-1.0).doubleValue();
+	    }
+	    else {
+	    	bfPolicy = Policy.bfLists.get(tick).doubleValue() ;
+	    }
+	    
+	//    System.out.println("bfPolicy = "+bfPolicy);
+	    
+		if (bfPolicy == 0) {
 			if (this.perCapitaIncome >= Policy.perCapitaIncomeThreshold) {
 				// CaseOne.one family income is larger than perCapitaThreshold
 				for (int i = 0; i < n; i++) {
@@ -386,7 +433,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 			}
 		}
 		// CaseTwo, when there is bolsa Familia
-		if (Policy.bfVolume > 0) {
+		if (bfPolicy > 0) {
 			// if
 			// (this.perCapitaIncome>=Policy.perCapitaIncomeThreshold&&this.bf>0)
 			// {
@@ -478,6 +525,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		}
 
 	}
+	
 
 	/*
 	 * public void reproduce (){ //check if there's eligible woman in this
@@ -603,7 +651,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 	public final double getCapital() {
 		// this.setCashTran();
 		// System.out.println("setCashTran="+this.cashTran);
-		capital = capital + this.getPension() + this.getBf() + this.wage ;
+		capital = capital + this.getWage();
 //				- this.getSubsistenceRequirements();
 		// this.getPension()+this.getBf()-this.getSubsistenceRequirements();
 		// System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+" hhdID "+this.getID()+" getWage="+this.getWage());
@@ -642,6 +690,7 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		int n = this.getHhdSize();
 		perCapitaIncome = (this.capital - this.pension - this.bf) / n;
 		return perCapitaIncome;
+		//this is the livelihood per capita income
 	}
 
 	public void setHusband() {
@@ -712,12 +761,15 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		// System.out.println("aveFemaleEdu="+aveFemaleEdu+";husbandedu="+this.husbandEdu+";probability="+jobProb);
 		return jobProb;
 	}
-
-	public double getLabour() {
+	
+	public void setLabour(){
 		labour = 0;
+		totalLabour=0;
 		for (Person p : this.familyMembers) {
-			p.calculateLabour();
-			labour += p.getLabour();
+			p.calculateLabour();			
+			totalLabour +=p.getTotalLabour();
+	//		if (p.getPension()==0 && !p.isSchoolAttendence())     
+				labour +=p.getLabour();			
 		}
 
 		if (this.getLinkedHouseholds().size() > 0) {
@@ -729,29 +781,46 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 				Person p = recallIter.next().getPerson();
 				p.calculateLabour();
 				labour += p.getLabour();
+				totalLabour +=p.getTotalLabour();
 			}
 		}
 
-		return labour;
 	}
 
-	public double getPension() {
-		// System.out.println("getCashTran="+cashTran);
+	public double getLabour() {
+		return labour;
+	}
+	
+	public double getTotalLabour(){
+		return totalLabour;
+	}
+
+	public void setPension(){
 		double pension = 0;
 		int n = this.familyMembers.size();
-		// System.out.println("n="+n);
 		for (int i = 0; i < n; i++) {
 			pension += this.familyMembers.get(i).getPension();
 		}
 		this.pension = pension;
+		capital +=pension;
+	//	System.out.println("set Pension: "+ pension);
+	}
+	
+	public double getPension() {
+		// System.out.println("getCashTran="+cashTran);
+		
 		// System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+"  hhdID="+this.getID()+" cashTrans="+cashTran);
+		
+	
+	//	capital += pension;
 		return pension;
 
 	}
 
-	public double getBf() {
+	public void setBf() {
+	//	System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+" bolsa familia="+bf);
 		double bf = 0;
-		int n = this.familyMembers.size();
+		int n = familyMembers.size();
 		if (this.perCapitaIncome < Policy.perCapitaIncomeThreshold) {
 			// looks like 500 is a reasonble threshold, otherwise there's no
 			// family eligible
@@ -765,8 +834,8 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 			// then bf=32*12/324=15
 			int j = 0;
 			for (int i = 0; i < n; i++) {
-				if (j < 5 && this.familyMembers.get(i).getBf() > 0) {
-					bf += this.familyMembers.get(i).getBf();
+				if (j < 5 && familyMembers.get(i).getBf() > 0) {
+					bf += familyMembers.get(i).getBf();
 					j++;
 				}
 			}
@@ -775,8 +844,12 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		this.bf = bf;
 		// if(bf>0)
 		// {
-		// System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+
-		// "  hhdID="+this.getID()+" bolsa familia="+bf);}
+	//	 System.out.println("tick="+RunState.getInstance().getScheduleRegistry().getModelSchedule().getTickCount()+
+	//	 "  hhdID="+this.getID()+" bolsa familia="+bf);
+		capital +=bf;
+	}
+	
+	public double getBf() {
 
 		return bf;
 
@@ -1030,6 +1103,24 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 			double cellsize, int... coordinates) {
 		takePossession(tenureField, landscapeGrid, (int) Math.round(hectares
 				* 10000d / (cellsize * cellsize)), coordinates);
+				
+		int maniocnum=0;
+		for (MyLandCell c: tenure.values()){
+			c.setLandUse(LandUse.MANIOCGARDEN);
+				maniocnum++;
+				if(maniocnum>1) break;
+				}
+		int acainum=0;
+		for (MyLandCell c: tenure.values()){
+			if (c.getLandUse()!=LandUse.MANIOCGARDEN) 
+				{ c.setLandUse(LandUse.ACAI);
+			      acainum++;
+			      if (acainum>1) break;}
+		
+		}
+		
+			
+			
 	}
 
 	protected final void takePossession(LandCell c) {
@@ -1090,12 +1181,20 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		return true;
 	}
 	
-	public double getSubsistenceRequirement() {
-		return subsistenceRequirement;
+	public double getMonetarySubsistenceRequirement() {
+		double monetarySubsistenceRequirement = 0;
+		for (int i = 0; i < this.familyMembers.size(); i++) {
+			Person p = this.familyMembers.get(i);
+			monetarySubsistenceRequirement += p.getSubsistenceUnit();
+		}
+		return monetarySubsistenceRequirement;
 	}
 
-	public void setSubsistenceRequirement(double subsistenceRequirement) {
-		this.subsistenceRequirement = subsistenceRequirement;
+	public void setTotalSubsistenceRequirement(double subsistence){
+		this.subsistenceRequirement=subsistence;
+	}
+	public double getTotalSubsistenceRequirement(){
+		return this.subsistenceRequirement;
 	}
 	
     public double getAnnualIncome() {
@@ -1110,4 +1209,30 @@ public abstract class HouseholdAgent extends SimpleAgent implements
 		//so to get net income, you should use
 		// annualIncome - subReq
 	}
+	
+	public void setUpland (double distanceToWater) {
+		if (distanceToWater > 400){
+			this.upLand=true;
+		//	System.out.println("this is upland");
+		}
+	}
+	
+    public boolean isUpLand() {
+		return upLand;
+	}
+    
+    public void recall (NetworkedUrbanAgent a, String stage){
+    	RepastEdge<SimpleAgent> edge = linkedHouseholds.remove(a);
+    	Database.getInstance().logRecalledUrbanAgent(conn, a, stage);
+    	familyMembers.add(a.getPerson());
+    	linkedHouseholds.remove(a);
+    	a.getEmployer().remove(a);
+    	a.setWage(0);
+    	this.setWage(0);
+		a.setEmployer(null);
+		a.setLocation(null);
+    	a.removeNetworkedHousehold(this);
+    	
+    }
 }
+ 

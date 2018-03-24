@@ -19,7 +19,7 @@ import org.rosuda.JRI.Rengine;
  * 
  */
 public class ForwardThinkingLinearOptimizingHouseholdAgent extends LinearOptimizingHouseholdAgent {
-	private int priceMemoryLimit = 10; // memory limit of historic prices in years
+	private int priceMemoryLimit = 4; // memory limit of historic prices in years
 	private int yearsForecasted = 3;
 	private double discountRate = 0.8;
 	
@@ -96,7 +96,8 @@ public class ForwardThinkingLinearOptimizingHouseholdAgent extends LinearOptimiz
 	}
 	
 	@Override
-	protected double getExpectedPrice(LandUse crop) {
+
+   protected double getExpectedPrice(LandUse crop) {
 		//System.out.print("Actual price: ");
 		//System.out.println(getActualPrice(crop));
 		

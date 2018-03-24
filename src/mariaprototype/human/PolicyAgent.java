@@ -30,6 +30,7 @@ public class PolicyAgent extends SimpleAgent implements NetworkAgent {
 		// set policy (read from file)
 		MessageEnvelope messageEnvelope = policyEnvelopePool.getBroadcastEnvelope(this, policy);
 		
+		
 		// send policy
 		Context<HouseholdAgent> context = ContextUtils.getContext(this);
 		IndexedIterable<HouseholdAgent> iter = context.getObjects(HouseholdAgent.class);

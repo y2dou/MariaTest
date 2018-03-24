@@ -65,6 +65,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		
 	}
 	
+	   
 	public Context<SimpleAgent> build(Context<SimpleAgent> c) {
 		System.out.println("Start running model Maria...");
 		HumanContext context;
@@ -97,17 +98,16 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.percentChayanovHouseholds = (Double) p.getValue("percentChayanovHouseholds");
 		context.percentMinLabourHouseholds = (Double) p.getValue("percentMinLabourHouseholds");
 		context.percentSubsistenceHouseholds = (Double) p.getValue("percentSubsistenceHouseholds");
-		
+		context.percentMovingAverageLinearOptimizingHouseholds = (Double) p.getValue("percentMovingAverageLinearOptimizingHouseholds");
+		context.percentMovingAverageSubsistenceHouseholds = (Double) p.getValue("percentMovingAverageSubsistenceHouseholds");
+		context.percentMovingAverageMinLabourHouseholds = (Double) p.getValue("percentMovingAverageMinLabourHouseholds");
 		
 		context.conn = (Connection) RunState.getInstance().getFromRegistry("connection");
 		
 		int demographicRandomSeed = (Integer) p.getValue("demographicRandomSeed");
 		int familySizeRandomSeed = (Integer) p.getValue("familySizeRandomSeed");
-	//	int plotSizeRandomSeed = (Integer) p.getValue("plotSizeRandomSeed");
+		int plotSizeRandomSeed = (Integer) p.getValue("plotSizeRandomSeed");
 		int capitalSizeRandomSeed= (Integer) p.getValue("capitalSizeRandomSeed");
-
-		
-	//	double capitalSizeRandomSeed = (Double) p.getValue("capitalSizeRandomSeed");
 		int educationRandomSeed = (Integer) p.getValue("educationRandomSeed");
 		//15 is the highest education year that households have; 
 		
@@ -115,39 +115,100 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		int numPersons = (Integer) p.getValue("numPersons");
 		
 		double globalMultiplier = (Double) p.getValue("priceStreamMultiplier");
-		
+					
 		//load pension
 	//	System.out.println(p.getValue("cashTransfer"));
-		double pension = (Double) p.getValue("pension");
+	/*	double pension = (Double) p.getValue("pension");
 		context.pension=(float) pension;
 		double bf = (Double) p.getValue("bf");
-		context.bf=(float)bf;
-		double alpha=(Double) p.getValue("alpha");
-	//	double beta=(Double) p.getValue("beta");
-		
-		context.alpha=(float) alpha;
-	//	context.beta=(float) beta;
-	//	System.out.println("alpha="+alpha+" beta="+(1-alpha));
-		System.out.println("pension="+pension);
-		System.out.println("bf="+bf);
-		if (pension>0) 
-		    { 
-			    Policy.pensionProgram=true;
-			    Policy.pensionVolume=pension;
-			    }
-		else {
-			    Policy.pensionProgram=false;
-			    Policy.pensionVolume=0;
+		context.bf=(float)bf;*/
+
+	//	System.out.println("pension="+pension);
+	//	System.out.println("bf="+bf);
+			Policy.pensionLists.clear();
+//	Map<Double, Double> pensionLists = new HashMap<Double, Double> ();
+		if ((Double) p.getValue("pension") >= 0.0d) {		 	
+			
+	//		context.pensionLists.put(-1.0, (Double) p.getValue("pension"));
+	//		Policy.pensionLists.put(-1.0, (Double) p.getValue("pension"));
+			Policy.pensionVolume = (Double) p.getValue("pension");
+			Policy.pensionProgramStatic = true;
+			System.out.println("  Pension Static: "+p.getValue("pension"));
 		}
-		if (bf>0)
-		{
-			Policy.bfProgram=true;
-			Policy.bfVolume=bf;
+		else if ((Double) p.getValue("pension") < 0.0d ){
+			//pay attention, the number written in parameter file has to be -1.01 or below...
+			//if it's -1.0 it won't work...god knows why
+	//	else {
+//			System.out.println("how about here");
+			//XXX: take all values in the file and load them into the map
+			String fileName = "auxdata/policy/pensionTest.txt";	
+	//		String fileName = "auxdata/batch/incremental.txt";	
+			String line= null;
+			Policy.pensionProgramStatic = false;
+			try {
+				FileReader fileReader = new FileReader(fileName);
+				BufferedReader bufferedReader = 
+	                new BufferedReader(fileReader);
+                int ticks = 1;
+	            while((line = bufferedReader.readLine()) != null) {
+	//            	context.pensionLists.put(new Double(ticks), new Double(line.trim()));        
+	            	Policy.pensionLists.put(new Double(ticks), new Double(line.trim())); 
+	            	++ticks;
+	      //    	System.out.println(ticks+" "+new Double(line.trim()));
+	            }   
+				System.out.println("  Pension Dynamic: "+Policy.pensionLists.toString());
+	            bufferedReader.close();
+			}
+			catch (FileNotFoundException ex){
+				System.out.println("Exception");
+			}
+			
+			catch(IOException ex) {
+				System.out.println("Exception 2");
+			}		
+				}
+		//XXX: read bf from file into the Map
+//		Map<Double, Double> bfLists = new HashMap<Double, Double> ();
+		Policy.bfLists.clear();
+		if ((Double) p.getValue("bf") >= 0.0d) {		 	
+			
+	//		context.pensionLists.put(-1.0, (Double) p.getValue("pension"));
+			Policy.bfLists.put(-1.0, (Double) p.getValue("bf"));
+	//		Policy.bfVolume = (Double) p.getValue("bf");
+	//		Policy.bfProgramStatic = true;
 		}
-		else {
-			Policy.bfProgram=false;
-		    Policy.bfVolume=0;
-		}
+		else if ((Double) p.getValue("bf") < 0.0d ){
+			//pay attention, the number written in parameter file has to be -1.01 or below...
+			//if it's -1.0 it won't work...god knows why
+	//	else {
+//			System.out.println("how about here");
+			//XXX: take all values in the file and load them into the map
+			String fileName = "auxdata/policy/bfTest.txt";	
+			String line= null;
+	//		Policy.bfProgramStatic = false;
+			try {
+				FileReader fileReader = new FileReader(fileName);
+				BufferedReader bufferedReader = 
+	                new BufferedReader(fileReader);
+                int ticks = 1;
+	            while((line = bufferedReader.readLine()) != null) {
+	//            	context.pensionLists.put(new Double(ticks), new Double(line.trim()));        
+	            	Policy.bfLists.put(new Double(ticks), new Double(line.trim())); 
+	            	++ticks;
+	      //    	System.out.println(ticks+" "+new Double(line.trim()));
+	            }   
+	            bufferedReader.close();
+			}
+			catch (FileNotFoundException ex){
+				System.out.println("Exception bf");
+			}
+			
+			catch(IOException ex) {
+				System.out.println("Exception bf 2");
+			}		
+				}
+		System.out.println("  BolsaFamilia "+Policy.bfLists.toString());
+	//	System.out.println("Pension List: "+Policy.pensionLists.toString());
 		setUpRandomDistributions();
 		
 		// load data: prices
@@ -162,10 +223,10 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			
 			if (staticAcaiPrice >= 0) {
 				staticMarketAgent.setPrice(LandUse.ACAI, staticAcaiPrice);
-				System.out.println ("acaiPrice =" + staticAcaiPrice);
+				System.out.println ("  acaiPrice Static = " + staticAcaiPrice);
 			} else {
-				priceLists.put(LandUse.ACAI, new FileInputStream("auxdata/prices/acai.prices.txt"));
-				
+				priceLists.put(LandUse.ACAI, new FileInputStream("auxdata/prices/acai.prices.test.txt"));
+		 
 				double multiplier = (Double) p.getValue("acaiMultiplier");
 				if (multiplier <= 0)
 					multiplier = globalMultiplier;
@@ -181,7 +242,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			if (staticPrice >= 0) {
 				staticMarketAgent.setPrice(LandUse.MANIOCGARDEN, staticPrice);
 			} else {
-				priceLists.put(LandUse.MANIOCGARDEN, new FileInputStream("auxdata/prices/maniocgarden.prices.txt"));
+				priceLists.put(LandUse.MANIOCGARDEN, new FileInputStream("auxdata/prices/maniocgarden.prices.test.txt"));
 				
 				double multiplier = (Double) p.getValue("maniocMultiplier");
 				if (multiplier <= 0)
@@ -211,28 +272,38 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		}
 		
 		// add market agent
-		context.add(staticMarketAgent);
-		
+		context.add(staticMarketAgent);		
 		context.add(new DynamicMarketAgent(priceLists, priceMultipliers));
 		
 		// load distributions
-	/*	RandomHelper.registerGenerator("plotSizeSelector", plotSizeRandomSeed);
+		RandomHelper.registerGenerator("plotSizeSelector", plotSizeRandomSeed);
 		context.plotSizeSelector = new WeightedSelector<Range<Integer>>("plotSizeSelector"); // plot size distribution, in cells
-		context.plotSizeSelector.add(new Range<Integer>(0, 200), 76);
-		context.plotSizeSelector.add(new Range<Integer>(201, 400), 26);
-		context.plotSizeSelector.add(new Range<Integer>(401, 600), 9);
-		context.plotSizeSelector.add(new Range<Integer>(601, 800), 4);
-		context.plotSizeSelector.add(new Range<Integer>(801, 1000), 1);
-		context.plotSizeSelector.add(new Range<Integer>(1001, 1200), 2); */
+	//	context.plotSizeSelector.add(new Range<Integer>(0, 200), 76);
+		context.plotSizeSelector.add(new Range<Integer>(201, 400), 50);
+		context.plotSizeSelector.add(new Range<Integer>(401, 600), 30);
+		context.plotSizeSelector.add(new Range<Integer>(601, 800), 10);
+		context.plotSizeSelector.add(new Range<Integer>(801, 1000), 8);
+		context.plotSizeSelector.add(new Range<Integer>(1001, 1200), 2); 
 		//Yue Sept3, try to solve forest distribution
 		
 	//	RandomHelper.registerGenerator("capitalSizeSelector", RandomHelper.getGenerator("capitalWeightedSelector").nextInt());
-		RandomHelper.registerGenerator("capitalSizeSelector", capitalSizeRandomSeed);
-		context.capitalSizeSelector= new WeightedSelector<Range<Integer>>("capitalSizeSelector");
-		context.capitalSizeSelector.add(new Range<Integer> (1000,2500), 0.50);
-		context.capitalSizeSelector.add(new Range<Integer> (2501,5000), 0.35);
-		context.capitalSizeSelector.add(new Range<Integer> (5001,7500), 0.15);
-	//	context.capitalSizeSelector.add(new Range<Integer> (10000,12500), 10);
+		RandomHelper.registerGenerator("capitalSizeSelector", 
+				capitalSizeRandomSeed);
+		context.capitalSizeSelector= 
+			new WeightedSelector<Range<Integer>>
+		          ("capitalSizeSelector");
+	/*	context.capitalSizeSelector.add(new 
+				Range<Integer> (1000,2500), 0.50);
+		context.capitalSizeSelector.add(new 
+				Range<Integer> (1000,4000), 0.25);*/
+	/*	context.capitalSizeSelector.add(new 
+				Range<Integer> (5001,7000), 0.25);		*/
+		context.capitalSizeSelector.add(new Range<Integer> (10000, 12500), 0.25);
+		context.capitalSizeSelector.add(new Range<Integer> (12501, 17000), 0.5);
+		context.capitalSizeSelector.add(new 
+				Range<Integer> (17001,20000), 0.25);		
+	//	context.capitalSizeSelector.add(new Range<Integer> (15000, 20000), 0.5);
+	//	context.capitalSizeSelector.add(new Range<Integer> (20001, 30000), 0.5);
 	//	context.capitalSizeSelector.add(capitalSizeSelector, capitalSizeSelector.getCumulativeProbability());
 		
 		RandomHelper.registerGenerator("educationSelector", educationRandomSeed);
@@ -246,21 +317,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		RandomHelper.registerGenerator("familySizeSelector", familySizeRandomSeed);
 		context.familySizeSelector = new WeightedSelector<Integer>("familySizeSelector");
 		// context.familySizeSelector.add(0, 11); // no one in the family?
-	/*	context.familySizeSelector.add(1, 39);
-		context.familySizeSelector.add(2, 46);
-		context.familySizeSelector.add(3, 64);
-		context.familySizeSelector.add(4, 65);
-		context.familySizeSelector.add(5, 30);
-		context.familySizeSelector.add(6, 29);
-		context.familySizeSelector.add(7, 18);
-		context.familySizeSelector.add(8, 8);
-		context.familySizeSelector.add(9, 4);
-		context.familySizeSelector.add(10, 8);
-		context.familySizeSelector.add(11, 5);
-		context.familySizeSelector.add(12, 2);
-		context.familySizeSelector.add(17, 1);
-	*/
-		context.familySizeSelector.add(1, 5);
+	
+	//	context.familySizeSelector.add(1, 5);
 		context.familySizeSelector.add(2, 10);
 		context.familySizeSelector.add(3, 15);
 		context.familySizeSelector.add(4, 20);
@@ -269,9 +327,19 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		context.familySizeSelector.add(7, 5);
 		context.familySizeSelector.add(8, 6);
 		context.familySizeSelector.add(9, 4);
-		context.familySizeSelector.add(10, 4);
-		context.familySizeSelector.add(12, 11);
+	//	context.familySizeSelector.add(10, 4);
+	//	context.familySizeSelector.add(12, 11); 
 		
+	//	context.familySizeSelector.add(2, 25);
+	//	context.familySizeSelector.add(3, 25);
+	//	context.familySizeSelector.add(4, 25);
+	//	context.familySizeSelector.add(5, 25);
+	//	context.familySizeSelector.add(6, 25);
+	//	context.familySizeSelector.add(7, 20);
+	//	context.familySizeSelector.add(8, 20);
+	//	context.familySizeSelector.add(9, 20);
+	//	context.familySizeSelector.add(10, 20);
+	//	context.familySizeSelector.add(11, 20);
 		// I changed the family size selector, to small families, in order to run comparison.
 		//the weight is based on hist of a1$hhdsize
 		//Yue Dou, Sep 29, 2014
@@ -292,8 +360,16 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		maleSelector.add(new Range<Integer>(40, 44), 4.86111);
 		maleSelector.add(new Range<Integer>(50, 54), 0.69444);
 		maleSelector.add(new Range<Integer>(55, 59), 0.69444);
-		maleSelector.add(new Range<Integer>(60, 64), 1.38889);
+		maleSelector.add(new Range<Integer>(60, 64), 1.38889); 
 	//	maleSelector.add(new Range<Integer>(80, 85), 1.38889);
+	//	maleSelector.add(new Range<Integer>(0,17), 0.50);
+	//	maleSelector.add(new Range<Integer>(18,60),0.25);
+	//	maleSelector.add(new Range<Integer>(61,80),0.25);
+		
+	//	maleSelector.add(new Range<Integer>(0,17), 0.35);
+	//	maleSelector.add(new Range<Integer>(18,60),0.15);
+	//	maleSelector.add(new Range<Integer>(61,80),0.50);
+		
 		context.demographicSelector.add(maleSelector, maleSelector.getCumulativeProbability());
 		
 		
@@ -308,9 +384,16 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		femaleSelector.add(new Range<Integer>(30, 34), 4.166667);
 		femaleSelector.add(new Range<Integer>(35, 39), 2.083333);
 		femaleSelector.add(new Range<Integer>(40, 44), 0.694444);
+		
 		femaleSelector.add(new Range<Integer>(60, 64), 0.694444);
 	//	femaleSelector.add(new Range<Integer>(75, 79), 2.083333);
-	//	femaleSelector.add(new Range<Integer>(80, 85), 0.694444);
+	//	femaleSelector.add(new Range<Integer>(80, 85), 0.694444); 
+	//	femaleSelector.add(new Range<Integer>(0, 17), 0.5);
+	//	femaleSelector.add(new Range<Integer>(18,55), 0.25);
+	//	femaleSelector.add(new Range<Integer>(56, 80), 0.25);
+	//	femaleSelector.add(new Range<Integer>(0, 17), 0.35);
+	//	femaleSelector.add(new Range<Integer>(18,55), 0.15);
+	//	femaleSelector.add(new Range<Integer>(56, 80), 0.50);
 		context.demographicSelector.add(femaleSelector, femaleSelector.getCumulativeProbability());
 		//where is this score from? and what for? Yue Dou May 14, 2014
 		//now i can answer this question, they're the distribution of the data, Oct 1, 2014
@@ -376,8 +459,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		RandomHelper.registerDistribution("isFemale", RandomHelper.createUniform(0, 1));
 		RandomHelper.registerDistribution("age", RandomHelper.createUniform(4, 54));
 		
-	//	RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(0.5, 10));
-		RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(0.5,5));
+		RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(0.1, 3));
+	//	RandomHelper.registerDistribution("hectares", RandomHelper.createUniform(1,5));
 	//	RandomHelper.registerDistribution("hectares", 5);
 		//this is the control for plot size;
 		//I'll change it to a homogeneous value for now.
@@ -385,6 +468,17 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		//and also I need to change the setting in SimpleHouseholdAgent
 		RandomHelper.registerDistribution("offerValue", RandomHelper.createUniform(0, 1));
 	}
+	
+/*	public double getPension(double ticks) {
+		double result;
+		if (pensionLists.containsKey(-1.0))	{
+			result = ((Double) pensionLists.get(-1.0)).doubleValue();
+		} else {
+			result = ((Double) pensionLists.get(ticks)).doubleValue();
+		}
+		return result;
+	} */
+	
 	public static int randInt(int min, int max){
 		//Yue wrote this for creating homogeneous hhd structure
 		Random rand=new Random();
@@ -426,7 +520,11 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		GridValueLayer isLand = (GridValueLayer) context.envContext.getValueLayer("is Land");
 		
 		Map<Integer, Point> agentLocations = new HashMap<Integer, Point>();
-		for (Integer i = 0; i < numHouseholds; i++) {
+		//place 50% households at Varzea; place other half at upland
+		//Yue, Sep 11, 2015
+	//	for (Integer i = 0; i < numHouseholds; i++) {
+		//VARZEA
+			for (Integer i = 0; i < numHouseholds/3; i++) {	
 			// place agent at random, minimizing distance to water and maximizing distance from each other (secondary)
 
 			Point bestPoint = null;
@@ -449,6 +547,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 					
 					// combine criteria: minimize distance to water, maximize distance to houses
 					double criteriaScore = distToWater - distToNearestHouse * 0.2;
+				//	double criteriaScore = distToWater ;
 					if (bestPoint == null || criteriaScore < bestCriteriaScore) {
 						bestCriteriaScore = criteriaScore;
 						bestPoint = candidate;
@@ -460,6 +559,44 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				agentLocations.put(i, bestPoint);
 		}
 	
+		//upland Yue Sept 11, 2015
+			for (Integer i = numHouseholds/3; i < numHouseholds; i++) {	
+				// place agent at random, maximizing distance to water and maximizing distance from each other (secondary)
+           //     System.out.println("why not allocate to upland");
+				Point bestPoint = null;
+				double bestCriteriaScore = Double.MIN_VALUE;	// higher scores are better
+				
+				for (int j = 0; j < 100 || (bestPoint == null && j < 10000); j++) {
+					Point candidate = new Point(RandomHelper.nextIntFromTo(0, context.width - 1),
+							RandomHelper.nextIntFromTo(0, context.height - 1));
+					
+					if (isLand.get(candidate.x, candidate.y) > 0) {
+						// determine criteria
+						double distToWater = distanceToWater.get(candidate.x, candidate.y);
+						
+						double distToNearestHouse = context.width * context.height; // in cell units
+						for (Point p : agentLocations.values()) {
+							double distToP = p.getDistanceTo(candidate);
+							if (distToP < distToNearestHouse) distToNearestHouse = distToP;
+						}
+						distToNearestHouse *= context.cellsize;				// convert cells to metres
+						
+						// combine criteria: minimize distance to water, maximize distance to houses
+				    	Random randomGenerator = new Random();
+						double criteriaScore = distToWater*0.2 + distToNearestHouse * 0.5 + randomGenerator.nextInt(50);
+					// add a random number is to make it less predictable.
+						//	double criteriaScore =  distToNearestHouse ;
+						if (bestPoint == null || criteriaScore > bestCriteriaScore) {
+							bestCriteriaScore = criteriaScore;
+							bestPoint = candidate;
+						}
+					}
+				}
+				
+				if (bestPoint != null)
+					agentLocations.put(i, bestPoint);
+			}	
+		
 		RandomHelper.registerGenerator("decisionMakingMethodSelector", RandomHelper.nextInt());
 		WeightedSelector<Integer> dmm = new WeightedSelector<Integer>("decisionMakingMethodSelector");
 		dmm.add(1, context.percentHeuristicHouseholds);
@@ -469,6 +606,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		dmm.add(5, context.percentChayanovHouseholds);
 		dmm.add(6, context.percentMinLabourHouseholds);
 		dmm.add(7, context.percentSubsistenceHouseholds);
+		dmm.add(8, context.percentMovingAverageLinearOptimizingHouseholds);
+		dmm.add(9, context.percentMovingAverageSubsistenceHouseholds);
+		dmm.add(10, context.percentMovingAverageMinLabourHouseholds);
 		
 		if (context.percentHeuristicHouseholds <= 0 && 
 				context.percentOptimalHouseholds <= 0 && 
@@ -476,7 +616,10 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				context.percentFullForwardOptimalHouseholds <= 0 &&
 				context.percentChayanovHouseholds <= 0 &&
 				context.percentMinLabourHouseholds <=0 &&
-				context.percentSubsistenceHouseholds <=0 ) {
+				context.percentSubsistenceHouseholds <=0 &&
+				context.percentMovingAverageLinearOptimizingHouseholds <=0 &&
+				context.percentMovingAverageSubsistenceHouseholds <=0 &&
+				context.percentMovingAverageMinLabourHouseholds <=0) {
 			return;
 		}
 		
@@ -505,6 +648,15 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				break;
 			case 7:
 				h = new SubsistenceHouseholdAgent (e.getKey());
+				break;
+			case 8:
+				h = new MovingAverageLinearOptimizingHouseholdAgent (e.getKey());
+				break;
+			case 9:
+				h = new MovingAverageSubsistenceHouseholdAgent (e.getKey());
+				break;
+			case 10:
+				h = new MovingAverageMinLabourHouseholdAgent (e.getKey());
 				break;
 			default:
 				throw new UnsupportedOperationException("Invalid decision-making method selected.");
@@ -551,8 +703,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			Range<Integer> ageRange = dws.sample();
 		//	Integer age = RandomHelper.nextIntFromTo(ageRange.getLower(), ageRange.getUpper());
 		   
-		   int age= randInt(25,30);
-		 
+		   int age= randInt(25,40);
+		 //could change it here, the age distribution
 		   boolean rnd = new Random().nextBoolean();
 		   if (rnd){
 			   females.add(age);
@@ -564,7 +716,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		   //to set up a homogeneous household structure for testing, Yue, march 3, 2015;
 		}
 		for (int i=numHouseholds;i<2*numHouseholds;i++){
-			int age= randInt(25,30);
+			int age= randInt(25,40);
 			males.add(age);
 		}
 		
@@ -704,7 +856,8 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		GridValueLayer isLand = (GridValueLayer) context.envContext.getValueLayer("is Land");
 		
 		Map<Integer, Point> agentLocations = new HashMap<Integer, Point>();
-		for (Integer i = 0; i < numHouseholds; i++) {
+	//	place agents to varzea
+		for (Integer i = 0; i < numHouseholds/3; i++) {
 			// place agent at random, minimizing distance to water and maximizing distance from each other (secondary)
 
 			Point bestPoint = null;
@@ -727,6 +880,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 					
 					// combine criteria: minimize distance to water, maximize distance to houses
 					double criteriaScore = distToWater - distToNearestHouse * 0.2;
+					
 					if (bestPoint == null || criteriaScore < bestCriteriaScore) {
 						bestCriteriaScore = criteriaScore;
 						bestPoint = candidate;
@@ -737,7 +891,43 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			if (bestPoint != null)
 				agentLocations.put(i, bestPoint);
 		}
-	
+		//upland Yue Sept 11, 2015
+		for (Integer i = numHouseholds/3; i < numHouseholds; i++) {	
+			// place agent at random, maximizing distance to water and maximizing distance from each other (secondary)
+       //     System.out.println("why not allocate to upland");
+			Point bestPoint = null;
+			double bestCriteriaScore = Double.MIN_VALUE;	// higher scores are better
+			
+			for (int j = 0; j < 100 || (bestPoint == null && j < 10000); j++) {
+				Point candidate = new Point(RandomHelper.nextIntFromTo(0, context.width - 1),
+						RandomHelper.nextIntFromTo(0, context.height - 1));
+				
+				if (isLand.get(candidate.x, candidate.y) > 0) {
+					// determine criteria
+					double distToWater = distanceToWater.get(candidate.x, candidate.y);
+					
+					double distToNearestHouse = context.width * context.height; // in cell units
+					for (Point p : agentLocations.values()) {
+						double distToP = p.getDistanceTo(candidate);
+						if (distToP < distToNearestHouse) distToNearestHouse = distToP;
+					}
+					distToNearestHouse *= context.cellsize;				// convert cells to metres
+					
+					// combine criteria: minimize distance to water, maximize distance to houses
+				//	double criteriaScore = distToWater + distToNearestHouse * 0.5;
+						double criteriaScore = distToNearestHouse;
+						
+				//I changed the weight of distance to nearesthouse from 0.2 to 0.5
+					if (bestPoint == null || criteriaScore > bestCriteriaScore) {
+						bestCriteriaScore = criteriaScore;
+						bestPoint = candidate;
+					}
+				}
+			}
+			
+			if (bestPoint != null)
+				agentLocations.put(i, bestPoint);
+		}	
 		RandomHelper.registerGenerator("decisionMakingMethodSelector", RandomHelper.nextInt());
 		WeightedSelector<Integer> dmm = new WeightedSelector<Integer>("decisionMakingMethodSelector");
 		dmm.add(1, context.percentHeuristicHouseholds);
@@ -747,6 +937,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		dmm.add(5, context.percentChayanovHouseholds);
 		dmm.add(6, context.percentMinLabourHouseholds);
 		dmm.add(7, context.percentSubsistenceHouseholds);
+		dmm.add(8, context.percentMovingAverageLinearOptimizingHouseholds);
+		dmm.add(9, context.percentMovingAverageSubsistenceHouseholds);
+		dmm.add(10, context.percentMovingAverageMinLabourHouseholds);
 	//	System.out.println("Just Check");
 		
 		if (context.percentHeuristicHouseholds <= 0 && 
@@ -755,7 +948,10 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				context.percentFullForwardOptimalHouseholds <= 0 &&
 				context.percentChayanovHouseholds <= 0 &&
 				context.percentMinLabourHouseholds <=0 &&
-				context.percentSubsistenceHouseholds <=0
+				context.percentSubsistenceHouseholds <=0 &&
+				context.percentMovingAverageLinearOptimizingHouseholds <=0 &&
+				context.percentMovingAverageSubsistenceHouseholds <=0 &&
+				context.percentMovingAverageMinLabourHouseholds <=0
 				) {
 			return;
 		}
@@ -788,6 +984,15 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				h = new SubsistenceHouseholdAgent (e.getKey());
 		//		System.out.println("hhd has been built");
 				break;
+			case 8:
+				h = new MovingAverageLinearOptimizingHouseholdAgent (e.getKey());
+				break;
+			case 9:
+				h = new MovingAverageSubsistenceHouseholdAgent (e.getKey());
+				break;
+			case 10:
+				h = new MovingAverageMinLabourHouseholdAgent (e.getKey());
+				break;
 			default:
 				throw new UnsupportedOperationException("Invalid decision-making method selected.");
 			}
@@ -798,6 +1003,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			// addToNetwork(context, h, multisitedNetwork);
 			
 			context.households.add(h);
+			
 			personSpace.moveTo(h, e.getValue().x, e.getValue().y);
 			
 			{
@@ -924,6 +1130,7 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		//	System.out.println(ws.getLower()+"  "+ws.getUpper());
 		//	System.out.println("L903="+capital);
 			h.setCapital(capital);
+		//	h.setCapital(capital+10000); this is for the capital raise experiment
 		//	h.setCapital(10000d);
 			//sofar i haven't calculate capital empirically, so i'll use a normal distribution
 		//	int capital=(int) (new Random().nextGaussian()*1000+10000);
@@ -931,7 +1138,14 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		}		
 		
 		for (HouseholdAgent h : households)
+			{
+			double distToWater = distanceToWater.get(h.getLocation().x,h.getLocation().y);
+				
+			h.setUpland(distToWater);
+			
 			Database.getInstance().logNewHousehold(context.conn, h);
+			}
+		
 	}
 	
 	protected void addHouseholdsFromRaster(HumanContext context, int numPersons, File householdProjectionFile, FileInputStream stream, Network<SimpleAgent> multisitedNetwork, 
@@ -978,6 +1192,9 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 		dmm.add(5, context.percentChayanovHouseholds);
 		dmm.add(6, context.percentMinLabourHouseholds);
 		dmm.add(7, context.percentSubsistenceHouseholds);
+		dmm.add(8, context.percentMovingAverageLinearOptimizingHouseholds);
+		dmm.add(9, context.percentMovingAverageSubsistenceHouseholds);
+		dmm.add(10, context.percentMovingAverageMinLabourHouseholds);
 		
 		if (context.percentHeuristicHouseholds <= 0 && 
 				context.percentOptimalHouseholds <= 0 && 
@@ -985,7 +1202,10 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 				context.percentFullForwardOptimalHouseholds <= 0 &&
 				context.percentChayanovHouseholds <= 0 &&
 				context.percentMinLabourHouseholds <=0 &&
-				context.percentSubsistenceHouseholds <=0
+				context.percentSubsistenceHouseholds <=0 &&
+				context.percentMovingAverageLinearOptimizingHouseholds <=0 &&
+				context.percentMovingAverageSubsistenceHouseholds <=0 &&
+				context.percentMovingAverageMinLabourHouseholds <=0
 				) {
 			return;
 		}
@@ -1016,7 +1236,16 @@ public class HumanContextBuilder implements ContextBuilder<SimpleAgent> {
 			case 7:
 				h = new SubsistenceHouseholdAgent (e.getKey());
 				break;
+			case 8:
+				h = new MovingAverageLinearOptimizingHouseholdAgent (e.getKey());
+				break;
 				//added by Yue, Dec 5th, 2014;
+			case 9:
+				h = new MovingAverageSubsistenceHouseholdAgent (e.getKey());
+				break;
+			case 10:
+				h = new MovingAverageMinLabourHouseholdAgent (e.getKey());
+				break;
 			default:
 				throw new UnsupportedOperationException("Invalid decision-making method selected.");
 			}

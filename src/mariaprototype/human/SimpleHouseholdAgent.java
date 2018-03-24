@@ -16,6 +16,7 @@ import mariaprototype.human.messaging.Message;
 import mariaprototype.human.messaging.NetworkAgent;
 import mariaprototype.human.messaging.Message.MessageType;
 import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
@@ -47,11 +48,13 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		context = humanContext;
 		EnvironmentalContext environmentalContext = ((HumanContext) humanContext).getEnvironmentalContext();
 		Grid<LandscapeCell> landscapeGrid = (Grid<LandscapeCell>) environmentalContext.getProjection("Landscape Grid");
-		
+	//	GridValueLayer distanceToWater = (GridValueLayer) environmentalContext.getValueLayer("Distance To Water");
 		GridValueLayer tenureField = (GridValueLayer) context.getValueLayer("Land Holder Field");
 		
 		takePossession(tenureField, landscapeGrid, RandomHelper.getDistribution("hectares").nextDouble(), environmentalContext.getCellsize(), coordinates);
-	//	takePossession(tenureField, landscapeGrid, 0.5d, environmentalContext.getCellsize(), coordinates);
+	//	takePossession(tenureField, landscapeGrid, 2d, environmentalContext.getCellsize(), coordinates);
+	    
+	   
 	}
 	
 	protected void processMessages() {
@@ -67,6 +70,8 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 				if (message.getMessageType().equals(MessageType.POLICY)) {
 					// a government policy
 					// read through it, see if conditions are met
+					Policy p = (Policy) message;
+	
 				}
 			} else if (sourceType.equals(AgentType.MIDDLEMAN_AGENT)) {
 				if (message.getMessageType().equals(MessageType.MIDDLEMAN_OFFER)) {
@@ -82,6 +87,7 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 					Iterator<Entry<LandUse, Double>> prices = m.iterator();
 					while (prices.hasNext()) {
 						Entry<LandUse, Double> f = prices.next();
+						
 						marketPrices.put(f.getKey(), f.getValue());
 					}
 							
@@ -294,7 +300,9 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected void recall(NetworkedUrbanAgent a, String stage) {
+	@Override
+//	protected void recall(NetworkedUrbanAgent a, String stage) {
+	public void recall (NetworkedUrbanAgent a, String stage){
 		RepastEdge<SimpleAgent> edge = linkedHouseholds.remove(a);
 		
 		Database.getInstance().logRecalledUrbanAgent(conn, a, stage);
@@ -302,7 +310,8 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		familyMembers.add(a.getPerson());
 		capital += a.getCapital();
 	//	System.out.println("simpleHHD="+this.getID()+" recall capital="+a.getCapital());
-		setWage(this.getWage()+a.getPerson().getWage()/2);
+	//	setWage(this.getWage()+a.getPerson().getWage()/2);
+		setWage(0);
 		a.getEmployer().remove(a);
 		a.setEmployer(null);
 		a.setLocation(null);
