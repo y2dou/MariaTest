@@ -58,10 +58,18 @@ public class MariaContextCreator extends DefaultContext<SimpleAgent> implements
 		if ((Double) p.getValue("percentOptimalHouseholds") <= 0 && 
 				(Double) p.getValue("percentHeuristicHouseholds") <= 0 && 
 				(Double) p.getValue("percentForwardOptimalHouseholds") <= 0 &&
-				(Double) p.getValue("percentFullForwardOptimalHouseholds") <= 0) {
+				(Double) p.getValue("percentFullForwardOptimalHouseholds") <= 0 &&
+				(Double) p.getValue("percentChayanovHouseholds") <= 0 &&
+				(Double) p.getValue("percentMinLabourHouseholds") <= 0 &&
+				(Double) p.getValue("percentSubsistenceHouseholds") <= 0 &&
+				(Double) p.getValue("percentMovingAverageLinearOptimizingHouseholds") <=0 &&
+				(Double) p.getValue("percentMovingAverageSubsistenceHouseholds") <=0 &&
+				(Double) p.getValue("percentMovingAverageMinLabourHouseholds") <=0
+		) {
 			System.err.println("MariaContextCreator: Skipping run: invalid parameters.");
 			invalidRun = true;
 		}
+		//add the last p.getValue Dec7,2014
 		
 		int runID = -1;
 		if (!invalidRun) {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Map;
 
 import javolution.util.FastTable;
 import mariaprototype.ImageUtility;
@@ -19,6 +20,7 @@ import repast.simphony.context.DefaultContext;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.space.graph.Network;
+import repast.simphony.valueLayer.GridValueLayer;
 
 public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected int width;
@@ -30,6 +32,9 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected WeightedSelector<Range<Integer>> plotSizeSelector;
 	protected WeightedSelector<Integer> familySizeSelector;
 	protected WeightedSelector<DemographicWeightedSelector> demographicSelector;
+	protected WeightedSelector<Range<Integer>> educationSelector;
+	protected WeightedSelector<Range<Integer>> capitalSizeSelector; 
+	//Feb 04,2015, Yue,to change the initialized capital
 	
 	// private FastTable<HouseholdReport> householdReports = new FastTable<HouseholdReport>();
 	protected FastTable<HouseholdAgent> households;
@@ -45,10 +50,25 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 	protected double percentOptimalHouseholds;
 	protected double percentForwardOptimalHouseholds;
 	protected double percentFullForwardOptimalHouseholds;
+	protected double percentChayanovHouseholds;
+	protected double percentMinLabourHouseholds;
+	protected double percentSubsistenceHouseholds;
+	protected double percentMovingAverageLinearOptimizingHouseholds;
+	protected double percentMovingAverageSubsistenceHouseholds;
+	protected double percentMovingAverageMinLabourHouseholds;
+	//added by Yue,Dec 5, 2014
 	
+	protected float pension;
+//	protected Map <Double,Double> pensionLists;
+	protected float bf;
+	protected float alpha;
+	
+//	protected float beta;
 	protected Connection conn;
 	
 	protected EnvelopePool envelopePool;	
+	
+
 	
 	public HumanContext() {
 		super();
@@ -86,7 +106,9 @@ public class HumanContext extends DefaultContext<SimpleAgent> {
 			String tick = String.format("%02d", (int) RunEnvironment.getInstance().getCurrentSchedule().getTickCount());
 			File landUseFile = new File((String) RunState.getInstance().getFromRegistry("path") + "/landUse" + tick + ".png");
 			
-			ImageUtility.createLandUsePNG(households, width, height, landUseFile);
+			ImageUtility.createLandUsePNG(households,(GridValueLayer) this.getEnvironmentalContext().
+					getValueLayer("Distance to Water"), width, height, landUseFile);
+			
 		}
 	}
 	

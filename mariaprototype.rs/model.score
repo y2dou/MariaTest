@@ -18,6 +18,9 @@
   <attributes label="percentOptimalHouseholds" ID="percentOptimalHouseholds" pluralLabel="percentOptimalHouseholdss" sType="FLOAT" defaultValue="1.0" units=""/>
   <attributes label="percentForwardOptimalHouseholds" ID="percentForwardOptimalHouseholds" pluralLabel="percentForwardOptimalHouseholdss" sType="FLOAT" defaultValue="0.0"/>
   <attributes label="percentFullForwardOptimalHouseholds" ID="percentFullForwardOptimalHouseholds" pluralLabel="percentFullForwardOptimalHouseholdss" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentChayanovHouseholds" ID="percentChayanovHouseholds" pluralLabel="percentChayanovHouseholdss" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentMinLabourHouseholds" ID="percentMinLabourHouseholds" pluralLabel="percentMinLabourHouseholdss" sType="FLOAT" defaultValue="0.0" units=""/>
+  <attributes label="percentSubsistenceHouseholds" ID="percentSubsistenceHouseholds" pluralLabel="percentSubsistenceHouseholdss" description="" sType="FLOAT" defaultValue="0.0" units=""/>
   <attributes label="runlength" ID="runlength" pluralLabel="runlengths" sType="FLOAT" defaultValue="40" units=""/>
   <attributes label="labourMultiplier" ID="labourMultiplier" pluralLabel="labourMultipliers" sType="FLOAT" defaultValue="1"/>
   <attributes label="capitalMultiplier" ID="capitalMultiplier" pluralLabel="capitalMultipliers" sType="FLOAT" defaultValue="1"/>
@@ -48,6 +51,15 @@
   <attributes label="demographicRandomSeed" ID="demographicRandomSeed" pluralLabel="demographicRandomSeeds" sType="INTEGER" defaultValue="1"/>
   <attributes label="familySizeRandomSeed" ID="familySizeRandomSeed" pluralLabel="familySizeRandomSeeds" sType="INTEGER" defaultValue="1"/>
   <attributes label="plotSizeRandomSeed" ID="plotSizeRandomSeed" pluralLabel="plotSizeRandomSeeds" sType="INTEGER" defaultValue="1"/>
+  <attributes label="pension" ID="pension" pluralLabel="pensions" sType="FLOAT" defaultValue="0.0" units=""/>
+  <attributes label="alpha" ID="alpha" pluralLabel="alphas" description="alpha" sType="FLOAT" defaultValue="0.5" units=""/>
+  <attributes label="bf" ID="bf" pluralLabel="bfs" sType="FLOAT" defaultValue="0" units=""/>
+  <attributes label="educationRandomSeed" ID="educationRandomSeed" pluralLabel="educationRandomSeeds" sType="INTEGER" defaultValue="1"/>
+  <attributes label="capitalSizeRandomSeed" ID="capitalSizeRandomSeed" pluralLabel="capitalSizeRandomSeeds" description="" sType="INTEGER" defaultValue="1" units=""/>
+  <attributes label="climateIndicator" ID="climateIndicator" pluralLabel="climateIndicators" description="climate indicator, &lt;0 read from file" sType="FLOAT" defaultValue="1.0f"/>
+  <attributes label="percentMovingAverageLinearOptimizingHouseholds" ID="percentMovingAverageLinearOptimizingHouseholds" pluralLabel="percentMovingAverageLinearOptimizingHouseholdss" description="" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentMovingAverageSubsistenceHouseholds" ID="percentMovingAverageSubsistenceHouseholds" pluralLabel="percentMovingAverageSubsistenceHouseholdss" sType="FLOAT" defaultValue="0.0"/>
+  <attributes label="percentMovingAverageMinLabourHouseholds" ID="percentMovingAverageMinLabourHouseholds" pluralLabel="percentMovingAverageMinLabourHouseholdss" sType="FLOAT" defaultValue="0.0"/>
   <implementation package="mariaprototype" className="" basePath="../MariaPrototype" mode="AUTO" binDir="bin,lib/windows,lib"/>
   <agents label="SimpleAgent" ID="simpleAgent" pluralLabel="SimpleAgents">
     <implementation className="SimpleAgent"/>
@@ -76,7 +88,7 @@
   <agents xsi:type="score:SContext" label="HumanContext" ID="humanContext" pluralLabel="HumanContexts">
     <implementation package="mariaprototype.human" className="HumanContextBuilder" basePath=""/>
     <agents label="HouseholdAgent" ID="householdAgent" pluralLabel="HouseholdAgents">
-      <implementation className="HouseholdAgent"/>
+      <implementation className="HouseholdAgent" basePath=""/>
     </agents>
     <agents label="PolicyAgent" ID="policyAgent" pluralLabel="PolicyAgents">
       <implementation className="PolicyAgent"/>
@@ -105,11 +117,29 @@
     <agents label="FullForwardLPHouseholdAgent" ID="fullForwardLPHouseholdAgent" pluralLabel="FullForwardLPHouseholdAgents">
       <implementation className="FullForwardLPHouseholdAgent"/>
     </agents>
+    <agents label="MinLabourHouseholdAgent" ID="minLabourHouseholdAgent" pluralLabel="MinLabourHouseholdAgents">
+      <implementation package="" className="MinLabourHouseholdAgent"/>
+    </agents>
+    <agents label="ChayanovHouseholdAgent" ID="ChayanovHouseholdAgent" pluralLabel="ChayanovHouseholdAgents">
+      <implementation className="ChayanovHouseholdAgent"/>
+    </agents>
+    <agents label="SubsistenceHouseholdAgent" ID="subsistenceHouseholdAgent" pluralLabel="SubsistenceHouseholdAgents" description="">
+      <implementation className="SubsistenceHouseholdAgent"/>
+    </agents>
     <agents label="Town" ID="town" pluralLabel="Towns">
       <implementation className="Town"/>
     </agents>
     <agents label="NetworkedUrbanAgent" ID="networkedUrbanAgent" pluralLabel="NetworkedUrbanAgents">
       <implementation className="NetworkedUrbanAgent"/>
+    </agents>
+    <agents label="MovingAverageLinearOptimizingHouseholdAgent" ID="MovingAverageLinearOptimizingHouseholdAgent" pluralLabel="MovingAverageLinearOptimizingHouseholdAgents">
+      <implementation className="MovingAverageLinearOptimizingHouseholdAgent"/>
+    </agents>
+    <agents label="MovingAverageSubsistenceHouseholdAgent" ID="movingAverageSubsistenceHouseholdAgent" pluralLabel="MovingAverageSubsistenceHouseholdAgents">
+      <implementation className="MovingAverageSubsistenceHouseholdAgent"/>
+    </agents>
+    <agents label="MovingAverageMinLabourHouseholdAgent" ID="movingAverageMinLabourHouseholdAgent" pluralLabel="MovingAverageMinLabourHouseholdAgents">
+      <implementation className="MovingAverageMinLabourHouseholdAgent"/>
     </agents>
     <projections xsi:type="score:SContinuousSpace" label="Person Space" ID="personSpace" pluralLabel="Person Spaces" borderRule="STRICT"/>
     <projections xsi:type="score:SNetwork" label="Multisited Household Network" ID="multisitedHouseholdNetwork" pluralLabel="Multisited Household Networks" directed="true"/>

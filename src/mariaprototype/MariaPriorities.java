@@ -21,8 +21,14 @@ public final class MariaPriorities {
 	public static final double MESSAGE_PASSING_1 = 0;
 	
 	/**
+	 * Priority for agent update demographic.
+	 */
+	public static final double AGENT_UPDATE_STATUES = -100;
+	/**
 	 * Priority for agent planning stage.
 	 */
+	
+	
 	public static final double PLANNING = -1000;
 	
 	public static final double MESSAGE_PASSING_2 = -1100;

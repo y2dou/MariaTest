@@ -25,6 +25,8 @@ public class FeasibleAllocations {
 	private FastTable<MyLandCell> toForestFallow = new FastTable<MyLandCell>(); // de-intensify																	// acai
 	private FastTable<MyLandCell> toFallow = new FastTable<MyLandCell>();
 	
+	private FastTable<MyLandCell> toGrowManioc = new FastTable<MyLandCell>();
+	
 	private Map<Person, JobOffer> employables = new HashMap<Person, JobOffer>();
 	
 	public FeasibleAllocations() {
@@ -51,7 +53,9 @@ public class FeasibleAllocations {
 		toManiocGarden.clear();
 		toIntensifyAcai.clear();
 		
-		employables.clear();
+		employables.clear(); 
+		
+		toGrowManioc.clear();
 	}
 	
 	public FastTable<MyLandCell> getToFallow() {
@@ -91,6 +95,10 @@ public class FeasibleAllocations {
 	}
 	public Map<Person, JobOffer> getEmployables() {
 		return employables;
+	}
+	
+	public FastTable<MyLandCell> getToGrowManioc(){
+		return toGrowManioc;
 	}
 
 

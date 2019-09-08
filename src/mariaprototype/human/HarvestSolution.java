@@ -9,6 +9,8 @@ public class HarvestSolution {
 	private double timber;
 	
 	private List<NetworkedUrbanAgent> recall = null;
+	
+	private List<JobOffer> accept=null;
 
 	public double getAcai() {
 		return acai;
@@ -48,5 +50,13 @@ public class HarvestSolution {
 
 	public void setRecall(List<NetworkedUrbanAgent> recall) {
 		this.recall = recall;
+	}
+	
+	public List<JobOffer> getAccept() {
+		return accept;
+	}
+	
+	public void setAccept (List<JobOffer> accept) {
+		this.accept=accept;
 	}
 }

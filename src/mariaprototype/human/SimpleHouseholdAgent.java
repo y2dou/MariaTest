@@ -16,6 +16,7 @@ import mariaprototype.human.messaging.Message;
 import mariaprototype.human.messaging.NetworkAgent;
 import mariaprototype.human.messaging.Message.MessageType;
 import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
@@ -47,10 +48,13 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		context = humanContext;
 		EnvironmentalContext environmentalContext = ((HumanContext) humanContext).getEnvironmentalContext();
 		Grid<LandscapeCell> landscapeGrid = (Grid<LandscapeCell>) environmentalContext.getProjection("Landscape Grid");
-		
+	//	GridValueLayer distanceToWater = (GridValueLayer) environmentalContext.getValueLayer("Distance To Water");
 		GridValueLayer tenureField = (GridValueLayer) context.getValueLayer("Land Holder Field");
 		
 		takePossession(tenureField, landscapeGrid, RandomHelper.getDistribution("hectares").nextDouble(), environmentalContext.getCellsize(), coordinates);
+	//	takePossession(tenureField, landscapeGrid, 2d, environmentalContext.getCellsize(), coordinates);
+	    
+	   
 	}
 	
 	protected void processMessages() {
@@ -66,6 +70,8 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 				if (message.getMessageType().equals(MessageType.POLICY)) {
 					// a government policy
 					// read through it, see if conditions are met
+					Policy p = (Policy) message;
+	
 				}
 			} else if (sourceType.equals(AgentType.MIDDLEMAN_AGENT)) {
 				if (message.getMessageType().equals(MessageType.MIDDLEMAN_OFFER)) {
@@ -81,6 +87,7 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 					Iterator<Entry<LandUse, Double>> prices = m.iterator();
 					while (prices.hasNext()) {
 						Entry<LandUse, Double> f = prices.next();
+						
 						marketPrices.put(f.getKey(), f.getValue());
 					}
 							
@@ -89,6 +96,7 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 			} else if (sourceType.equals(AgentType.TOWN)) {
 				if (message.getMessageType().equals(MessageType.JOB_OFFER)) {
 					processJobOffer((JobOffer) e.getValue());
+			//		System.out.println(e.getValue());
 				}
 			}
 		}
@@ -264,14 +272,17 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 		}
 	}
 	
+
+	
 	@SuppressWarnings("unchecked")
 	protected void send(Person p, JobOffer o) {
 		Town t = o.getTown();
-		
+	//    System.out.println(t.broadcastJobs());
 		NetworkedUrbanAgent a = new NetworkedUrbanAgent(p);
 		a.setWage(o.getWage());
 		a.setColor(this.getColor());
 		familyMembers.remove(p);
+	//	System.out.println("family send");
 		t.add(a);
 		a.setEmployer(t);
 		a.addNetworkedHousehold(this);
@@ -289,14 +300,18 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected void recall(NetworkedUrbanAgent a, String stage) {
+	@Override
+//	protected void recall(NetworkedUrbanAgent a, String stage) {
+	public void recall (NetworkedUrbanAgent a, String stage){
 		RepastEdge<SimpleAgent> edge = linkedHouseholds.remove(a);
 		
 		Database.getInstance().logRecalledUrbanAgent(conn, a, stage);
 		
 		familyMembers.add(a.getPerson());
 		capital += a.getCapital();
-		
+	//	System.out.println("simpleHHD="+this.getID()+" recall capital="+a.getCapital());
+	//	setWage(this.getWage()+a.getPerson().getWage()/2);
+		setWage(0);
 		a.getEmployer().remove(a);
 		a.setEmployer(null);
 		a.setLocation(null);
@@ -331,5 +346,8 @@ public abstract class SimpleHouseholdAgent extends HouseholdAgent {
 			 * at the end of the run, that's ok. 
 			 */
 		}
+		
 	}
+	
+	
 }

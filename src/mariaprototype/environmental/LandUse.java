@@ -3,17 +3,21 @@ package mariaprototype.environmental;
 import java.awt.Color;
 
 public enum LandUse {
-	ACAI(0x54CC3E) {
+	ACAI(0x54CC3E) {  //green
 		@Override
 		public String toString() {
 			return "acai";
 		}
-	}, MANIOCGARDEN(0xFF534C) {
+	}, INTENSEACAI(0x54CC3E)  {
+		public String toString(){
+			return "intenseacai";
+		}
+	},	MANIOCGARDEN(0xFF534C) {  //red
 		@Override
 		public String toString() {
 			return "maniocgarden";
 		}
-	}, FOREST(0x154229) {
+	}, FOREST(0x154229) {   //dark green
 		@Override
 		public String toString() {
 			return "forest";
@@ -23,7 +27,7 @@ public enum LandUse {
 		public String toString() {
 			return "fields";
 		}
-	}, FALLOW(0x99867B) {
+	}, FALLOW(0x99867B) {   //grey
 		@Override
 		public String toString() {
 			return "fallow";
